@@ -14,6 +14,13 @@
 //Language:     C++
 
 
+#ifndef __JOB_HPP__
+#define __JOB_HPP__
+
+#include <fstream>
+#include "Car.hpp"
+
+class Car;
 
 // This class stores information about the jobs.
 class Job
@@ -21,17 +28,28 @@ class Job
   public:
     //car number that the job belongs to
 	int car_number;
+	Car * car;
     int job_number;
     double VM_size;
     double VM_migration_remained;
-    bool completed;
-    //meaning this job was assigned or not assigned to a car
+    //bool completed;
+    
+	//meaning this job was assigned or not assigned to a car
 	bool assigned;													
+	bool jobProcessingComplete; 
+	bool jobComplete;
 	
-    double job_duration;  // in minute
+	int jobSize;              //In Minutes
+	int jobSizeLeftToProcess; //Starts at jobSize and is subtracted each minute. 
+	
+	int dataToMigrate;		  //In Megabytes
+	int dataLeftToMigrate;    //Starts at dataToMigrate and is subtracted by available bandwidth each minute 
+	
+	
+    //double job_duration;  // in minute
     double data_this_job_will_produce;
     double data_storage_time;
-    double job_duration_remained;
+    //double job_duration_remained;
     int data1_car_number;
     std::string replicated_data;
     int data2_car_number;
@@ -45,8 +63,9 @@ class Job
 
     Job();
     void display_job_information(std::ofstream& outFile);
-    void calculate_VM_size();
-    void calculate_job_duration();
+    //void calculate_VM_size();
+    //void calculate_job_duration();
     
 };
 
+#endif

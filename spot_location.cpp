@@ -13,29 +13,28 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
-#ifndef __RANDOM_HPP__
-#define __RANDOM_HPP__
 
+#include "spot_location.hpp"
 
-//Class will be updated to handle a seed so that many runs can be performed with a different seed.
-class Random
+void spot_location::spot_locations(int sno, int cno, int rno, int gcnumber, int occup)
 {
-  public:
-
-  int GetNextInt(int max);
-  double GetNextDouble(double max);
-  
-
-};
-
-int Random::GetNextInt(int max)
-{
-  return rand() % max;
+  spot_number = sno;
+  cluster_number = cno;
+  region_number = rno;
+  group_center_number = gcnumber;
+  occupied = occup;
 }
 
-double Random::GetNextDouble(double max)
+// This displays all information about the parking spots.
+void spot_location::display_spot_information(std::ofstream& outFile)                    
 {
-  return ((double)rand() / (RAND_MAX)) * max;
+  outFile<<"\n";
+  outFile<<"-----------------------------------------"<<"\n";
+  outFile<<"		Spot Details		        "<<"\n";
+  outFile<<"-----------------------------------------"<<"\n";
+  outFile<<"Spot number : "<<spot_number<<"\n";
+  outFile<<"Cluster number : "<<cluster_number<<"\n";
+  outFile<<"Region number : "<<region_number<<"\n";
+  outFile<<"Group Center number : "<<group_center_number<<"\n";
+  outFile<<"Occupied : "<<occupied<<"\n";
 }
-
-#endif

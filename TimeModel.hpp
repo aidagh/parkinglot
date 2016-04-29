@@ -13,6 +13,8 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
+#ifndef __TIMEMODEL_HPP__
+#define __TIMEMODEL_HPP__
 
 
 class TimeModel
@@ -42,3 +44,5 @@ int TimeModel::getTime()
 {
 	return time;
 }
+
+#endif

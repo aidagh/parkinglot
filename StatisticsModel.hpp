@@ -13,6 +13,9 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
+#ifndef __STATISTICSMODEL_HPP__
+#define __STATISTICSMODEL_HPP__
+
 
 class StatisticsModel
 {
@@ -32,3 +35,5 @@ class StatisticsModel
 int StatisticsModel::jobs_completed = 0;
 int StatisticsModel::count_migrated_successfully = 0;
 int StatisticsModel::count_failed_to_migrate = 0;
+
+#endif

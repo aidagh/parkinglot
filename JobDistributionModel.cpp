@@ -13,34 +13,48 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
-#include "TimeModel.hpp"
-#include "Random.hpp"
-#include "Configuration.hpp"
+#include "JobDistributionModel.hpp"
 
-
-#ifndef __CARRESIDENCYDISTRIBUTIONMODEL_HPP__
-#define __CARRESIDENCYDISTRIBUTIONMODEL_HPP__
-
-
-class CarResidencyDistributionModel
+int JobDistributionModel::getNextJobLength()
 {
-  private: 
-    Configuration _configuration;
-    Random _random;
-    TimeModel _time;  
-    static int NextArrival;
-	static int NextDeparture;
-
-
+	//TODO: Obviously this needs to be adjusted
+	return 20;
 	
-  public: 
-    int getNextArrival();
-	int getNextDeparture();
-    int generateNext();
-    
-};
+}
 
-int CarResidencyDistributionModel::NextArrival = 0;
-int CarResidencyDistributionModel::NextDeparture = 0;
+int JobDistributionModel::getNextArrival()
+{
+	if (NextArrival == 0)
+	{
+		generateNext();
+	}	
+	return NextArrival;
+}
+double JobDistributionModel::getNextJobDataToMigrate()
+{
+	//TODO: Obviously this needs to be adjusted
+	return 0;
+	
+}
 
-#endif
+int JobDistributionModel::generateNext()
+{
+  //TODO: This needs to be updated to work based on the configuration
+  NextArrival = _time.getTime() + 5;
+  
+  /*
+  if (_configuration.CarResidency_FromFile)
+  {
+	  //Use pre-existing file
+  }
+  else if (_configuration.CarResidency_Static)
+  {
+	  //CarResidency_Static_Hours;   
+  }
+  else if (_configuration.CarResidency_Exponential)
+  {
+	//_configuration.CarResidency_Exponential_Lambda;  
+  }
+  */
+}
+

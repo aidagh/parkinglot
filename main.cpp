@@ -13,23 +13,8 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
-/*
-List of Updates:
-Split into header and class files (car, job, spot_location, time)
-Rename cars to car, jobs to job, 
 
-*/
-
-/*
-TO DO:
-1. Add Configuration class
-2. Add Statistics class
-3. Fix bandwidth
-4. Organize loops
-5. Drop input files
-*/
-
-
+//TODO: Review if all the following are needed here
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -51,6 +36,8 @@ TO DO:
 #include "Job.cpp"
 #include "CarResidencyDistributionModel.hpp"
 #include "CarResidencyDistributionModel.cpp"
+#include "JobDistributionModel.hpp"
+#include "JobDistributionModel.cpp"
 #include "StatisticsModel.hpp"
 #include "StatisticsModel.cpp"
 #include "CarModel.hpp"
@@ -62,7 +49,7 @@ TO DO:
 
 
 
-using namespace std;
+//using namespace std;
 
 void RegionCenter1();
 void RegionCenter2();
@@ -507,11 +494,11 @@ int max_residency_not_busy_car(int time){                       //This will find
     return car_num;
 
 }
- */
+ 
  
  
  int max_residency_not_busy_car(int time){                       //This will find a car with the maximum dept time that doesn't have a job assigned to it.
-	ofstream outTestOutput;
+	std::ofstream outTestOutput;
 	outTestOutput.open("test.txt");													// we don't use it is case we are not calculating the max dept time 
     int car_num = -1;
     int dept_time_temp= -1;
@@ -528,7 +515,7 @@ int max_residency_not_busy_car(int time){                       //This will find
 
 }
 
-/*
+
                                                             // This is to replicate the data to other cluster.
                                                             //This function gets the spot location of other cluster to which data should be replicated(same GC and same Region).
 int generate_random_cluster_number_in_a_region(int GC_number_of_this_car, int spot_number_of_this_job, int cluster_number_of_this_car, int car_number_of_this_job){
@@ -589,849 +576,432 @@ return clusternum;
 
 CarModel _carModel;
 TimeModel _timeModel;
-
+JobModel _jobModel;
 
 int main()
 {
 	_carModel.Initialize();
 	_timeModel.initialize();
 	
-	int a;
-	std::cin >> a;
-	
 	while (_timeModel.getTime() < _configuration.MaxTime)
 	{
 	  std::cout << "Time: " << _timeModel.getTime() << std::endl;
-      _carModel.HandleLeavingVehicles();
-	  _carModel.HandleIncomingVehicles();
-		
+      _carModel.HandleDepartingVehicles();
+  	  _carModel.HandleIncomingVehicles();
+      _jobModel.HandleJobProcessing();
+	  _jobModel.HandleCompletedJobs();
+	  _jobModel.HandleIncomingJobs();
+
+	  
 	  _timeModel.increment();
 	}
 	
 }
 
-int oldmain()
-{
-    int car_participation_count=0, total_cars_count=0;
-	//srand(time(0));
-//These are handled on the fly now.
-//	RegionCenter1();                                        //This will initialize the spot locations of all clusters belonging to region center1.
-//	RegionCenter2();                                        //This will initialize the spot locations of all clusters belonging to region center2.
-//	RegionCenter3();                                        //This will initialize the spot locations of all clusters belonging to region center3.
-//	RegionCenter4();                                        //This will initialize the spot locations of all clusters belonging to region center4.
-    ofstream outFile,outFileFailed,outFilePassJob,outFileCarParticipation,outFileTotalCarsArrived, outFileParkingLot, FailedMigratedJobs, outTurnedAway, outFailedReplication, outCongCount, outMigration3,outEndMigration, outJobFailed;
-    ifstream inFile,inFile2;
-    ofstream outTest, outTest2, outMigration,outMigration2;
-	outMigration.open("jobs_started_migration.txt");
-	outMigration2.open("jobs_failed.txt");
-	outMigration3.open("jobs_csv.txt");
-    inFile.open("input_departure_time_of_flight.txt");
-    inFile2.open("input_arrival_time_of_flight.txt");
-    outTurnedAway.open("TurnedAwayCars.txt");
-	outCongCount.open("Congestioncount.txt");
-	outJobFailed.open("JobMigrationFailed.txt");
-	outEndMigration.open("job_end_migration.txt");
-    outFile.open("CarsAndJobDetails.txt");
-    outFileFailed.open("PossibleFailedJob.txt");
-	outFilePassJob.open("PossiblePassedJob.txt");
-    outFileCarParticipation.open("cars_participation_simulation.txt");
-    outFileTotalCarsArrived.open("total_cars_for_the_simulation.txt");
-    //outTest.open("replicationData.txt");
-	//outFailedReplication.open("FailedreplicationData.txt");
-    outTest2.open("SuccessfullyMigratedJobs.txt");
-    FailedMigratedJobs.open("FailedMigratedJobs.txt");
-    ofstream outSpot;
-    outSpot.open("SpotDetails.txt");
-    outFileParkingLot.open("NewCarsAssignedtoSpot.txt");
-
-
-                                                            // Assigning the carnumbers for all available 5000 cars
-//    for(int i=1; i<=5000; i++)
-//	{
-//		cars_list[i].car_number = i;
-//        cars_list[i].busy = false;
-//	}
-
-_carModel.Initialize();
-    //Initialize all spot numbers, job numbers, departure time to all the cars
-//    for(int i=1; i<=2560; i++)
-//	  {
-//		cars_list[i].car_spot_number = spot_loc[i].spot_number;
-//		spot_loc[i].occupied_by_car_number = i ;
-//      cars_list[i].job_number=i;
-//      cars_list[i].calculate_departure_time();
-//		cars_list[i].calculate_residency_time_of_car();
-//		cars_list[i].turned_away=0;
-//      cars_list[i].busy = true;
-//
-//	}
-
-
-
-//RF - New cars will be generated on the fly.  see carModel
-//      // Initialize -1 for cars outside the range of parking lot.
-//   	for(int i=2561; i<=5000; i++)
-//   	{
-//   		cars_list[i].car_spot_number = -1;
-//   
-//   	}
-  
-//RF - New jobs will be generated on the fly.  See jobModel
-//   // Initialize all 5000 jobs for job class
-//	  for(int i=1; i<=5000; i++)
-//		{
-//			jobs_list[i].job_number = i;
-//			jobs_list[i].calculate_VM_size();
-//			jobs_list[i].calculate_job_duration();		//Added by Me						
-// 	     jobs_list[i].completed=false;
-// 	     jobs_list[i].assigned=false;
-//
-//		}
-
-//RF - jobs will be assigned to cars on the fly. 
-//     The initial state of the parking lot will be handled in the initialize of the carModel and jobModel
-//     *****TODO
-//	// Assigning jobs to cars and setting the assigned flag for job class.
-//    for(int i=1; i<=2560; i++)
-//		{
-//	
-// 	       if(cars_list[i].job_number==jobs_list[i].job_number){
-//	            jobs_list[i].car_number=cars_list[i].car_number;
-// 	           jobs_list[i].assigned=true;
-//	        }
-//	        else
-//	        {
-//	            jobs_list[i].car_number=-1;
-//	            jobs_list[i].assigned=false;
-//	        }
-//		}
-
-    // Getting the arrival time of car from the arrival list of flights from an input file.
-    for(int i=2561; i<=5000; i++){
-
-      cars_list[i].get_arrival_time_of_car(inFile);
-      cars_list[i].get_departure_time_of_car(inFile2);
-      cars_list[i].calculate_residency_time_of_car();
-    }
-
-
-/*
-    if(spot_loc[1].cluster_number>64)					// issue we had with this particular car number
-    {
-        spot_loc[1].spot_number=1;
-        spot_loc[1].region_number=1;
-        spot_loc[1].cluster_number=1;
-        spot_loc[1].group_center_number=1;
-        spot_loc[1].occupied=1;
-    }
-*/
-
-                                                            // Displaying all car and job information
-    for(int i=1; i<=5000; i++)
-	{
-
-		cars_list[i].display_car_information(outFile);
-		int job_number = jobs_list[i].job_number;
-		jobs_list[job_number].display_job_information(outFile);		
-
-	}
-                                                            //Displays all spot information.
-//	for(int i=1;i<=2560;i++)
-//	{
-//		spot_loc[i].display_spot_information(outSpot);
-//	}
-
-
-                                                            // Simulation time in minutes that is run for 24 hours which is equal to 1440 minutes.
-   // Time time;
-    //cout << "\nTime is: " <<time.minute;
-    for (int i=1; i<=END_TIME; i++){  //1440
-        //time.increment();
-        cout << "\nTime is: " <<i;
-        // If simulation time in minutes exceeds the departure time of car then it means that car
-        //has already left and need to initialize the spot location as -1 and job assigned should be set to false.
-        
-//		Car Loop
-//		  1. handle leaving cars
-//		  2. decrement job duration 
-//		  3. handle incoming cars
-//		  4. handle VM Migration
-		  
-		  
-		for(int c=1; c<=5000; c++)
-        {
-                if(i>=cars_list[c].departure_time_of_car)
-                {
- //                   spot_var = cars_list[c].car_spot_number;
- //                   spot_loc[spot_var].occupied_by_car_number = cars_list[c].car_number;
- //                   spot_loc[spot_var].occupied= -1;
- //                   int job_var = cars_list[c].job_number;
- //                   jobs_list[job_var].assigned = false; //if the car leaves we will un assign the job
- //                   cars_list[c].car_spot_number = -1;
- //                   cars_list[c].busy=false;
-					
-                }
-				
-				//RF ? What if the job is complete?
-				if (cars_list[c].car_spot_number != -1) {
-					int job_var_temp = cars_list[c].job_number;
-					jobs_list[job_var_temp].job_duration_remained--;				
-				}
-
-                //RF - Logically sound, but we can improve the efficiency here.
-                // assigning new cars to the parking lot
-                if( c>=2561 && cars_list[c].arrival_time_of_car == i && cars_list[c].car_spot_number == -1 && cars_list[c].turned_away != 1){
-                    for (int s=1; s<=2560; s++){
- //                       if (spot_loc[s].occupied == -1 ){
- //                           cars_list[c].car_spot_number = spot_loc[s].spot_number;
- //                           spot_loc[s].occupied_by_car_number=cars_list[c].car_number;
- //                           spot_loc[s].occupied = 1;
- //                           cars_list[c].turned_away = 0;
- //                           cars_list[c].busy=false;
-  //                         break;
+//    int oldmain()
+//    {
+//        int car_participation_count=0, total_cars_count=0;
+//    	//srand(time(0));
+//    //These are handled on the fly now.
+//    //	RegionCenter1();                                        //This will initialize the spot locations of all clusters belonging to region center1.
+//    //	RegionCenter2();                                        //This will initialize the spot locations of all clusters belonging to region center2.
+//    //	RegionCenter3();                                        //This will initialize the spot locations of all clusters belonging to region center3.
+//    //	RegionCenter4();                                        //This will initialize the spot locations of all clusters belonging to region center4.
+//        std::ofstream outFile,outFileFailed,outFilePassJob,outFileCarParticipation,outFileTotalCarsArrived, outFileParkingLot, FailedMigratedJobs, outTurnedAway, outFailedReplication, outCongCount, outMigration3,outEndMigration, outJobFailed;
+//        std::ifstream inFile,inFile2;
+//        std::ofstream outTest, outTest2, outMigration,outMigration2;
+//    	outMigration.open("jobs_started_migration.txt");
+//    	outMigration2.open("jobs_failed.txt");
+//    	outMigration3.open("jobs_csv.txt");
+//        inFile.open("input_departure_time_of_flight.txt");
+//        inFile2.open("input_arrival_time_of_flight.txt");
+//        outTurnedAway.open("TurnedAwayCars.txt");
+//    	outCongCount.open("Congestioncount.txt");
+//    	outJobFailed.open("JobMigrationFailed.txt");
+//    	outEndMigration.open("job_end_migration.txt");
+//        outFile.open("CarsAndJobDetails.txt");
+//        outFileFailed.open("PossibleFailedJob.txt");
+//    	outFilePassJob.open("PossiblePassedJob.txt");
+//        outFileCarParticipation.open("cars_participation_simulation.txt");
+//        outFileTotalCarsArrived.open("total_cars_for_the_simulation.txt");
+//        //outTest.open("replicationData.txt");
+//    	//outFailedReplication.open("FailedreplicationData.txt");
+//        outTest2.open("SuccessfullyMigratedJobs.txt");
+//        FailedMigratedJobs.open("FailedMigratedJobs.txt");
+//        std::ofstream outSpot;
+//        outSpot.open("SpotDetails.txt");
+//        outFileParkingLot.open("NewCarsAssignedtoSpot.txt");
+//    
+//    
+//                                                                // Assigning the carnumbers for all available 5000 cars
+//    //    for(int i=1; i<=5000; i++)
+//    //	{
+//    //		cars_list[i].car_number = i;
+//    //        cars_list[i].busy = false;
+//    //	}
+//    
+//    _carModel.Initialize();
+//        //Initialize all spot numbers, job numbers, departure time to all the cars
+//    //    for(int i=1; i<=2560; i++)
+//    //	  {
+//    //		cars_list[i].car_spot_number = spot_loc[i].spot_number;
+//    //		spot_loc[i].occupied_by_car_number = i ;
+//    //      cars_list[i].job_number=i;
+//    //      cars_list[i].calculate_departure_time();
+//    //		cars_list[i].calculate_residency_time_of_car();
+//    //		cars_list[i].turned_away=0;
+//    //      cars_list[i].busy = true;
+//    //
+//    //	}
+//    
+//    
+//    
+//    //RF - New cars will be generated on the fly.  see carModel
+//    //      // Initialize -1 for cars outside the range of parking lot.
+//    //   	for(int i=2561; i<=5000; i++)
+//    //   	{
+//    //   		cars_list[i].car_spot_number = -1;
+//    //   
+//    //   	}
+//      
+//    //RF - New jobs will be generated on the fly.  See jobModel
+//    //   // Initialize all 5000 jobs for job class
+//    //	  for(int i=1; i<=5000; i++)
+//    //		{
+//    //			jobs_list[i].job_number = i;
+//    //			jobs_list[i].calculate_VM_size();
+//    //			jobs_list[i].calculate_job_duration();		//Added by Me						
+//    // 	     jobs_list[i].completed=false;
+//    // 	     jobs_list[i].assigned=false;
+//    //
+//    //		}
+//    
+//    //RF - jobs will be assigned to cars on the fly. 
+//    //     The initial state of the parking lot will be handled in the initialize of the carModel and jobModel
+//    //     *****TODO
+//    //	// Assigning jobs to cars and setting the assigned flag for job class.
+//    //    for(int i=1; i<=2560; i++)
+//    //		{
+//    //	
+//    // 	       if(cars_list[i].job_number==jobs_list[i].job_number){
+//    //	            jobs_list[i].car_number=cars_list[i].car_number;
+//    // 	           jobs_list[i].assigned=true;
+//    //	        }
+//    //	        else
+//    //	        {
+//    //	            jobs_list[i].car_number=-1;
+//    //	            jobs_list[i].assigned=false;
+//    //	        }
+//    //		}
+//    
+//        // Getting the arrival time of car from the arrival list of flights from an input file.
+//        for(int i=2561; i<=5000; i++){
+//    
+//          cars_list[i].get_arrival_time_of_car(inFile);
+//          cars_list[i].get_departure_time_of_car(inFile2);
+//          cars_list[i].calculate_residency_time_of_car();
+//        }
+//    
+//    
+//    /*
+//        if(spot_loc[1].cluster_number>64)					// issue we had with this particular car number
+//        {
+//            spot_loc[1].spot_number=1;
+//            spot_loc[1].region_number=1;
+//            spot_loc[1].cluster_number=1;
+//            spot_loc[1].group_center_number=1;
+//            spot_loc[1].occupied=1;
+//        }
+//    */
+//    
+//                                                                // Displaying all car and job information
+//        for(int i=1; i<=5000; i++)
+//    	{
+//    
+//    		cars_list[i].display_car_information(outFile);
+//    		int job_number = jobs_list[i].job_number;
+//    		jobs_list[job_number].display_job_information(outFile);		
+//    
+//    	}
+//                                                                //Displays all spot information.
+//    //	for(int i=1;i<=2560;i++)
+//    //	{
+//    //		spot_loc[i].display_spot_information(outSpot);
+//    //	}
+//    
+//    
+//                                                                // Simulation time in minutes that is run for 24 hours which is equal to 1440 minutes.
+//       // Time time;
+//        //cout << "\nTime is: " <<time.minute;
+//        for (int i=1; i<=END_TIME; i++){  //1440
+//            //time.increment();
+//            std::cout << "\nTime is: " <<i;
+//            // If simulation time in minutes exceeds the departure time of car then it means that car
+//            //has already left and need to initialize the spot location as -1 and job assigned should be set to false.
+//            
+//    //		Car Loop
+//    //		  1. handle leaving cars
+//    //		  2. decrement job duration 
+//    //		  3. handle incoming cars
+//    //		  4. handle VM Migration
+//    		  
+//    		  
+//    		for(int c=1; c<=5000; c++)
+//            {
+//                    if(i>=cars_list[c].departure_time_of_car)
+//                    {
+//     //                   spot_var = cars_list[c].car_spot_number;
+//     //                   spot_loc[spot_var].occupied_by_car_number = cars_list[c].car_number;
+//     //                   spot_loc[spot_var].occupied= -1;
+//     //                   int job_var = cars_list[c].job_number;
+//     //                   jobs_list[job_var].assigned = false; //if the car leaves we will un assign the job
+//     //                   cars_list[c].car_spot_number = -1;
+//     //                   cars_list[c].busy=false;
+//    					
+//                    }
+//    				
+//    				//RF ? What if the job is complete?
+//    				if (cars_list[c].car_spot_number != -1) {
+//    					int job_var_temp = cars_list[c].job_number;
+//    					jobs_list[job_var_temp].job_duration_remained--;				
+//    				}
+//    
+//                    //RF - Logically sound, but we can improve the efficiency here.
+//                    // assigning new cars to the parking lot
+//                    if( c>=2561 && cars_list[c].arrival_time_of_car == i && cars_list[c].car_spot_number == -1 && cars_list[c].turned_away != 1){
+//                        for (int s=1; s<=2560; s++){
+//     //                       if (spot_loc[s].occupied == -1 ){
+//     //                           cars_list[c].car_spot_number = spot_loc[s].spot_number;
+//     //                           spot_loc[s].occupied_by_car_number=cars_list[c].car_number;
+//     //                           spot_loc[s].occupied = 1;
+//     //                           cars_list[c].turned_away = 0;
+//     //                           cars_list[c].busy=false;
+//      //                         break;
+//    //                        }
+//    //                        else{
+//    //                            cars_list[c].turned_away = 1;
+//    
+//    //                        }
+//    
 //                        }
-//                        else{
-//                            cars_list[c].turned_away = 1;
-
-//                        }
-
-                    }
-                }
-				
-				
-				
-				
-
-                //VM Migration: if residency time of the car is less than the job durationjob duration of that car; it means that the job may fail
-                //so we will migrate the job within 10 mins before the car leaves
-
-				int job_num_var = cars_list[c].job_number;
-
-				bool dummy_flag=false;
-
-				
-				if (  jobs_list[job_num_var].job_duration_remained >0  && cars_list[c].job_number != 0 && cars_list[c].car_flag_start_migration == false && cars_list[c].job_has_been_migrated==false && i+START_TIME_MIGRATION >= cars_list[c].departure_time_of_car && cars_list[c].departure_time_of_car >= i && cars_list[c].car_spot_number != -1)   // if the car is migrating
-				{
-								
-									//calculate_congestion(i);
-									//calculate_bandwidth();					// This is used to find the bandwidth per min.
-									//int spot_num_of_car_migrating_from=cars_list[c].car_spot_number;
-									//int cluster_number_of_car_migrating_from=getClusterNumber(spot_num_of_car_migrating_from);
-									//int cluster_bandwidth_of_car_migrating_from=cluster_bandwidth[cluster_number_of_car_migrating_from];
-									int temp_car_num_migration_to_evaluate = max_residency_not_busy_car(i);
-									
-									if(temp_car_num_migration_to_evaluate != -1 ){
-											int temp_car_num_migration_to= temp_car_num_migration_to_evaluate;		// this is used for migrating the job when we want to pick a car with maximum residency time
-											//int spot_num_of_car_migrating_to= cars_list[temp_car_num_migration_to].car_spot_number;
-											//int cluster_number_of_car_migrating_to = getClusterNumber(spot_num_of_car_migrating_to);
-											//int cluster_bandwidth_of_car_migrating_to=cluster_bandwidth[cluster_number_of_car_migrating_to];
-																	
-											cars_list[c].car_num_migration_to = temp_car_num_migration_to;
-																	
-											//lock the car 
-											cars_list[temp_car_num_migration_to].busy=true;
-											/*
-											
-											if ( cluster_bandwidth_of_car_migrating_to < cluster_bandwidth_of_car_migrating_from){
-												
-												 minimum_migration_bandwidth = cluster_bandwidth_of_car_migrating_to;
-												
-											}
-											else{
-												
-												 minimum_migration_bandwidth = cluster_bandwidth_of_car_migrating_from;
-											}
-											*/
-											
-											outMigration << "At Time: "<<i<<"car number: " << c << " with job number:	" << job_num_var << "	will be migrated to car number:	" << temp_car_num_migration_to <<endl;
-										//	outMigration<<c<<","<<job_num_var<<","<<temp_car_num_migration_to<<endl;
-											dummy_flag=true;
-
-									}	
-									
-				
-				}
-			
-				
-				
-				if (dummy_flag==true) 
-				{	
-					cars_list[c].car_flag_start_migration=true;
-					
-					//outMigration << "car number	" << c << "	with job number	" << job_num_var << "	will be migrated to car number	" << temp_car_num_migration_to << endl;
-					//outMigration << "car number	" << c << "	AFTER DUMMY FLAG cars_list[c].car_flag_start_migration	" << cars_list[c].car_flag_start_migration << endl;
-				}
-				
-				
-				// Migration
-				
-				if(cars_list[c].car_flag_start_migration == true ){
-				
-					calculate_congestion(i);
-					calculate_bandwidth();			
-					int spot_num_of_car_migrating_from=cars_list[c].car_spot_number;
-					int cluster_number_of_car_migrating_from=getClusterNumber(spot_num_of_car_migrating_from);
-					int cluster_bandwidth_of_car_migrating_from=cluster_bandwidth[cluster_number_of_car_migrating_from];
-					int temp_car_num_migration_to = cars_list[c].car_num_migration_to;
-									
-					int spot_num_of_car_migrating_to= cars_list[temp_car_num_migration_to].car_spot_number;
-					int cluster_number_of_car_migrating_to = getClusterNumber(spot_num_of_car_migrating_to);
-					int cluster_bandwidth_of_car_migrating_to=cluster_bandwidth[cluster_number_of_car_migrating_to];
-				
-					jobs_list[job_num_var].VM_migration_remained = jobs_list[job_num_var].VM_migration_remained - minimum_migration_bandwidth;
-
-					
-					if ( cluster_bandwidth_of_car_migrating_to < cluster_bandwidth_of_car_migrating_from){
-												
-							 minimum_migration_bandwidth = cluster_bandwidth_of_car_migrating_to;
-												
-						}
-					else{
-							
-							 minimum_migration_bandwidth = cluster_bandwidth_of_car_migrating_from;
-						}
-					
-					jobs_list[job_num_var].VM_migration_remained = jobs_list[job_num_var].VM_migration_remained - minimum_migration_bandwidth;
-					
-					if(jobs_list[job_num_var].VM_migration_remained<=0){
-						
-						//cars_list[c].car_flag_start_migration = false;
-						cars_list[c].car_flag_end_migration = true;
-					
-					}
-					
-					
-					if(cars_list[c].car_flag_end_migration == true && cars_list[c].print_migration_flag_counter==0){
-						
-						outEndMigration<<"At time: "<<i<<" job number: "<<job_num_var<< " on car number " << c << "	got migrated to	car number: " <<	temp_car_num_migration_to <<endl;
-						//outEndMigration<<i<<","<<job_num_var<<","<<c<<","<<temp_car_num_migration_to<<endl;
-						cars_list[c].print_migration_flag_counter++;
-
-					}
-				
-				}
-				
-				
-	
-
-        }	//end of car loop
-		
-		for(int k=1;k<=40;k++)
-				{
-						outCongCount<< "Time: " << i <<" For cluster number: "<<k<<"\t"<<cluster_count_migrating[k]<<"Bandwidth is: "<<cluster_bandwidth[k]<<endl;
-				}
-		
-
-    }
-	
-	
-	for(int j=1;j<=5000;j++)
-	{
-	      outFileCarParticipation<<cars_list[j].residency_time<<endl;
-	}
-	for (int jj=0; jj<5000; jj++){
-	
-	//if(jobs_list[jj].VM_migration_remained >0)
-	if (jobs_list[jj].job_flag_start_migration==true && jobs_list[jj].job_flag_end_migration==false){
-
-		outJobFailed<<" VM migration failed: job number: "<<jj<< " on car number " << jobs_list[jj].car_number<<" got failed "<<endl;
-	
-	}
-	
-	
-	
-	
-	
-	if(jobs_list[jj].job_duration_remained>0 && jobs_list[jj].car_number !=0 ){
-	
-	//if (jobs_list[jj].job_flag_start_migration==true && jobs_list[jj].job_flag_end_migration==false){
-				
-		outJobFailed<<" job duration failed: job number: "<<jj<< " on car number " << jobs_list[jj].car_number<<" got failed "<<endl;
-				
-	}
-	
-	}
-    /*                                                                                        // This is to check the jobs passed and failed for car and its respective output is generated.
-        outFileFailed << "These are the jobs that might fail if we don't do the migration" << endl;
-        outFilePassJob << "These are the jobs that will possibly succeed" << endl;
-        for(int k=1; k<=2560;k++)
-        {
-			//cout<<"job duration: "<<jobs_list[k].job_duration<<"residency_time: "<<cars_list[k].residency_time<<endl;
-            if(jobs_list[k].job_duration > cars_list[k].residency_time)
-            {
-				jobfailCounter++;
-                cars_list[k].display_failed_job_car_details(outFileFailed);
-
-            }
-			else
-			{
-				jobPassCounter++;
-				cars_list[k].display_pass_job_car_details(outFilePassJob);
-
-			}
-
-        }
-
-
-        for (int i=1 ; i <= 5000; i++){
-
-            if (jobs_list[i].migrated_successfully == 2){
-                count_migrated_successfully++;
-            }
-
-            if (jobs_list[i].migrated_successfully == 3){
-                count_failed_to_migrate++;
-            }
-
-            if (cars_list[i].turned_away == 1) {
-                turned_away_count++;
-            outTurnedAway << "car number " << cars_list[i].car_number << " got turned away" << endl;
-
-            }
-
-            if ( jobs_list[i].completed == true){
-                jobs_completed++;
-            }
-        }
-
-        outTurnedAway << "Total Cars turned away : "<<turned_away_count<<endl;
-        outTest2 << "Count of jobs migrated successfully " << count_migrated_successfully << endl;
-        FailedMigratedJobs <<  "Count of jobs failed to be migrated " << count_failed_to_migrate << endl;
-		outFileFailed<< endl <<"Job failed count: "<<jobfailCounter<<endl;
-		outFilePassJob<< endl << "Job Pass Count: "<<jobPassCounter<<endl;
-		outFilePassJob << endl << "Total of jobs completed: " << jobs_completed << endl;
-
-*/
-}
-
-
+//                    }
+//    				
+//    				
+//    				
+//    				
+//    
+//                    //VM Migration: if residency time of the car is less than the job durationjob duration of that car; it means that the job may fail
+//                    //so we will migrate the job within 10 mins before the car leaves
+//    
+//    				int job_num_var = cars_list[c].job_number;
+//    
+//    				bool dummy_flag=false;
+//    
+//    				
+//    				if (  jobs_list[job_num_var].job_duration_remained >0  && cars_list[c].job_number != 0 && cars_list[c].car_flag_start_migration == false && cars_list[c].job_has_been_migrated==false && i+START_TIME_MIGRATION >= cars_list[c].departure_time_of_car && cars_list[c].departure_time_of_car >= i && cars_list[c].car_spot_number != -1)   // if the car is migrating
+//    				{
+//    								
+//    									//calculate_congestion(i);
+//    									//calculate_bandwidth();					// This is used to find the bandwidth per min.
+//    									//int spot_num_of_car_migrating_from=cars_list[c].car_spot_number;
+//    									//int cluster_number_of_car_migrating_from=getClusterNumber(spot_num_of_car_migrating_from);
+//    									//int cluster_bandwidth_of_car_migrating_from=cluster_bandwidth[cluster_number_of_car_migrating_from];
+//    									int temp_car_num_migration_to_evaluate = max_residency_not_busy_car(i);
+//    									
+//    									if(temp_car_num_migration_to_evaluate != -1 ){
+//    											int temp_car_num_migration_to= temp_car_num_migration_to_evaluate;		// this is used for migrating the job when we want to pick a car with maximum residency time
+//    											//int spot_num_of_car_migrating_to= cars_list[temp_car_num_migration_to].car_spot_number;
+//    											//int cluster_number_of_car_migrating_to = getClusterNumber(spot_num_of_car_migrating_to);
+//    											//int cluster_bandwidth_of_car_migrating_to=cluster_bandwidth[cluster_number_of_car_migrating_to];
+//    																	
+//    											cars_list[c].car_num_migration_to = temp_car_num_migration_to;
+//    																	
+//    											//lock the car 
+//    											cars_list[temp_car_num_migration_to].busy=true;
+//    											/*
+//    											
+//    											if ( cluster_bandwidth_of_car_migrating_to < cluster_bandwidth_of_car_migrating_from){
+//    												
+//    												 minimum_migration_bandwidth = cluster_bandwidth_of_car_migrating_to;
+//    												
+//    											}
+//    											else{
+//    												
+//    												 minimum_migration_bandwidth = cluster_bandwidth_of_car_migrating_from;
+//    											}
+//    											*/
+//    											
+//    											outMigration << "At Time: "<<i<<"car number: " << c << " with job number:	" << job_num_var << "	will be migrated to car number:	" << temp_car_num_migration_to <<std::endl;
+//    										//	outMigration<<c<<","<<job_num_var<<","<<temp_car_num_migration_to<<endl;
+//    											dummy_flag=true;
+//    
+//    									}	
+//    									
+//    				
+//    				}
+//    			
+//    				
+//    				
+//    				if (dummy_flag==true) 
+//    				{	
+//    					cars_list[c].car_flag_start_migration=true;
+//    					
+//    					//outMigration << "car number	" << c << "	with job number	" << job_num_var << "	will be migrated to car number	" << temp_car_num_migration_to << endl;
+//    					//outMigration << "car number	" << c << "	AFTER DUMMY FLAG cars_list[c].car_flag_start_migration	" << cars_list[c].car_flag_start_migration << endl;
+//    				}
+//    				
+//    				
+//    				// Migration
+//    				
+//    				if(cars_list[c].car_flag_start_migration == true ){
+//    				
+//    					calculate_congestion(i);
+//    					calculate_bandwidth();			
+//    					int spot_num_of_car_migrating_from=cars_list[c].car_spot_number;
+//    					int cluster_number_of_car_migrating_from=getClusterNumber(spot_num_of_car_migrating_from);
+//    					int cluster_bandwidth_of_car_migrating_from=cluster_bandwidth[cluster_number_of_car_migrating_from];
+//    					int temp_car_num_migration_to = cars_list[c].car_num_migration_to;
+//    									
+//    					int spot_num_of_car_migrating_to= cars_list[temp_car_num_migration_to].car_spot_number;
+//    					int cluster_number_of_car_migrating_to = getClusterNumber(spot_num_of_car_migrating_to);
+//    					int cluster_bandwidth_of_car_migrating_to=cluster_bandwidth[cluster_number_of_car_migrating_to];
+//    				
+//    					jobs_list[job_num_var].VM_migration_remained = jobs_list[job_num_var].VM_migration_remained - minimum_migration_bandwidth;
+//    
+//    					
+//    					if ( cluster_bandwidth_of_car_migrating_to < cluster_bandwidth_of_car_migrating_from){
+//    												
+//    							 minimum_migration_bandwidth = cluster_bandwidth_of_car_migrating_to;
+//    												
+//    						}
+//    					else{
+//    							
+//    							 minimum_migration_bandwidth = cluster_bandwidth_of_car_migrating_from;
+//    						}
+//    					
+//    					jobs_list[job_num_var].VM_migration_remained = jobs_list[job_num_var].VM_migration_remained - minimum_migration_bandwidth;
+//    					
+//    					if(jobs_list[job_num_var].VM_migration_remained<=0){
+//    						
+//    						//cars_list[c].car_flag_start_migration = false;
+//    						cars_list[c].car_flag_end_migration = true;
+//    					
+//    					}
+//    					
+//    					
+//    					if(cars_list[c].car_flag_end_migration == true && cars_list[c].print_migration_flag_counter==0){
+//    						
+//    						outEndMigration<<"At time: "<<i<<" job number: "<<job_num_var<< " on car number " << c << "	got migrated to	car number: " <<	temp_car_num_migration_to <<std::endl;
+//    						//outEndMigration<<i<<","<<job_num_var<<","<<c<<","<<temp_car_num_migration_to<<endl;
+//    						cars_list[c].print_migration_flag_counter++;
+//    
+//    					}
+//    				
+//    				}
+//    				
+//    				
+//    	
+//    
+//            }	//end of car loop
+//    		
+//    		for(int k=1;k<=40;k++)
+//    				{
+//    						outCongCount<< "Time: " << i <<" For cluster number: "<<k<<"\t"<<cluster_count_migrating[k]<<"Bandwidth is: "<<cluster_bandwidth[k]<<std::endl;
+//    				}
+//    		
+//    
+//        }
+//    	
+//    	
+//    	for(int j=1;j<=5000;j++)
+//    	{
+//    	      outFileCarParticipation<<cars_list[j].residency_time<<std::endl;
+//    	}
+//    	for (int jj=0; jj<5000; jj++){
+//    	
+//    	//if(jobs_list[jj].VM_migration_remained >0)
+//    	if (jobs_list[jj].job_flag_start_migration==true && jobs_list[jj].job_flag_end_migration==false){
+//    
+//    		outJobFailed<<" VM migration failed: job number: "<<jj<< " on car number " << jobs_list[jj].car_number<<" got failed "<<std::endl;
+//    	
+//    	}
+//    	
+//    	
+//    	
+//    	
+//    	
+//    	if(jobs_list[jj].job_duration_remained>0 && jobs_list[jj].car_number !=0 ){
+//    	
+//    	//if (jobs_list[jj].job_flag_start_migration==true && jobs_list[jj].job_flag_end_migration==false){
+//    				
+//    		outJobFailed<<" job duration failed: job number: "<<jj<< " on car number " << jobs_list[jj].car_number<<" got failed "<<std::endl;
+//    				
+//    	}
+//    	
+//    	}
+//        /*                                                                                        // This is to check the jobs passed and failed for car and its respective output is generated.
+//            outFileFailed << "These are the jobs that might fail if we don't do the migration" << endl;
+//            outFilePassJob << "These are the jobs that will possibly succeed" << endl;
+//            for(int k=1; k<=2560;k++)
+//            {
+//    			//cout<<"job duration: "<<jobs_list[k].job_duration<<"residency_time: "<<cars_list[k].residency_time<<endl;
+//                if(jobs_list[k].job_duration > cars_list[k].residency_time)
+//                {
+//    				jobfailCounter++;
+//                    cars_list[k].display_failed_job_car_details(outFileFailed);
+//    
+//                }
+//    			else
+//    			{
+//    				jobPassCounter++;
+//    				cars_list[k].display_pass_job_car_details(outFilePassJob);
+//    
+//    			}
+//    
+//            }
+//    
+//    
+//            for (int i=1 ; i <= 5000; i++){
+//    
+//                if (jobs_list[i].migrated_successfully == 2){
+//                    count_migrated_successfully++;
+//                }
+//    
+//                if (jobs_list[i].migrated_successfully == 3){
+//                    count_failed_to_migrate++;
+//                }
+//    
+//                if (cars_list[i].turned_away == 1) {
+//                    turned_away_count++;
+//                outTurnedAway << "car number " << cars_list[i].car_number << " got turned away" << endl;
+//    
+//                }
+//    
+//                if ( jobs_list[i].completed == true){
+//                    jobs_completed++;
+//                }
+//            }
+//    
+//            outTurnedAway << "Total Cars turned away : "<<turned_away_count<<endl;
+//            outTest2 << "Count of jobs migrated successfully " << count_migrated_successfully << endl;
+//            FailedMigratedJobs <<  "Count of jobs failed to be migrated " << count_failed_to_migrate << endl;
+//    		outFileFailed<< endl <<"Job failed count: "<<jobfailCounter<<endl;
+//    		outFilePassJob<< endl << "Job Pass Count: "<<jobPassCounter<<endl;
+//    		outFilePassJob << endl << "Total of jobs completed: " << jobs_completed << endl;
+//    
+//    */
+//    }
+//    
+//    
 
 /*
 RF - Moved all the following to 
-CarModel::GetClusterNumber();
-CarModel::GetRegionNumber();
-CarModel::GetGroupNumber();
-void RegionCenter1()
-{
-
-        //For Region1
-
-        for(int i=1;i<=640;i++)
-        {
-                if( i <= 160)
-                {
-                        if( i <= 40 )
-                        {
-                                spot_loc[i].spot_locations(i,1,1,1,1);
-                        }
-
-                        if( i > 40  && i <= 80 )
-                        {
-                                spot_loc[i].spot_locations(i,2,1,1,1);
-                        }
-
-                        if( i > 80 && i <= 120 )
-                        {
-                                spot_loc[i].spot_locations(i,3,1,1,1);
-                        }
-
-                        if( i > 120 && i <= 160 )
-                        {
-                                spot_loc[i].spot_locations(i,4,1,1,1);
-
-                        }
-                }
-
-                if( i > 160 && i <= 320)
-                {
-                        if( i > 160 && i <= 200 )
-                        {
-                                spot_loc[i].spot_locations(i,5,1,2,1);
-                        }
-
-                        if( i > 200  && i <= 240 )
-                        {
-                                spot_loc[i].spot_locations(i,6,1,2,1);
-                        }
-
-                        if( i > 240 && i <= 280 )
-                        {
- 				spot_loc[i].spot_locations(i,7,1,2,1);
-                        }
-
-                        if( i > 280 && i <= 320 )
-                        {
-                                spot_loc[i].spot_locations(i,8,1,2,1);
-
-                        }
-                }
-
-                 if( i > 320 && i <= 480)
-                {
-                        if( i > 320 && i <= 360 )
-                        {
-                                spot_loc[i].spot_locations(i,9,1,3,1);
-                        }
-
-                        if( i > 360  && i <= 400 )
-                        {
-                                spot_loc[i].spot_locations(i,10,1,3,1);
-                        }
-
-                        if( i > 400 && i <= 440 )
-                        {
-                                spot_loc[i].spot_locations(i,11,1,3,1);
-                        }
-
-                        if( i > 440 && i <= 480 )
-                        {
-                                spot_loc[i].spot_locations(i,12,1,3,1);
-
-                        }
-                }
-
-		if( i > 480 && i <= 640)
-                {
-                        if( i > 480 && i <= 520 )
-                        {
-                                spot_loc[i].spot_locations(i,13,1,4,1);
-                        }
-
-                        if( i > 520  && i <= 560 )
-                        {
-                                spot_loc[i].spot_locations(i,14,1,4,1);
-                        }
-
-                        if( i > 560 && i <= 600 )
-                        {
-                                spot_loc[i].spot_locations(i,15,1,4,1);
-                        }
-
-                        if( i > 600 && i <= 640 )
-                        {
-                                spot_loc[i].spot_locations(i,16,1,4,1);
-
-                        }
-                }
-        }
-
-}
-
-void RegionCenter2()
-{
-
-        //For Region1
-
-        for(int i=641;i<=1280;i++)
-        {
-                if( i <= 800)
-                {
-                        if( i <= 680 )
-                        {
-                                spot_loc[i].spot_locations(i,17,2,5,1);
-                        }
-
-                        if( i > 680  && i <= 720 )
-                        {
-                                spot_loc[i].spot_locations(i,18,2,5,1);
-                        }
-
-                        if( i > 720 && i <= 760 )
-                        {
-                                spot_loc[i].spot_locations(i,19,2,5,1);
-                        }
-
-                        if( i > 761 && i <= 800 )
-                        {
-                                spot_loc[i].spot_locations(i,20,2,5,1);
-
-                        }
-                }
-
-                if( i > 800 && i <= 960)
-                {
-                        if( i > 800 && i <= 840 )
-                        {
-                                spot_loc[i].spot_locations(i,21,2,6,1);
-                        }
-
-                        if( i > 840  && i <= 880 )
-                        {
-                                spot_loc[i].spot_locations(i,22,2,6,1);
-                        }
-
-                        if( i > 880 && i <= 920 )
-                        {
-                                spot_loc[i].spot_locations(i,23,2,6,1);
-                        }
-
-                        if( i > 920 && i <= 960 )
-                        {
-                                spot_loc[i].spot_locations(i,24,2,6,1);
-
-                        }
-                }
-
-                 if( i > 960 && i <= 1120)
-                {
-                        if( i > 960 && i <= 1000 )
-                        {
-                                spot_loc[i].spot_locations(i,25,2,7,1);
-                        }
-
-                        if( i > 1000  && i <= 1040 )
-                        {
-                                spot_loc[i].spot_locations(i,26,2,7,1);
-                        }
-
-                        if( i > 1040 && i <= 1080 )
-                        {
-                                spot_loc[i].spot_locations(i,27,2,7,1);
-                        }
-
-                        if( i > 1080 && i <= 1120 )
-                        {
-                                spot_loc[i].spot_locations(i,28,2,7,1);
-
-                        }
-                }
-
-                if( i > 1120 && i <= 1280)
-                {
-                        if( i > 1120 && i <= 1160 )
-                        {
-                                spot_loc[i].spot_locations(i,29,2,8,1);
-                        }
-
-                        if( i > 1160  && i <= 1200 )
-                        {
-                                spot_loc[i].spot_locations(i,30,2,8,1);
-                        }
-
-                        if( i > 1200 && i <= 1240 )
-                        {
-                                spot_loc[i].spot_locations(i,31,2,8,1);
-                        }
-
-                        if( i > 1240 && i <= 1280 )
-                        {
-                                spot_loc[i].spot_locations(i,32,2,8,1);
-
-                        }
-                }
-        }
-
-}
-
-void RegionCenter3()
-{
-
-        //For Region1
-
-        for(int i=1281;i<=1920;i++)
-        {
-                if( i <= 1440)
-                {
-                        if( i <= 1320 )
-                        {
-                                spot_loc[i].spot_locations(i,33,3,9,1);
-                        }
-
-                        if( i > 1320  && i <= 1360 )
-                        {
-                                spot_loc[i].spot_locations(i,34,3,9,1);
-                        }
-
-                        if( i > 1360 && i <= 1400 )
-                        {
-                                spot_loc[i].spot_locations(i,35,3,9,1);
-                        }
-
-                        if( i > 1400 && i <= 1440 )
-                        {
-                                spot_loc[i].spot_locations(i,36,3,9,1);
-
-                        }
-                }
-
-                if( i > 1440 && i <= 1600)
-                {
-                        if( i > 1440 && i <= 1480 )
-                        {
-                                spot_loc[i].spot_locations(i,37,3,10,1);
-                        }
-
-                        if( i > 1480  && i <= 1520 )
-                        {
-                                spot_loc[i].spot_locations(i,38,3,10,1);
-                        }
-
-                        if( i > 1520 && i <= 1560 )
-                        {
-                                spot_loc[i].spot_locations(i,39,3,10,1);
-                        }
-
-                        if( i > 1560 && i <= 1600 )
-                        {
-                                spot_loc[i].spot_locations(i,40,3,10,1);
-
-                        }
-                }
-
-                 if( i > 1600 && i <= 1760)
-                {
-                        if( i > 1600 && i <= 1640 )
-                        {
-                                spot_loc[i].spot_locations(i,41,3,11,1);
-                        }
-
-                        if( i > 1640  && i <= 1680 )
-                        {
-                                spot_loc[i].spot_locations(i,42,3,11,1);
-                        }
-
-                        if( i > 1680 && i <= 1720 )
-                        {
-                                spot_loc[i].spot_locations(i,43,3,11,1);
-                        }
-
-                        if( i > 1720 && i <= 1760 )
-                        {
-                                spot_loc[i].spot_locations(i,44,3,11,1);
-
-                        }
-                }
-
-                if( i > 1760 && i <= 1920)
-                {
-                        if( i > 1760 && i <= 1800 )
-                        {
-                                spot_loc[i].spot_locations(i,45,3,12,1);
-                        }
-
-                        if( i > 1800  && i <= 1840 )
-                        {
-                                spot_loc[i].spot_locations(i,46,3,12,1);
-                        }
-
-                        if( i > 1840 && i <= 1880 )
-                        {
-                                spot_loc[i].spot_locations(i,47,3,12,1);
-                        }
-
-                        if( i > 1880 && i <= 1920 )
-                        {
-                                spot_loc[i].spot_locations(i,48,3,12,1);
-
-                        }
-                }
-        }
-
-}
-
-void RegionCenter4()
-{
-
-        //For Region1cars_list[i].car_spot_number
-
-        for(int i=1921;i<=2560;i++)
-        {
-                if( i <= 2080)
-                {
-                        if( i <= 1960 )
-                        {
-                                spot_loc[i].spot_locations(i,49,4,13,1);
-                        }
-
-                        if( i > 1960  && i <= 2000 )
-                        {
-                                spot_loc[i].spot_locations(i,50,4,13,1);
-                        }
-
-                        if( i > 2000 && i <= 2040 )
-                        {
-                                spot_loc[i].spot_locations(i,51,4,13,1);
-                        }
-
-                        if( i > 2040 && i <= 2080 )
-                        {
-                                spot_loc[i].spot_locations(i,52,4,13,1);
-
-                        }
-                }
-
-                if( i > 2080 && i <= 2240)
-                {
-                        if( i > 2080 && i <= 2120 )
-                        {
-                                spot_loc[i].spot_locations(i,53,4,14,1);
-                        }
-
-                        if( i > 2120  && i <= 2160 )
-                        {
-                                spot_loc[i].spot_locations(i,54,4,14,1);
-                        }
-
-                        if( i > 2160 && i <= 2200 )
-                        {
-                                spot_loc[i].spot_locations(i,55,4,14,1);
-                        }
-
-                        if( i > 2200 && i <= 2240 )
-                        {
-                                spot_loc[i].spot_locations(i,56,4,14,1);
-
-                        }
-                }
-
-                 if( i > 2240 && i <= 2400)
-                {
-                        if( i > 2240 && i <= 2280 )
-                        {
-                                spot_loc[i].spot_locations(i,57,4,15,1);
-                        }
-
-                        if( i > 2280  && i <= 2320 )
-                        {
-                                spot_loc[i].spot_locations(i,58,4,15,1);
-                        }
-
-                        if( i > 2320 && i <= 2360 )
-                        {
-                                spot_loc[i].spot_locations(i,59,4,15,1);
-                        }
-
-                        if( i > 2360 && i <= 2400 )
-                        {
-                                spot_loc[i].spot_locations(i,60,4,15,1);
-
-                        }
-                }
-
-                if( i > 2400 && i <= 2560)
-                {
-                        if( i > 2400 && i <= 2440 )
-                        {
-                                spot_loc[i].spot_locations(i,61,4,16,1);
-                        }
-
-                        if( i > 2440  && i <= 2480 )
-                        {
-                                spot_loc[i].spot_locations(i,62,4,16,1);
-                        }
-
-                        if( i > 2480 && i <= 2520 )
-                        {
-                                spot_loc[i].spot_locations(i,63,4,16,1);
-                        }
-
-                        if( i > 2520 && i <= 2560 )
-                        {
-                                spot_loc[i].spot_locations(i,64,4,16,1);
-
-                        }
-                }
-        }
-
-}
+   CarModel::GetClusterNumber();
+   CarModel::GetRegionNumber();
+   CarModel::GetGroupNumber();
+
+void RegionCenter1() {}
+void RegionCenter2() {}
+void RegionCenter3() {}
+void RegionCenter4() {}
 */

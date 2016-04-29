@@ -13,6 +13,18 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
+#include "TimeModel.hpp"
+#include "Random.hpp"
+#include "Configuration.hpp"
+#include "CarResidencyDistributionModel.hpp"
+#include "Job.hpp"
+
+#include <map>
+#include <list>
+
+#ifndef __CARMODEL_HPP__
+#define __CARMODEL_HPP__
+
 class CarModel
 {
   private: 
@@ -21,19 +33,23 @@ class CarModel
     TimeModel _time;  
 	CarResidencyDistributionModel _carResidencyDistributionModel;
     //carmap is indexed by parking spot number
-	static std::map<int, Car> carmap;  
+	static std::map<int, Car*> carmap;  
     static std::list<int> emptySpaces; 
 	
 	//This is used to override some parts of CreateNewCar during the initialize phase.
 	static bool initializing;
 	
 	
-	bool CreateNewCar();
+	bool createNewCar();
+	void handleVehicleDepartingNOW();
+	void handleVehicleDepartingSOON();
 	
   public: 
     void Initialize();
-    void HandleLeavingVehicles();
+    void HandleDepartingVehicles();
 	void HandleIncomingVehicles();
+	
+	Car* AssignJob(Job* job);
 	
 	int getClusterNumber(int);
 	int getRegionNumber(int);
@@ -41,6 +57,8 @@ class CarModel
 	
 };
 
-std::map<int, Car> CarModel::carmap;
+std::map<int, Car*> CarModel::carmap;
 std::list<int> CarModel::emptySpaces; 
 bool CarModel::initializing = false;
+
+#endif

@@ -13,6 +13,8 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
+#include "Job.hpp"
+
 Job::Job()
 {
   job_flag_start_migration = false;
@@ -21,6 +23,15 @@ Job::Job()
   data_replication_time_to_same_region=0;
   data1_car_number = -1;
   data2_car_number = -1;
+  
+  assigned = false;													
+  jobProcessingComplete = false; 
+  jobComplete = false;
+  
+  jobSize = 0;
+  jobSizeLeftToProcess = 999;
+
+  
 }
 
 //This displays the job information which is assigned to all the cars in the parking lot as soon as simulation starts.
@@ -36,12 +47,13 @@ void Job::display_job_information(std::ofstream& outFile)
 }
 
 
-
+/*
 void Job::calculate_VM_size(){
   // our jobs are between 1 GB and 5 GB
   VM_size= rand()%(5000-1000)+1000;                           
   VM_migration_remained = VM_size;
 }
+
 
 // Calculates the time it takes to complete a job in a car.
 void Job::calculate_job_duration(){                                          
@@ -49,4 +61,4 @@ void Job::calculate_job_duration(){
   job_duration= (VM_size*0.1);												 
   job_duration_remained = job_duration;
 }																
-
+*/

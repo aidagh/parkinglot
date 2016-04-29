@@ -1,3 +1,6 @@
+
+#include "Configuration.hpp"
+
 void Configuration::ReadFromFile()
 {
   std::ifstream file;
@@ -12,6 +15,10 @@ void Configuration::ReadFromFile()
     {
       MaxTime = ConvertToInt(right);
     }
+    if (left == "TimeStep")
+    {
+      TimeStep = ConvertToInt(right);
+    }	
     if (left == "BandwidthPerSecondForCluster")
     {
       BandwidthPerSecondForCluster = ConvertToDouble(right);
@@ -19,6 +26,10 @@ void Configuration::ReadFromFile()
     if (left == "NumberOfParkingSpaces")
     {
       NumberOfParkingSpaces = ConvertToInt(right);
+    }	
+    if (left == "VMMigrationOffset")
+    {
+      VMMigrationOffset = ConvertToInt(right);
     }
     if (left == "CarResidency_FromFile") 
 	{

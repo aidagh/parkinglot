@@ -13,29 +13,25 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
-#ifndef __RANDOM_HPP__
-#define __RANDOM_HPP__
+#ifndef __SPOT_LOCATION_HPP__
+#define __SPOT_LOCATION_HPP__
 
 
-//Class will be updated to handle a seed so that many runs can be performed with a different seed.
-class Random
+
+//This class includes all information about the parking spots and also it keeps track of whether parking spot is occupied or not.
+class spot_location
 {
-  public:
-
-  int GetNextInt(int max);
-  double GetNextDouble(double max);
-  
-
+  public: 
+    int spot_number;
+    int cluster_number;
+    int region_number;
+    int group_center_number;
+    int occupied;
+    int occupied_by_car_number;
+    
+	void spot_locations(int sno, int cno, int rno, int gcnumber, int occup);
+	void display_spot_information(std::ofstream& outFile);
+	
 };
-
-int Random::GetNextInt(int max)
-{
-  return rand() % max;
-}
-
-double Random::GetNextDouble(double max)
-{
-  return ((double)rand() / (RAND_MAX)) * max;
-}
 
 #endif

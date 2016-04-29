@@ -13,12 +13,24 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
+#include "TimeModel.hpp"
+#include "Configuration.hpp"
+#include "JobDistributionModel.hpp"
+#include "CarModel.hpp"
+#include <map>
+#include <queue>
+
+#ifndef __JOBMODEL_HPP__
+#define __JOBMODEL_HPP__
+
 class JobModel
 {
   private: 
-//    Configuration _configuration;
+    Configuration _configuration;
 //    Random _random;
-//    TimeModel _time;  
+    TimeModel _time;  
+    JobDistributionModel _jobDistributionModel;
+    CarModel _carModel;
 
     //jobMap contains jobs that are assigned to vehicles
 	//  jobMap is indexed by parking spot number
@@ -27,25 +39,22 @@ class JobModel
 	//jobQueue contains jobs that could not be assigned to any vehicles
 	static std::queue<Job> jobQueue;
 	
+	static int numJobs;
+	
+	Job* GenerateJob();
+	void createNewJob();
+	
   public: 
     void Initialize();
-	void HandleIncomingJob();
-    void HandleCompletingJob();
+	void HandleJobProcessing();
+	void HandleIncomingJobs();
+    void HandleCompletedJobs();
 };
 
 std::map<int, Job> JobModel::jobMap;
-
-void JobModel::Initialize()
-{	
+std::queue<Job> JobModel::jobQueue;
+int JobModel::numJobs = 0;
 	
-}
 
-void JobModel::HandleIncomingJob()
-{
-	
-}
 
-void JobModel::HandleCompletingJob()
-{
-	
-}
+#endif

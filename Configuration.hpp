@@ -1,9 +1,20 @@
+
+#include <sstream>
+
+#ifndef __CONFIGURATION_HPP__
+#define __CONFIGURATION_HPP__
+
+
 class Configuration
 {
   public:
    static int MaxTime;
+   static int TimeStep;
    static double BandwidthPerSecondForCluster;
    static int NumberOfParkingSpaces;
+   
+   
+   static int VMMigrationOffset;
    
    static bool CarResidency_FromFile;
    static bool CarResidency_Static;
@@ -19,11 +30,18 @@ class Configuration
 };
 
 
-int Configuration::MaxTime = 1440; 
+int Configuration::MaxTime = 100; 
+int Configuration::TimeStep = 1; 
 double Configuration::BandwidthPerSecondForCluster = .125; 
 int Configuration::NumberOfParkingSpaces = 10;
+
+int Configuration::VMMigrationOffset = 60;
+
 bool Configuration::CarResidency_FromFile = false;
 bool Configuration::CarResidency_Static = true;
 int Configuration::CarResidency_Static_Hours = 24;
 bool Configuration::CarResidency_Exponential = false;
 double Configuration::CarResidency_Exponential_Lambda = 0;
+
+
+#endif

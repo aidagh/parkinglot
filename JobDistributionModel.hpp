@@ -17,30 +17,27 @@
 #include "Random.hpp"
 #include "Configuration.hpp"
 
+#ifndef __JOBDISTRIBUTIONMODEL_HPP__
+#define __JOBDISTRIBUTIONMODEL_HPP__
 
-#ifndef __CARRESIDENCYDISTRIBUTIONMODEL_HPP__
-#define __CARRESIDENCYDISTRIBUTIONMODEL_HPP__
-
-
-class CarResidencyDistributionModel
+class JobDistributionModel
 {
   private: 
     Configuration _configuration;
     Random _random;
     TimeModel _time;  
     static int NextArrival;
-	static int NextDeparture;
-
+    static int NextJobLength;
 
 	
   public: 
     int getNextArrival();
-	int getNextDeparture();
+    int getNextJobLength();
+	double getNextJobDataToMigrate();
     int generateNext();
-    
 };
 
-int CarResidencyDistributionModel::NextArrival = 0;
-int CarResidencyDistributionModel::NextDeparture = 0;
+int JobDistributionModel::NextArrival = 0;
+int JobDistributionModel::NextJobLength = 0;
 
 #endif

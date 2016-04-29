@@ -13,6 +13,8 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
+#include "StatisticsModel.hpp"
+
 
 void StatisticsModel::LogJobCompleted()
 {

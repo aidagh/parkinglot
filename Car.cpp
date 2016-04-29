@@ -13,6 +13,7 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
+#include "Car.hpp"
 
 
 Car::Car()
@@ -29,7 +30,28 @@ Car::Car()
   car_flag_end_migration=false;
   car_num_migration_to = -1;
   print_migration_flag_counter=0;
+  
+  job_number = 0;
+  job = NULL;
 }
+
+
+//What does this mean?
+bool Car::isMigratable()
+{
+  if (job == NULL) 
+    return true;	
+  return false; 
+}
+
+//Car has no current job, and isn't being migrated to
+bool Car::canAcceptJob()
+{
+  if (job == NULL) 
+    return true;	
+  return false; 
+}
+
 
 
 
