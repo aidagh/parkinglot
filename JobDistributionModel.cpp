@@ -30,6 +30,12 @@ int JobDistributionModel::getNextArrival()
 	}	
 	return NextArrival;
 }
+int JobDistributionModel::getNextVMSize()
+{
+	//TODO: Obviously this needs to be adjusted
+	return 5;
+	
+}
 double JobDistributionModel::getNextJobDataToMigrate()
 {
 	//TODO: Obviously this needs to be adjusted

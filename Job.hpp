@@ -22,6 +22,21 @@
 
 class Car;
 
+
+enum JobStatus
+{
+	Idle,
+	Processing,
+	VMMigratingAwayFrom,
+	VMMigratingTo,
+	VMMigrationComplete,
+	DataMigrating,
+	Complete
+	
+	
+};
+
+
 // This class stores information about the jobs.
 class Job
 {
@@ -35,9 +50,13 @@ class Job
     //bool completed;
     
 	//meaning this job was assigned or not assigned to a car
-	bool assigned;													
-	bool jobProcessingComplete; 
-	bool jobComplete;
+	JobStatus jobStatus;
+//	bool assigned;													
+//	bool jobProcessingComplete; 
+//	bool jobComplete;
+//	bool jobMigratingFrom;
+//	bool jobMigratingTo;
+
 	
 	int jobSize;              //In Minutes
 	int jobSizeLeftToProcess; //Starts at jobSize and is subtracted each minute. 
@@ -45,6 +64,10 @@ class Job
 	int dataToMigrate;		  //In Megabytes
 	int dataLeftToMigrate;    //Starts at dataToMigrate and is subtracted by available bandwidth each minute 
 	
+	Car* MigrateToCar;
+	Car* MigrateFromCar;
+	Job* MigrateToJob;
+	Job* MigrateFromJob;
 	
     //double job_duration;  // in minute
     double data_this_job_will_produce;
@@ -60,6 +83,7 @@ class Job
     bool job_flag_start_migration;
     bool job_flag_end_migration;
     int car_num_migration_to;
+	
 
     Job();
     void display_job_information(std::ofstream& outFile);

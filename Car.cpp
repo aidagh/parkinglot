@@ -36,10 +36,11 @@ Car::Car()
 }
 
 
-//What does this mean?
+//The car has a job and it is not completed
 bool Car::isMigratable()
 {
-  if (job == NULL) 
+  if (job != NULL && (job->jobStatus == Processing || job->jobStatus == DataMigrating))
+  
     return true;	
   return false; 
 }

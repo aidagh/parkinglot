@@ -24,9 +24,7 @@ Job::Job()
   data1_car_number = -1;
   data2_car_number = -1;
   
-  assigned = false;													
-  jobProcessingComplete = false; 
-  jobComplete = false;
+  jobStatus = Idle;
   
   jobSize = 0;
   jobSizeLeftToProcess = 999;

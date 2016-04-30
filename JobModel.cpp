@@ -11,7 +11,8 @@ Job * JobModel::GenerateJob()
   job->job_number = numJobs;  
   job->jobSize = _jobDistributionModel.getNextJobLength();  //Get this from distribution class	
   job->jobSizeLeftToProcess = job->jobSize;
-  
+  job->VM_size = _jobDistributionModel.getNextVMSize();
+  job->jobStatus = Processing;
 
   job->dataToMigrate = _jobDistributionModel.getNextJobDataToMigrate();		
   job->dataLeftToMigrate = 0;
@@ -23,37 +24,42 @@ Job * JobModel::GenerateJob()
 
 void JobModel::createNewJob()
 {
+	CarModel _carModel;
 	Job* job = GenerateJob();
 	Car* car = _carModel.AssignJob(job);
 	
 	if (car != NULL)
 	{
+      std::cout << "New Job assigned to car:" << car->car_spot_number << std::endl;
 	  job->car_number = car->car_number;
 	  job->car = car;
-	  jobMap[car->car_spot_number] = *job;
+	  jobMap[car->car_spot_number] = job;
 	}
 	else
 	{
-	  jobQueue.push(*job);	
+      std::cout << "New Job assigned to JobQueue:" << std::endl;
+
+      jobQueue.push(job);	
 	}
 	
 	
 }
 
 
+
 void JobModel::HandleJobProcessing()
 {
-  std::map<int, Job>::iterator it;
+  std::map<int, Job*>::iterator it;
   for(it = jobMap.begin(); it != jobMap.end(); it++) 
   {
-    Job* job = &(it->second);
+    Job* job = it->second;
 
-	std::cout << "Space:" << it->first << ", leftToProcess:" << job->jobSizeLeftToProcess << ", leftToMigrate:" << job->dataLeftToMigrate << std::endl;
+	std::cout << "Space:" << it->first << ", leftToProcess:" << job->jobSizeLeftToProcess << ", leftToMigrate:" << job->dataLeftToMigrate << ", Status:" << job->jobStatus << std::endl;
 	
 	
 	//TODO: move away from bools as statuses and use a Status enum
     //If the job is still processing, then 
-	if (!job->jobProcessingComplete)
+	if (job->jobStatus == Processing)
 	{
       //subtract time from the time left to process
       job->jobSizeLeftToProcess-=_configuration.TimeStep;
@@ -62,34 +68,38 @@ void JobModel::HandleJobProcessing()
       if (job->jobSizeLeftToProcess <= 0)
 	  {
 		//Set the job to ProcessingComplete
-		job->jobProcessingComplete = true;
+		job->jobStatus = DataMigrating;
 	  } 
 
 	}
   }
   
+			
+}
+
+void JobModel::HandleJobDataMigration()
+{
+  std::list<int> jobEraseList;
+
+  std::map<int, Job*>::iterator it;
+  for(it = jobMap.begin(); it != jobMap.end(); it++) 
+  {
+    Job* job = it->second;
   //Determine Congestion and Available Bandwidth Here
   //TODO: 
 
-  std::list<int> jobEraseList;
-  for(it = jobMap.begin(); it != jobMap.end() && !jobMap.empty() ; it++) 
-  {
-    Job* job = &(it->second);
-
 	//If the job is not yet fully complete, but the processing is complete, then the vehicle is backing up data
-	if (!job->jobComplete && job->jobProcessingComplete)
+	if (job->jobStatus == DataMigrating)
 	{		
 		//Migrate Data here
 		
-		
-		
-		
+	
 		
 		if (job->dataLeftToMigrate <= 0)
 		{
 			std::cout << "Space:" << it->first << " -- Job Complete!" << std::endl;
 			
-			job->jobComplete = true;
+			job->jobStatus = Complete;
 		    //TODO: update statistics	
 			jobEraseList.push_back(it->first);
             job->car->job = NULL;
@@ -106,7 +116,55 @@ void JobModel::HandleJobProcessing()
   {
     jobMap.erase(*itList);
   }
+}
+
+void JobModel::HandleJobVMMigration()
+{
+  std::list<int> jobEraseList;
+  std::map<int, Job*>::iterator it;
+  for(it = jobMap.begin(); it != jobMap.end(); it++) 
+  {
+    Job* job = it->second;
+  //Determine Congestion and Available Bandwidth Here
+  //TODO: 
+
+	if (job->jobStatus == VMMigratingAwayFrom)
+	{		
+		//Migrate VM here
+		//TODO: incorporate congestion
+		job->VM_migration_remained-=1;
+				
+		if (job->VM_migration_remained <= 0)
+		{
+			std::cout << "Space:" << it->first << " -- VM Complete!" << std::endl;
+			std::cout << "  Freeing Space: " << it->first << std::endl;
+			std::cout << "  Starting job in Space: " << job->MigrateToCar->car_spot_number << std::endl;
+
+			//Do we restart the job processing, or data migration?
+			job->jobStatus = VMMigrationComplete;
 			
+			
+			Job* migratedJob = job->MigrateToJob;
+			migratedJob->jobStatus = Processing;
+			
+		    //TODO: update statistics	
+
+			
+            //Remove the job that was being migrated.
+			jobEraseList.push_back(it->first);
+            job->car->job = NULL;
+			
+		}
+	}
+  }
+  			
+  std::list<int>::iterator itList;
+  for(itList = jobEraseList.begin(); itList != jobEraseList.end(); itList++)
+  {
+    jobMap.erase(*itList);
+  }
+
+	
 }
 
 
@@ -124,12 +182,45 @@ void JobModel::HandleIncomingJobs()
 
 void JobModel::HandleCompletedJobs()
 {
-  std::map<int, Job>::iterator it;
+ /* std::map<int, Job>::iterator it;
   for(it = jobMap.begin(); it != jobMap.end(); it++) 
   {
     Job* job = &(it->second);
 	
 	  
   }
+	*/
+}
+
+
+void JobModel::CancelJob(int spaceId)
+{
+  Job * job = jobMap[spaceId];
+  //Handle Statistics!
+  jobMap.erase(spaceId);
+  std::cout << "Erased job in space" << spaceId << std::endl;
+
+}
+
+void JobModel::Migrate(Car* leavingCar, Car* carToMigrateTo)
+{
+
+	leavingCar->job->VM_migration_remained = leavingCar->job->VM_size;
+    leavingCar->job->MigrateToCar = carToMigrateTo;
+    leavingCar->job->jobStatus = VMMigratingAwayFrom;
+
+	Job * MigrateToJob = new Job();
+	leavingCar->job->MigrateToJob = MigrateToJob;
+	MigrateToJob->job_number = leavingCar->job->job_number;
+	MigrateToJob->VM_size = 0;
+    MigrateToJob->MigrateFromCar = leavingCar;
+    MigrateToJob->jobStatus = VMMigratingTo;	
+	MigrateToJob->jobSize = leavingCar->job->jobSize;
+	MigrateToJob->jobSizeLeftToProcess = leavingCar->job->jobSizeLeftToProcess;
+	MigrateToJob->dataToMigrate = leavingCar->job->dataToMigrate;
+	MigrateToJob->dataLeftToMigrate = leavingCar->job->dataLeftToMigrate;
 	
+    carToMigrateTo->job = MigrateToJob;
+	
+	std::cout << "Job " << leavingCar->job->job_number << " from Car " << leavingCar->car_spot_number << "to Car " << carToMigrateTo->car_spot_number << std::endl;
 }

@@ -589,6 +589,8 @@ int main()
       _carModel.HandleDepartingVehicles();
   	  _carModel.HandleIncomingVehicles();
       _jobModel.HandleJobProcessing();
+      _jobModel.HandleJobDataMigration();
+      _jobModel.HandleJobVMMigration();
 	  _jobModel.HandleCompletedJobs();
 	  _jobModel.HandleIncomingJobs();
 

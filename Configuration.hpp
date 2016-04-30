@@ -35,7 +35,7 @@ int Configuration::TimeStep = 1;
 double Configuration::BandwidthPerSecondForCluster = .125; 
 int Configuration::NumberOfParkingSpaces = 10;
 
-int Configuration::VMMigrationOffset = 60;
+int Configuration::VMMigrationOffset = 10;
 
 bool Configuration::CarResidency_FromFile = false;
 bool Configuration::CarResidency_Static = true;

@@ -13,17 +13,20 @@
 //Submitted on: 04 December 2015
 //Language:     C++
 
+#ifndef __CARMODEL_HPP__
+#define __CARMODEL_HPP__
+
 #include "TimeModel.hpp"
 #include "Random.hpp"
 #include "Configuration.hpp"
 #include "CarResidencyDistributionModel.hpp"
 #include "Job.hpp"
+#include "JobModel.hpp"
 
 #include <map>
 #include <list>
 
-#ifndef __CARMODEL_HPP__
-#define __CARMODEL_HPP__
+class JobModel;
 
 class CarModel
 {
@@ -32,6 +35,7 @@ class CarModel
     Random _random;
     TimeModel _time;  
 	CarResidencyDistributionModel _carResidencyDistributionModel;
+	JobModel _jobModel;
     //carmap is indexed by parking spot number
 	static std::map<int, Car*> carmap;  
     static std::list<int> emptySpaces; 
@@ -41,6 +45,7 @@ class CarModel
 	
 	
 	bool createNewCar();
+	Car * GetMigrationToVehicle(Car* FromCar);
 	void handleVehicleDepartingNOW();
 	void handleVehicleDepartingSOON();
 	

@@ -80,7 +80,7 @@ bool CarModel::createNewCar()
   if (initializing)
   {
     //This is a poor way to initialize the parkinglot.
-    newCar->departure_time_of_car = 1440;
+    newCar->departure_time_of_car = 40;
   }
   else
   {
@@ -105,7 +105,25 @@ void CarModel::HandleIncomingVehicles()
 	}	
 }
 
-
+//For a car that is migrating, choose the car to migrate to
+Car * CarModel::GetMigrationToVehicle(Car* FromCar)
+{
+  //Loop through and find the latest departing vehicle that currently is not running a job.
+  //ToDo: This needs to consider cluster 
+  Car* latestDepartingCar;
+  int latestDepartureTime = 0;
+  std::map<int, Car*>::iterator it;
+ 
+  for(it = carmap.begin(); it != carmap.end(); it++) 
+  {
+     if (it->second->canAcceptJob() && it->second->departure_time_of_car > latestDepartureTime)
+	 {
+		 latestDepartingCar = it->second;
+		 latestDepartureTime = latestDepartingCar->departure_time_of_car;
+	 }
+  }	
+  return latestDepartingCar;
+}
 
 void CarModel::handleVehicleDepartingNOW()
 {
@@ -119,31 +137,50 @@ void CarModel::handleVehicleDepartingNOW()
   {
     Car leavingCar = *(it->second);
     int leavingCarSpace = it->first; 
+
+    std::cout << "Car in spot " << leavingCarSpace << " is leaving in at time:" << leavingCar.departure_time_of_car << std::endl;
+
     //Check if car has left or is leaving
     if (leavingCar.departure_time_of_car <= _time.getTime())
     {
-  	  std::cout << "Car in spot " << leavingCarSpace << " is leaving" << std::endl;
+	  //int jobId = leavingCar.job->job_number;
+	  if (leavingCar.job != NULL)
+	    _jobModel.CancelJob(leavingCarSpace);
+  	  std::cout << "Car in spot " << leavingCarSpace << " is leaving NOW" << std::endl;
 	  emptySpaces.push_back(leavingCarSpace);
   	  //** Need to save off some statistics here!
   	  carmap.erase(leavingCarSpace);	 
+	  
     }
   }  
 }
+
+
+
 void CarModel::handleVehicleDepartingSOON()
 {
 //  Loop through all vehicles and determine if it is leaving SOON
 //	  Mark the vehicle as migrating - setup the job/car to migrate
 //	  update statistics
 
+  JobModel _jobModel;
+
   std::map<int, Car*>::iterator it;
   for(it = carmap.begin(); it != carmap.end(); it++) 
   {
-    Car leavingCar = *(it->second);
+    Car * leavingCar = it->second;
     int leavingCarSpace = it->first; 
     //Check if car is leaving soon, and has a VM
-    if (leavingCar.departure_time_of_car <= _time.getTime() + _configuration.VMMigrationOffset && leavingCar.isMigratable())
+    if (leavingCar->isMigratable() && leavingCar->departure_time_of_car <= _time.getTime() + _configuration.VMMigrationOffset )
     {
   	  std::cout << "Starting Migration of Car in spot " << leavingCarSpace << " " << std::endl;
+
+      //1. Choose car to migrate to
+	  //2. Set Migration to 
+	  //3. Stop Job Processing / Data Migration
+	  Car * carToMigrateTo = GetMigrationToVehicle(it->second);
+      _jobModel.Migrate(leavingCar, carToMigrateTo) ;
+
 	  //emptySpaces.push_back(leavingCarSpace);
   	  //** Need to save off some statistics here!
   	  //carmap.erase(leavingCarSpace);	 
@@ -200,7 +237,10 @@ Car * CarModel::AssignJob(Job* job)
 	  break;
     }
   }  
+ 
+  std::cout << "Job cannot be assigned to any cars :" << job->job_number << std::endl;
 	
+  return NULL;
 	
 }
 

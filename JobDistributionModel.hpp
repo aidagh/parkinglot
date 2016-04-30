@@ -28,16 +28,19 @@ class JobDistributionModel
     TimeModel _time;  
     static int NextArrival;
     static int NextJobLength;
+	static int NextVMSize;
 
 	
   public: 
     int getNextArrival();
-    int getNextJobLength();
+    int getNextJobLength();    
+	int getNextVMSize();
 	double getNextJobDataToMigrate();
     int generateNext();
 };
 
 int JobDistributionModel::NextArrival = 0;
 int JobDistributionModel::NextJobLength = 0;
+int JobDistributionModel::NextVMSize = 0;
 
 #endif

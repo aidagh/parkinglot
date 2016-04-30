@@ -38,7 +38,7 @@ int CarResidencyDistributionModel::generateNext()
 {
   //This needs to be updated to work based on the configuration
   NextArrival = _time.getTime() + 10;
-  NextDeparture = NextArrival + 1440;
+  NextDeparture = NextArrival + 40;
   
   /*
   if (_configuration.CarResidency_FromFile)
