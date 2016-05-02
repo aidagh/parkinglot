@@ -30,14 +30,14 @@ void JobModel::createNewJob()
 	
 	if (car != NULL)
 	{
-      std::cout << "New Job assigned to car:" << car->car_spot_number << std::endl;
+      *_log.info << "New Job assigned to car:" << car->car_spot_number << std::endl;
 	  job->car_number = car->car_number;
 	  job->car = car;
 	  jobMap[car->car_spot_number] = job;
 	}
 	else
 	{
-      std::cout << "New Job assigned to JobQueue:" << std::endl;
+      *_log.info << "New Job assigned to JobQueue:" << std::endl;
 
       jobQueue.push(job);	
 	}
@@ -54,7 +54,7 @@ void JobModel::HandleJobProcessing()
   {
     Job* job = it->second;
 
-	std::cout << "Space:" << it->first << ", leftToProcess:" << job->jobSizeLeftToProcess << ", leftToMigrate:" << job->dataLeftToMigrate << ", Status:" << job->jobStatus << std::endl;
+	*_log.debug << "Space:" << it->first << ", leftToProcess:" << job->jobSizeLeftToProcess << ", leftToMigrate:" << job->dataLeftToMigrate << ", Status:" << job->jobStatus << std::endl;
 	
 	
 	//TODO: move away from bools as statuses and use a Status enum
@@ -97,7 +97,7 @@ void JobModel::HandleJobDataMigration()
 		
 		if (job->dataLeftToMigrate <= 0)
 		{
-			std::cout << "Space:" << it->first << " -- Job Complete!" << std::endl;
+			*_log.info << "Space:" << it->first << " -- Job Complete!" << std::endl;
 			
 			job->jobStatus = Complete;
 		    //TODO: update statistics	
@@ -136,9 +136,7 @@ void JobModel::HandleJobVMMigration()
 				
 		if (job->VM_migration_remained <= 0)
 		{
-			std::cout << "Space:" << it->first << " -- VM Complete!" << std::endl;
-			std::cout << "  Freeing Space: " << it->first << std::endl;
-			std::cout << "  Starting job in Space: " << job->MigrateToCar->car_spot_number << std::endl;
+			*_log.info << "Space:" << it->first << " -- VM Complete!" << std::endl;
 
 			//Do we restart the job processing, or data migration?
 			job->jobStatus = VMMigrationComplete;
@@ -198,7 +196,7 @@ void JobModel::CancelJob(int spaceId)
   Job * job = jobMap[spaceId];
   //Handle Statistics!
   jobMap.erase(spaceId);
-  std::cout << "Erased job in space" << spaceId << std::endl;
+  *_log.debug << "Erased job in space" << spaceId << std::endl;
 
 }
 
@@ -222,5 +220,5 @@ void JobModel::Migrate(Car* leavingCar, Car* carToMigrateTo)
 	
     carToMigrateTo->job = MigrateToJob;
 	
-	std::cout << "Job " << leavingCar->job->job_number << " from Car " << leavingCar->car_spot_number << "to Car " << carToMigrateTo->car_spot_number << std::endl;
+	*_log.info << "Job " << leavingCar->job->job_number << " from Car " << leavingCar->car_spot_number << "to Car " << carToMigrateTo->car_spot_number << std::endl;
 }

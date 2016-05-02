@@ -26,6 +26,9 @@
 #include <queue>
 
 
+
+#include "Logger.hpp"
+#include "Logger.cpp"
 #include "TimeModel.hpp"
 #include "Random.hpp"
 #include "Configuration.hpp"
@@ -44,6 +47,7 @@
 #include "CarModel.cpp"
 #include "JobModel.hpp"
 #include "JobModel.cpp"
+
 //#include "spot_location.hpp"
 //#include "spot_location.cpp"
 
@@ -577,15 +581,27 @@ return clusternum;
 CarModel _carModel;
 TimeModel _timeModel;
 JobModel _jobModel;
+Logger _log;
+
+
+
+
 
 int main()
 {
+
+	_log.ShowInfo();
+	*_log.info << "Showing Info Logs" << std::endl;
+	*_log.debug << "Showing Debug Logs" << std::endl;
+	
+	
+	
 	_carModel.Initialize();
 	_timeModel.initialize();
 	
 	while (_timeModel.getTime() < _configuration.MaxTime)
 	{
-	  std::cout << "Time: " << _timeModel.getTime() << std::endl;
+	  *_log.info << "Time: " << _timeModel.getTime() << std::endl;
       _carModel.HandleDepartingVehicles();
   	  _carModel.HandleIncomingVehicles();
       _jobModel.HandleJobProcessing();

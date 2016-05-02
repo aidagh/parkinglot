@@ -16,6 +16,7 @@
 #ifndef __CARMODEL_HPP__
 #define __CARMODEL_HPP__
 
+#include "Logger.hpp"
 #include "TimeModel.hpp"
 #include "Random.hpp"
 #include "Configuration.hpp"
@@ -31,7 +32,8 @@ class JobModel;
 class CarModel
 {
   private: 
-    Configuration _configuration;
+    Logger _log;
+	Configuration _configuration;
     Random _random;
     TimeModel _time;  
 	CarResidencyDistributionModel _carResidencyDistributionModel;

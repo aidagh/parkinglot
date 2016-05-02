@@ -17,6 +17,7 @@
 #ifndef __JOBMODEL_HPP__
 #define __JOBMODEL_HPP__
 
+#include "Logger.hpp"
 #include "TimeModel.hpp"
 #include "Configuration.hpp"
 #include "JobDistributionModel.hpp"
@@ -29,6 +30,7 @@
 class JobModel
 {
   private: 
+    Logger _log;
     Configuration _configuration;
 //    Random _random;
     TimeModel _time;  

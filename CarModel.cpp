@@ -93,7 +93,7 @@ bool CarModel::createNewCar()
   
   emptySpaces.remove(randomEmptySpace);
   
-  std::cout << "Car in spot " << randomEmptySpace << " has arrived" << std::endl;
+  *_log.info << "Car in spot " << randomEmptySpace << " has arrived" << std::endl;
 
 }
 
@@ -138,7 +138,7 @@ void CarModel::handleVehicleDepartingNOW()
     Car leavingCar = *(it->second);
     int leavingCarSpace = it->first; 
 
-    std::cout << "Car in spot " << leavingCarSpace << " is leaving in at time:" << leavingCar.departure_time_of_car << std::endl;
+    *_log.debug << "Car in spot " << leavingCarSpace << " is leaving in at time:" << leavingCar.departure_time_of_car << std::endl;
 
     //Check if car has left or is leaving
     if (leavingCar.departure_time_of_car <= _time.getTime())
@@ -146,7 +146,7 @@ void CarModel::handleVehicleDepartingNOW()
 	  //int jobId = leavingCar.job->job_number;
 	  if (leavingCar.job != NULL)
 	    _jobModel.CancelJob(leavingCarSpace);
-  	  std::cout << "Car in spot " << leavingCarSpace << " is leaving NOW" << std::endl;
+  	  *_log.info << "Car in spot " << leavingCarSpace << " is leaving NOW" << std::endl;
 	  emptySpaces.push_back(leavingCarSpace);
   	  //** Need to save off some statistics here!
   	  carmap.erase(leavingCarSpace);	 
@@ -173,7 +173,7 @@ void CarModel::handleVehicleDepartingSOON()
     //Check if car is leaving soon, and has a VM
     if (leavingCar->isMigratable() && leavingCar->departure_time_of_car <= _time.getTime() + _configuration.VMMigrationOffset )
     {
-  	  std::cout << "Starting Migration of Car in spot " << leavingCarSpace << " " << std::endl;
+  	  *_log.info << "Starting Migration of Car in spot " << leavingCarSpace << " " << std::endl;
 
       //1. Choose car to migrate to
 	  //2. Set Migration to 
@@ -213,11 +213,11 @@ Car * CarModel::AssignJob(Job* job)
   {
 	 if (it->second->job != NULL)
 	 {
-		 std::cout << "Space:" << it->first << " is busy with job: " << it->second->job->job_number << std::endl;
+		 *_log.debug << "Space:" << it->first << " is busy with job: " << it->second->job->job_number << std::endl;
 	 }
 	 else
 	 {
-		 std::cout << "Space:" << it->first << " is not busy " << std::endl;
+		 *_log.debug << "Space:" << it->first << " is not busy " << std::endl;
 	 } 
   }
   
@@ -228,7 +228,7 @@ Car * CarModel::AssignJob(Job* job)
     //Check if car has a job or is getting a job migrated
     if (car->canAcceptJob())
     {
-  	  std::cout << "Car in spot " << carSpace << " is assigned Job " << job->job_number << std::endl;
+  	  *_log.info << "Car in spot " << carSpace << " is assigned Job " << job->job_number << std::endl;
 	  car->job_number = job->job_number;
 	  car->job = job;
 //	  car->busy = true;
@@ -238,7 +238,7 @@ Car * CarModel::AssignJob(Job* job)
     }
   }  
  
-  std::cout << "Job cannot be assigned to any cars :" << job->job_number << std::endl;
+  *_log.info << "Job cannot be assigned to any cars :" << job->job_number << std::endl;
 	
   return NULL;
 	
