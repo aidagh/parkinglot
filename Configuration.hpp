@@ -5,9 +5,12 @@
 #define __CONFIGURATION_HPP__
 
 
+
 class Configuration
 {
   public:
+   static int LogLevel;
+  
    static int MaxTime;
    static int TimeStep;
    static double BandwidthPerSecondForCluster;
@@ -29,7 +32,7 @@ class Configuration
 
 };
 
-
+int Configuration::LogLevel = 1;
 int Configuration::MaxTime = 100; 
 int Configuration::TimeStep = 1; 
 double Configuration::BandwidthPerSecondForCluster = .125; 

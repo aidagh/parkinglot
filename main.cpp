@@ -589,8 +589,7 @@ Logger _log;
 
 int main()
 {
-
-	_log.ShowInfo();
+	_log.Initialize();
 	*_log.info << "Showing Info Logs" << std::endl;
 	*_log.debug << "Showing Debug Logs" << std::endl;
 	

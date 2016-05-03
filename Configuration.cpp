@@ -11,6 +11,10 @@ void Configuration::ReadFromFile()
     std::string left = line.substr(0, line.find("="));
     std::string right = line.substr(line.find("=")+1, line.size() - line.find("="));
 
+    if (left == "LogLevel")
+    {
+      LogLevel = ConvertToInt(right);
+    }
     if (left == "MaxTime")
     {
       MaxTime = ConvertToInt(right);
