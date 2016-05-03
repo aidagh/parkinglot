@@ -35,25 +35,25 @@ void Configuration::ReadFromFile()
     {
       VMMigrationOffset = ConvertToInt(right);
     }
-    if (left == "CarResidency_FromFile") 
+    if (left == "CarArrival_FromFile") 
 	{
-	  CarResidency_FromFile = ConvertToBool(right);
+	  CarArrival_FromFile = ConvertToBool(right);
 	}
-    if (left == "CarResidency_Static") 
+    if (left == "CarArrival_Static") 
 	{
-	  CarResidency_Static = ConvertToBool(right);
+	  CarArrival_Static = ConvertToBool(right);
 	}
-    if (left == "CarResidency_Static_Hours")   
+    if (left == "CarArrival_Static_Value")   
 	{
-	  CarResidency_Static_Hours = ConvertToInt(right);
+	  CarArrival_Static_Value = ConvertToInt(right);
 	}
-    if (left == "CarResidency_Exponential") 
+    if (left == "CarArrival_Poisson") 
 	{
-	  CarResidency_Exponential = ConvertToBool(right);
+	  CarArrival_Poisson = ConvertToBool(right);
 	}
-    if (left == "CarResidency_Exponential_Lambda") 
+    if (left == "CarArrival_Poisson_Lambda") 
 	{
-	  CarResidency_Exponential_Lambda = ConvertToDouble(right);
+	  CarArrival_Poisson_Lambda = ConvertToDouble(right);
 	}
   }
 }

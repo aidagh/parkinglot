@@ -577,7 +577,7 @@ return clusternum;
 	
 }
 
-
+CarResidencyDistributionModel _carResidencyDistributionModel;
 CarModel _carModel;
 TimeModel _timeModel;
 JobModel _jobModel;
@@ -594,9 +594,10 @@ int main()
 	*_log.debug << "Showing Debug Logs" << std::endl;
 	
 	
-	
+	_carResidencyDistributionModel.Initialize();
 	_carModel.Initialize();
 	_timeModel.initialize();
+	
 	
 	while (_timeModel.getTime() < _configuration.MaxTime)
 	{
