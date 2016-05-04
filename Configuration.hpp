@@ -17,6 +17,22 @@
 //    CarDeparture_Static_Value -
 //    CarDeparture_Exponential -
 //    CarDeparture_Exponential_Lambda -
+//    JobArrival_Static -
+//    JobArrival_Static_Value - 
+//    JobArrival_Exponential - 
+//    JobArrival_Poisson_Lambda -
+//    
+//    JobLength_Static -
+//    JobLength_Static_Value -
+//    JobLength_Normal -
+//    JobLength_Normal_Mean -
+//    JobLength_Normal_STDev -
+//    
+//    JobVMSize_Static -
+//    JobVMSize_Static_Value -
+//    JobVMSize_Normal -
+//    JobVMSize_Normal_Mean -
+//    JobVMSize_Normal_STDev -
 
 #include <sstream>
 
@@ -49,6 +65,24 @@ class Configuration
    static bool CarDeparture_Exponential;
    static double CarDeparture_Exponential_Lambda;
 
+   static bool JobArrival_Static;
+   static int JobArrival_Static_Value;   
+   static bool JobArrival_Exponential;
+   static double JobArrival_Poisson_Lambda;
+
+   static bool JobLength_Static;
+   static int JobLength_Static_Value;   
+   static bool JobLength_Normal;
+   static double JobLength_Normal_Mean;
+   static double JobLength_Normal_STDev;
+
+   static bool JobVMSize_Static;
+   static int JobVMSize_Static_Value;   
+   static bool JobVMSize_Normal;
+   static double JobVMSize_Normal_Mean;
+   static double JobVMSize_Normal_STDev;
+
+
    
    void ReadFromFile();
    bool ConvertToBool(std::string &data);   
@@ -75,6 +109,24 @@ bool Configuration::CarDeparture_Static = true;
 int Configuration::CarDeparture_Static_Value = 25;
 bool Configuration::CarDeparture_Exponential = false;
 double Configuration::CarDeparture_Exponential_Lambda = 0.1;
+
+
+bool Configuration::JobArrival_Static = true;
+int Configuration::JobArrival_Static_Value = 20;   
+bool Configuration::JobArrival_Exponential = false;
+double Configuration::JobArrival_Poisson_Lambda = .05;
+       
+bool Configuration::JobLength_Static = true;
+int Configuration::JobLength_Static_Value = 20;   
+bool Configuration::JobLength_Normal = false;
+double Configuration::JobLength_Normal_Mean = 20;
+double Configuration::JobLength_Normal_STDev = 5;
+       
+bool Configuration::JobVMSize_Static = true;
+int Configuration::JobVMSize_Static_Value = 10;   
+bool Configuration::JobVMSize_Normal = false;
+double Configuration::JobVMSize_Normal_Mean = 10;
+double Configuration::JobVMSize_Normal_STDev = 3;
 
 
 #endif

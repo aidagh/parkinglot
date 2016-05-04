@@ -73,8 +73,26 @@ void Configuration::ReadFromFile()
 	{
 	  CarDeparture_Exponential_Lambda = ConvertToDouble(right);
 	}
+/*
+JobArrival_Static
+JobArrival_Static_Value
+JobArrival_Exponential
+JobArrival_Poisson_Lambda
 
-	}
+JobLength_Static
+JobLength_Static_Value
+JobLength_Normal
+JobLength_Normal_Mean
+JobLength_Normal_STDev
+
+JobVMSize_Static
+JobVMSize_Static_Value
+JobVMSize_Normal
+JobVMSize_Normal_Mean
+JobVMSize_Normal_STDev
+*/
+	
+  }
 }
 
 bool Configuration::ConvertToBool(std::string &data)

@@ -14,8 +14,8 @@
 #include "TimeModel.hpp"
 #include "Random.hpp"
 #include "Configuration.hpp"
-#include "CarArrivalDistributionFactory.hpp"
-#include "CarDepartureDistributionFactory.hpp"
+#include "DistributionFactory/CarArrivalDistributionFactory.hpp"
+#include "DistributionFactory/CarDepartureDistributionFactory.hpp"
 
 class CarResidencyDistributionModel
 {
