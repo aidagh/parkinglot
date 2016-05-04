@@ -55,7 +55,24 @@ void Configuration::ReadFromFile()
 	{
 	  CarArrival_Poisson_Lambda = ConvertToDouble(right);
 	}
-  }
+    if (left == "CarDeparture_Static") 
+	{
+	  CarDeparture_Static = ConvertToBool(right);
+	}
+    if (left == "CarDeparture_Static_Value")   
+	{
+	  CarDeparture_Static_Value = ConvertToInt(right);
+	}
+    if (left == "CarDeparture_Exponential") 
+	{
+	  CarDeparture_Exponential = ConvertToBool(right);
+	}
+    if (left == "CarDeparture_Exponential_Lambda") 
+	{
+	  CarDeparture_Exponential_Lambda = ConvertToDouble(right);
+	}
+
+	}
 }
 
 bool Configuration::ConvertToBool(std::string &data)

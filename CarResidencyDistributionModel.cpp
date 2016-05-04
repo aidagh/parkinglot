@@ -16,81 +16,9 @@
 #include "CarResidencyDistributionModel.hpp"
 
 
-class CarArrivalDistributionFactory
-{
-	public:
-	    static CarArrivalDistributionFactory *make_CarArrivalDistribution(int choice);
-		virtual void Initialize() = 0;  //=0 because we have to declare some function;
-		virtual int getNext() = 0;      //=0 because we have to declare some function;
-	
-};
-
-class PoissonArrival: public CarArrivalDistributionFactory
-{
-	private: 
-	std::default_random_engine generatorArrival;
-	std::poisson_distribution<int> * ArrivalPoissonDistribution;
-	
-	
-	public:
-		void Initialize();
-		int getNext();
-	
-};
-
-void PoissonArrival::Initialize()
-{
-	Configuration _configuration;	
-	ArrivalPoissonDistribution = new std::poisson_distribution<int>(_configuration.CarArrival_Poisson_Lambda);
-}
-
-int PoissonArrival::getNext()
-{
-	return (*ArrivalPoissonDistribution)(generatorArrival);
-}
-
-
-class StaticArrival: public CarArrivalDistributionFactory
-{
-	private: 
-	    int staticValue;
-	public:
-		void Initialize();
-		int getNext();
-	
-};
-
-void StaticArrival::Initialize()
-{
-	Configuration _configuration;	
-	staticValue = _configuration.CarArrival_Static_Value;
-}
-
-int StaticArrival::getNext()
-{
-	return staticValue;
-}
-
-
-
-CarArrivalDistributionFactory *CarArrivalDistributionFactory::make_CarArrivalDistribution(int choice)
-{ 
-	if (choice == 0)
-		return new StaticArrival;
-	if (choice == 1)
-		return new PoissonArrival;
-}
-
-
-
-
-
-
-
-
 void CarResidencyDistributionModel::Initialize()
 {
-  *_log.trace << "Initializing CarResidencyDistributionModel" << std::endl;
+  *_log.trace << "Initializing CarResidencyDistributionModel - Car Arrival" << std::endl;
 	
   if (_configuration.CarArrival_FromFile)
   {
@@ -113,6 +41,31 @@ void CarResidencyDistributionModel::Initialize()
     *_log.trace << "   Poisson" << std::endl;
   }
 
+  
+  
+  *_log.trace << "Initializing CarResidencyDistributionModel - Car Departure" << std::endl;
+	
+//  if (_configuration.CarArrival_FromFile)
+//  {
+//	  //Use pre-existing file
+//	  *_log.trace << "   From File" << std::endl;
+//	
+//  } 
+//  else 
+	  if (_configuration.CarDeparture_Static)
+  {
+	  //CarResidency_Static_Hours;   
+      CarDepartureDistribution = CarDepartureDistributionFactory::make_CarDepartureDistribution(0);  
+	  CarDepartureDistribution->Initialize();
+
+	  *_log.trace << "   Static" << std::endl;
+  }
+  else if (_configuration.CarDeparture_Exponential)
+  {
+    CarDepartureDistribution = CarDepartureDistributionFactory::make_CarDepartureDistribution(1);  
+	CarDepartureDistribution->Initialize();
+    *_log.trace << "   Departure" << std::endl;
+  }
 
 	
 }
@@ -142,7 +95,7 @@ int CarResidencyDistributionModel::generateNext()
   //This needs to be updated to work based on the configuration
   NextArrival = _time.getTime() + CarArrivalDistribution->getNext();
   
-  NextDeparture = NextArrival + 40;
+  NextDeparture = NextArrival + CarDepartureDistribution->getNext();
   
 
   //Test for Distributions
