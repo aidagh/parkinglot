@@ -1,4 +1,8 @@
-
+//File:         Logger.hpp
+//Description: 	Provides logging to the application
+//   Initialize() - used to initialize the logger with configuration options set within the configuration Model.
+//   ShowAll(), ShowInfo(), ShowDebug(), ShowNone() - Used to set the level of debugging.  
+//   *trace, *debug, *info - Used to output logging data
 
 
 #ifndef __LOGGER_HPP__

@@ -1,3 +1,5 @@
+//File:         Configuration.cpp
+//Description: 	Provides configuration data to the application
 
 #include "Configuration.hpp"
 

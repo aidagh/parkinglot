@@ -1,3 +1,22 @@
+//File:         Configuration.hpp
+//Description: 	Provides configuration data to the application
+//  ReadFromFile - Sets the configuration options from a file: config.in
+//  Options:
+//    LogLevel - Set the level of logging for the application: 0-Trace, 1-Debug, 2-Warn
+//    MaxTime - Sets the maximum Time of the time loop.
+//    TimeStep - Set the amount of time each step will be incremented in the time loop.
+//    BandwidthPerSecondForCluster -
+//    NumberOfParkingSpaces -
+//    VMMigrationOffset -
+//    CarArrival_FromFile -
+//    CarArrival_Static -
+//    CarArrival_Static_Value -
+//    CarArrival_Poisson -
+//    CarArrival_Poisson_Lambda -
+//    CarDeparture_Static -
+//    CarDeparture_Static_Value -
+//    CarDeparture_Exponential -
+//    CarDeparture_Exponential_Lambda -
 
 #include <sstream>
 

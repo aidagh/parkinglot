@@ -1,8 +1,8 @@
-//File:         CarArrivalDistributionFactory
-//Description: 
-//
-//
-//
+//File:         CarArrivalDistributionFactory.hpp
+//Description:  A factory object that returns an implementation based on the selected distribution 
+//  *make_CarArrivalDistribution - returns a pointer to a Arrival Distribution
+//      choice:0 - Static Arrival
+//      choice:1 - Poisson Arrival
 
 
 #ifndef __CARARRIVALDISTRIBUTIONFACTORY_HPP__

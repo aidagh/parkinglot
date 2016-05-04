@@ -1,3 +1,5 @@
+//File:         Logger.cpp
+//Description: 	Provides logging to the application
 
 #include "Logger.hpp"
 

@@ -1,10 +1,10 @@
 //File:         CarResidencyDistributionModel.hpp
-//Description: 
-//
-//
-//
-
-
+//Description: 	Provides random values for the car residency
+//	Initialize() - Used to initialize the model with values from configuration
+//  GetNextArrival() - Used to get the next random value for the car arrival. (In terms of x time units from now)
+//  GetNextDeparture() - Used to get the next random value for the car departure. (In terms of vehicle residency time)
+//  GenerateNext() - populate NextArrival and NextDeparture with new random values.
+	
 
 #ifndef __CARRESIDENCYDISTRIBUTIONMODEL_HPP__
 #define __CARRESIDENCYDISTRIBUTIONMODEL_HPP__
