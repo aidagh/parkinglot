@@ -1,0 +1,16 @@
+
+
+#ifndef __DISTRIBUTIONTYPE_ENUM__
+#define __DISTRIBUTIONTYPE_ENUM__
+
+enum DistributionType
+{
+	FromFile,
+	Static,
+	Poisson,
+	Normal,
+	Exponential,
+	Uniform
+};
+
+#endif

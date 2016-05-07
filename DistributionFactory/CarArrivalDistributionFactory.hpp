@@ -8,10 +8,12 @@
 #ifndef __CARARRIVALDISTRIBUTIONFACTORY_HPP__
 #define __CARARRIVALDISTRIBUTIONFACTORY_HPP__
 
+#include "DistributionType.enum"
+
 class CarArrivalDistributionFactory
 {
 	public:
-	    static CarArrivalDistributionFactory *make_CarArrivalDistribution(int choice);
+	    static CarArrivalDistributionFactory *make_CarArrivalDistribution(DistributionType distribution);
 		virtual void Initialize() = 0;  //=0 because we have to declare some function;
 		virtual int getNext() = 0;      //=0 because we have to declare some function;
 	

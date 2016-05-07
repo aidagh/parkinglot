@@ -131,7 +131,7 @@ void JobModel::HandleJobVMMigration()
   //Determine Congestion and Available Bandwidth Here
   //TODO: 
 
-	if (job->jobStatus == VMMigratingAwayFrom)
+	if (job->jobStatus == VMMigrating)
 	{		
 		//Migrate VM here
 		//TODO: incorporate congestion
@@ -141,19 +141,25 @@ void JobModel::HandleJobVMMigration()
 		{
 			*_log.info << "Space:" << it->first << " -- VM Complete!" << std::endl;
 
+			//VM Completion
+			//1. job is the job being migrated
+			//2. Set job->MigrateFromCar->job to NULL
+			//3. Set job->car to job->MigrateToCar
+			//4. Set job->MigrateFromCar to NULL
+			//5. Set job->MigrateToCar to NULL
+			//6. Set Status to either Processing or Data Migration.
+            //7. Update Statistics
+			
+            job->MigrateFromCar->job = NULL;
+			job->car = job->MigrateToCar;
+			job->MigrateFromCar = NULL;
+			job->MigrateToCar = NULL;
+			
 			//Do we restart the job processing, or data migration?
-			job->jobStatus = VMMigrationComplete;
-			
-			
-			Job* migratedJob = job->MigrateToJob;
-			migratedJob->jobStatus = Processing;
+			job->jobStatus = Processing;
 			
 		    //TODO: update statistics	
 
-			
-            //Remove the job that was being migrated.
-			jobEraseList.push_back(it->first);
-            job->car->job = NULL;
 			
 		}
 	}
@@ -203,25 +209,34 @@ void JobModel::CancelJob(int spaceId)
 
 }
 
-void JobModel::Migrate(Car* leavingCar, Car* carToMigrateTo)
+void JobModel::SetupVMMigration(Car* leavingCar, Car* carToMigrateTo)
 {
-
-	leavingCar->job->VM_migration_remained = leavingCar->job->VM_size;
-    leavingCar->job->MigrateToCar = carToMigrateTo;
-    leavingCar->job->jobStatus = VMMigratingAwayFrom;
-
-	Job * MigrateToJob = new Job();
-	leavingCar->job->MigrateToJob = MigrateToJob;
-	MigrateToJob->job_number = leavingCar->job->job_number;
-	MigrateToJob->VM_size = 0;
-    MigrateToJob->MigrateFromCar = leavingCar;
-    MigrateToJob->jobStatus = VMMigratingTo;	
-	MigrateToJob->jobSize = leavingCar->job->jobSize;
-	MigrateToJob->jobSizeLeftToProcess = leavingCar->job->jobSizeLeftToProcess;
-	MigrateToJob->dataToMigrate = leavingCar->job->dataToMigrate;
-	MigrateToJob->dataLeftToMigrate = leavingCar->job->dataLeftToMigrate;
+    //1. leavingCar->job should already equal the job.
+	//2. set carToMigrateTo->job to the job.
+	//3. Set job->MigrateToCar to carToMigrateTo
+	//4. Set job->MigrateFromCar to leaving Car.
 	
-    carToMigrateTo->job = MigrateToJob;
+    Job * job = leavingCar->job;
+	carToMigrateTo->job = job;
+	job->MigrateToCar = carToMigrateTo;
+	job->MigrateFromCar = leavingCar;
 	
-	*_log.info << "Job " << leavingCar->job->job_number << " from Car " << leavingCar->car_spot_number << "to Car " << carToMigrateTo->car_spot_number << std::endl;
+//	leavingCar->job->VM_migration_remained = leavingCar->job->VM_size;
+//    leavingCar->job->MigrateToCar = carToMigrateTo;
+//    leavingCar->job->jobStatus = VMMigratingAwayFrom;
+//
+//	Job * MigrateToJob = new Job();
+//	leavingCar->job->MigrateToJob = MigrateToJob;
+//	MigrateToJob->job_number = leavingCar->job->job_number;
+//	MigrateToJob->VM_size = 0;
+//    MigrateToJob->MigrateFromCar = leavingCar;
+//    MigrateToJob->jobStatus = VMMigratingTo;	
+//	MigrateToJob->jobSize = leavingCar->job->jobSize;
+//	MigrateToJob->jobSizeLeftToProcess = leavingCar->job->jobSizeLeftToProcess;
+//	MigrateToJob->dataToMigrate = leavingCar->job->dataToMigrate;
+//	MigrateToJob->dataLeftToMigrate = leavingCar->job->dataLeftToMigrate;
+//	
+//    carToMigrateTo->job = MigrateToJob;
+	
+	*_log.info << "Job " << job->job_number << " from Car " << leavingCar->car_spot_number << "to Car " << carToMigrateTo->car_spot_number << std::endl;
 }

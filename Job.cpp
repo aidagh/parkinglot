@@ -20,6 +20,7 @@ Job::Job()
   
 }
 
+
 //This displays the job information which is assigned to all the cars in the parking lot as soon as simulation starts.
 void Job::display_job_information(std::ofstream& outFile)
 {

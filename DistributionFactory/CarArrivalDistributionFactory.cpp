@@ -49,10 +49,10 @@ int StaticArrival::getNext()
 	return staticValue;
 }
 
-CarArrivalDistributionFactory *CarArrivalDistributionFactory::make_CarArrivalDistribution(int choice)
+CarArrivalDistributionFactory *CarArrivalDistributionFactory::make_CarArrivalDistribution(DistributionType distribution)
 { 
-	if (choice == 0)
+	if (distribution == Static)
 		return new StaticArrival;
-	if (choice == 1)
+	if (distribution == Poisson)
 		return new PoissonArrival;
 }

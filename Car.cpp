@@ -24,14 +24,7 @@ Car::Car()
 }
 
 
-//The car has a job and it is not completed
-bool Car::isMigratable()
-{
-  if (job != NULL && (job->jobStatus == Processing || job->jobStatus == DataMigrating))
-  
-    return true;	
-  return false; 
-}
+
 
 //Car has no current job, and isn't being migrated to
 bool Car::canAcceptJob()

@@ -8,10 +8,12 @@
 #ifndef __JOBLENGTHDISTRIBUTIONFACTORY_HPP__
 #define __JOBLENGTHDISTRIBUTIONFACTORY_HPP__
 
+#include "DistributionType.enum"
+
 class JobLengthDistributionFactory
 {
 	public:
-	    static JobLengthDistributionFactory *make_JobLengthDistribution(int choice);
+	    static JobLengthDistributionFactory *make_JobLengthDistribution(DistributionType distribution);
 		virtual void Initialize() = 0;  //=0 because we have to declare some function;
 		virtual int getNext() = 0;      //=0 because we have to declare some function;
 	

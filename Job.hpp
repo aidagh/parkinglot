@@ -15,8 +15,8 @@ enum JobStatus
 {
 	Idle,
 	Processing,
-	VMMigratingAwayFrom,
-	VMMigratingTo,
+	VMMigrating,
+//	VMMigratingTo,
 	VMMigrationComplete,
 	DataMigrating,
 	Complete

@@ -49,10 +49,10 @@ int StaticJobLength::getNext()
 	return staticValue;
 }
 
-JobLengthDistributionFactory *JobLengthDistributionFactory::make_JobLengthDistribution(int choice)
+JobLengthDistributionFactory *JobLengthDistributionFactory::make_JobLengthDistribution(DistributionType distribution)
 { 
-	if (choice == 0)
+	if (distribution == Static)
 		return new StaticJobLength;
-	if (choice == 1)
+	if (distribution == Normal)
 		return new NormalJobLength;
 }

@@ -19,7 +19,7 @@
 //    CarDeparture_Exponential_Lambda -
 //    JobArrival_Static -
 //    JobArrival_Static_Value - 
-//    JobArrival_Exponential - 
+//    JobArrival_Poisson - 
 //    JobArrival_Poisson_Lambda -
 //    
 //    JobLength_Static -
@@ -67,7 +67,7 @@ class Configuration
 
    static bool JobArrival_Static;
    static int JobArrival_Static_Value;   
-   static bool JobArrival_Exponential;
+   static bool JobArrival_Poisson;
    static double JobArrival_Poisson_Lambda;
 
    static bool JobLength_Static;
@@ -113,7 +113,7 @@ double Configuration::CarDeparture_Exponential_Lambda = 0.1;
 
 bool Configuration::JobArrival_Static = true;
 int Configuration::JobArrival_Static_Value = 20;   
-bool Configuration::JobArrival_Exponential = false;
+bool Configuration::JobArrival_Poisson = false;
 double Configuration::JobArrival_Poisson_Lambda = .05;
        
 bool Configuration::JobLength_Static = true;

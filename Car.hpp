@@ -42,7 +42,7 @@ class Car
 		
     Car();
     
-    bool isMigratable(); 
+//    bool isMigratable(); 
 	bool canAcceptJob();
 	
     void display_car_information(std::ofstream& outFile);

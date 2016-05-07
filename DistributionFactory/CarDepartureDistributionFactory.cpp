@@ -49,10 +49,10 @@ int StaticDeparture::getNext()
 	return staticValue;
 }
 
-CarDepartureDistributionFactory *CarDepartureDistributionFactory::make_CarDepartureDistribution(int choice)
+CarDepartureDistributionFactory *CarDepartureDistributionFactory::make_CarDepartureDistribution(DistributionType distribution)
 { 
-	if (choice == 0)
+	if (distribution == Static)
 		return new StaticDeparture;
-	if (choice == 1)
+	if (distribution == Exponential)
 		return new ExponentialDeparture;
 }

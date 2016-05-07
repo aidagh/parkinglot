@@ -76,7 +76,7 @@ void Configuration::ReadFromFile()
 /*
 JobArrival_Static
 JobArrival_Static_Value
-JobArrival_Exponential
+JobArrival_Poisson
 JobArrival_Poisson_Lambda
 
 JobLength_Static

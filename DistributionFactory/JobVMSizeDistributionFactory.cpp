@@ -49,10 +49,10 @@ int StaticJobVMSize::getNext()
 	return staticValue;
 }
 
-JobVMSizeDistributionFactory *JobVMSizeDistributionFactory::make_JobVMSizeDistribution(int choice)
+JobVMSizeDistributionFactory *JobVMSizeDistributionFactory::make_JobVMSizeDistribution(DistributionType distribution)
 { 
-	if (choice == 0)
+	if (distribution == Static)
 		return new StaticJobVMSize;
-	if (choice == 1)
+	if (distribution == Normal)
 		return new NormalJobVMSize;
 }

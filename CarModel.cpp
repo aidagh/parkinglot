@@ -98,7 +98,7 @@ Car * CarModel::GetMigrationToVehicle(Car* FromCar)
 {
   //Loop through and find the latest departing vehicle that currently is not running a job.
   //ToDo: This needs to consider cluster 
-  Car* latestDepartingCar;
+  Car* latestDepartingCar = NULL;
   int latestDepartureTime = 0;
   std::map<int, Car*>::iterator it;
  
@@ -108,8 +108,11 @@ Car * CarModel::GetMigrationToVehicle(Car* FromCar)
 	 {
 		 latestDepartingCar = it->second;
 		 latestDepartureTime = latestDepartingCar->departure_time_of_car;
+		 *_log.trace << "Car " << it->first << " can accept job, leaving " << latestDepartingCar->departure_time_of_car << std::endl;
+
 	 }
   }	
+
   return latestDepartingCar;
 }
 
@@ -158,8 +161,10 @@ void CarModel::handleVehicleDepartingSOON()
   {
     Car * leavingCar = it->second;
     int leavingCarSpace = it->first; 
-    //Check if car is leaving soon, and has a VM
-    if (leavingCar->isMigratable() && leavingCar->departure_time_of_car <= _time.getTime() + _configuration.VMMigrationOffset )
+    
+	//Check if car is leaving soon, and has a VM
+	bool carHasAMigratableJob = (leavingCar->job != NULL) && (leavingCar->job->jobStatus == Processing || leavingCar->job->jobStatus == DataMigrating);  	
+    if (carHasAMigratableJob && leavingCar->departure_time_of_car <= _time.getTime() + _configuration.VMMigrationOffset )
     {
   	  *_log.info << "Starting Migration of Car in spot " << leavingCarSpace << " " << std::endl;
 
@@ -167,11 +172,20 @@ void CarModel::handleVehicleDepartingSOON()
 	  //2. Set Migration to 
 	  //3. Stop Job Processing / Data Migration
 	  Car * carToMigrateTo = GetMigrationToVehicle(it->second);
-      _jobModel.Migrate(leavingCar, carToMigrateTo) ;
+	  
+	  if (carToMigrateTo != NULL)
+	  {
+        _jobModel.SetupVMMigration(leavingCar, carToMigrateTo) ;
 
-	  //emptySpaces.push_back(leavingCarSpace);
-  	  //** Need to save off some statistics here!
-  	  //carmap.erase(leavingCarSpace);	 
+	    //emptySpaces.push_back(leavingCarSpace);
+  	    //** Need to save off some statistics here!
+  	    //carmap.erase(leavingCarSpace);	 
+	  }
+	  else
+	  {
+		  //There is no car to migrate to..  Currently, the code will just try again next minute.
+		  
+	  }
     }
   }  
 

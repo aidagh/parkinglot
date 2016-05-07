@@ -49,10 +49,10 @@ int StaticJobArrival::getNext()
 	return staticValue;
 }
 
-JobArrivalDistributionFactory *JobArrivalDistributionFactory::make_JobArrivalDistribution(int choice)
+JobArrivalDistributionFactory *JobArrivalDistributionFactory::make_JobArrivalDistribution(DistributionType distribution)
 { 
-	if (choice == 0)
+	if (distribution == Static)
 		return new StaticJobArrival;
-	if (choice == 1)
+	if (distribution == Poisson)
 		return new PoissonJobArrival;
 }

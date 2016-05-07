@@ -4,12 +4,63 @@
 
 #include "JobDistributionModel.hpp"
 
-int JobDistributionModel::getNextJobLength()
+
+void JobDistributionModel::Initialize()
 {
-	//TODO: Obviously this needs to be adjusted
-	return 20;
+  *_log.trace << "Initializing JobDistributionModel - Job Arrival" << std::endl;
 	
+  if (_configuration.JobArrival_Static)
+  {
+      JobArrivalDistribution = JobArrivalDistributionFactory::make_JobArrivalDistribution(Static);  
+	  JobArrivalDistribution->Initialize();
+
+	  *_log.trace << "   Static" << std::endl;
+  }
+  else if (_configuration.JobArrival_Poisson)
+  {
+    JobArrivalDistribution = JobArrivalDistributionFactory::make_JobArrivalDistribution(Poisson);  
+	JobArrivalDistribution->Initialize();
+    *_log.trace << "   Poisson" << std::endl;
+  }
+
+  
+  
+  *_log.trace << "Initializing JobDistributionModel - Job Length" << std::endl;
+	
+  if (_configuration.JobLength_Static)
+  {
+      JobLengthDistribution = JobLengthDistributionFactory::make_JobLengthDistribution(Static);  
+	  JobLengthDistribution->Initialize();
+
+	  *_log.trace << "   Static" << std::endl;
+  }
+  else if (_configuration.JobLength_Normal)
+  {
+    JobLengthDistribution = JobLengthDistributionFactory::make_JobLengthDistribution(Normal);  
+	JobLengthDistribution->Initialize();
+    *_log.trace << "   Normal" << std::endl;
+  }
+
+
+  *_log.trace << "Initializing JobDistributionModel - VM Size" << std::endl;
+	
+  if (_configuration.JobVMSize_Static)
+  {
+      JobVMSizeDistribution = JobVMSizeDistributionFactory::make_JobVMSizeDistribution(Static);  
+	  JobVMSizeDistribution->Initialize();
+
+	  *_log.trace << "   Static" << std::endl;
+  }
+  else if (_configuration.JobVMSize_Normal)
+  {
+    JobVMSizeDistribution = JobVMSizeDistributionFactory::make_JobVMSizeDistribution(Normal);  
+	JobVMSizeDistribution->Initialize();
+    *_log.trace << "   Normal" << std::endl;
+  }
+
+  
 }
+
 
 int JobDistributionModel::getNextArrival()
 {
@@ -21,35 +72,33 @@ int JobDistributionModel::getNextArrival()
 }
 int JobDistributionModel::getNextVMSize()
 {
-	//TODO: Obviously this needs to be adjusted
-	return 5;
-	
+	if (NextVMSize == 0)
+	{
+		generateNext();
+	}	
+	return NextVMSize;
+}
+int JobDistributionModel::getNextJobLength()
+{
+	if (NextArrival == 0)
+	{
+		generateNext();
+	}	
+	return NextJobLength;
 }
 double JobDistributionModel::getNextJobDataToMigrate()
 {
-	//TODO: Obviously this needs to be adjusted
 	return 0;
-	
 }
+
+
 
 int JobDistributionModel::generateNext()
 {
-  //TODO: This needs to be updated to work based on the configuration
-  NextArrival = _time.getTime() + 5;
+  *_log.trace << "JobDistributionModel.generateNext()" << std::endl;
   
-  /*
-  if (_configuration.CarResidency_FromFile)
-  {
-	  //Use pre-existing file
-  }
-  else if (_configuration.CarResidency_Static)
-  {
-	  //CarResidency_Static_Hours;   
-  }
-  else if (_configuration.CarResidency_Exponential)
-  {
-	//_configuration.CarResidency_Exponential_Lambda;  
-  }
-  */
+  NextArrival = _time.getTime() + JobArrivalDistribution->getNext();
+  NextJobLength = JobLengthDistribution->getNext();
+  NextVMSize = JobVMSizeDistribution->getNext();
 }
 

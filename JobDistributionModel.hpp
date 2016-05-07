@@ -16,8 +16,10 @@ class JobDistributionModel
 {
   private: 
     Configuration _configuration;
-    Random _random;
-    TimeModel _time;  
+    Logger _log;
+	Random _random;
+    TimeModel _time;
+    	
     static int NextArrival;
     static int NextJobLength;
 	static int NextVMSize;
@@ -27,6 +29,7 @@ class JobDistributionModel
 	static JobVMSizeDistributionFactory * JobVMSizeDistribution;
   
   public: 
+    void Initialize();
     int getNextArrival();
     int getNextJobLength();    
 	int getNextVMSize();

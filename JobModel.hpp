@@ -47,7 +47,7 @@ class JobModel
     void HandleCompletedJobs();
 	
 	void CancelJob(int);
-	void Migrate(Car* leavingCar, Car* carToMigrateTo);
+	void SetupVMMigration(Car* leavingCar, Car* carToMigrateTo);
 	
 };
 
