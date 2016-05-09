@@ -38,17 +38,19 @@ class CarModel
 	Car * GetMigrationToVehicle(Car* FromCar);
 	void handleVehicleDepartingNOW();
 	void handleVehicleDepartingSOON();
+    void HandleDepartingVehicles();
+	void HandleIncomingVehicles();
 	
   public: 
     void Initialize();
-    void HandleDepartingVehicles();
-	void HandleIncomingVehicles();
 	
 	Car* AssignJob(Job* job);
 	
 	int getClusterNumber(int);
 	int getRegionNumber(int);
 	int getGroupNumber(int);
+	
+	void HandleCars();
 	
 };
 

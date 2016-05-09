@@ -21,6 +21,12 @@ void CarModel::Initialize()
 	initializing = false;
 }
 
+void CarModel::HandleCars()
+{
+  HandleDepartingVehicles();
+  HandleIncomingVehicles();
+
+}
 
 
 

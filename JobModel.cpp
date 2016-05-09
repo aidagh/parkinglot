@@ -8,6 +8,22 @@ void JobModel::Initialize()
 	
 }
 
+void JobModel::HandleJobs()
+{
+  HandleJobProcessing();
+  
+  HandleJobDataMigration_ReserveTransaction();
+  //HandleJobVMMigration_CompleteTransaction();
+  
+  HandleJobDataMigration_ReserveTransaction();
+  //HandleJobVMMigration_CompleteTransaction();
+  HandleJobVMMigration();
+  
+  HandleCompletedJobs();
+  HandleIncomingJobs();
+}
+
+
 Job * JobModel::GenerateJob()
 {
   Job * job = new Job();
@@ -18,7 +34,6 @@ Job * JobModel::GenerateJob()
   job->jobStatus = Processing;
 
   job->dataToMigrate = _jobDistributionModel.getNextJobDataToMigrate();		
-  job->dataLeftToMigrate = 0;
   
   _jobDistributionModel.generateNext();
   numJobs++;
@@ -34,7 +49,7 @@ void JobModel::createNewJob()
 	if (car != NULL)
 	{
       *_log.info << "New Job assigned to car:" << car->car_spot_number << std::endl;
-	  job->car_number = car->car_number;
+//	  job->car_number = car->car_number;
 	  job->car = car;
 	  jobMap[car->car_spot_number] = job;
 	}
@@ -48,7 +63,15 @@ void JobModel::createNewJob()
 	
 }
 
-
+void JobModel::SetJobToDataMigrating(Job * job)
+{
+	//1. Set job to DataMigrating
+	//2. Populate ActiveMigrationJobs
+	//3. Populate DataMigrationSet
+    //4. Update Car in MigrationSet with a Job * of the job it is holding data for.	
+	
+	job->jobStatus = DataMigrating;
+}
 
 void JobModel::HandleJobProcessing()
 {
@@ -57,10 +80,9 @@ void JobModel::HandleJobProcessing()
   {
     Job* job = it->second;
 
-	*_log.debug << "Space:" << it->first << ", leftToProcess:" << job->jobSizeLeftToProcess << ", leftToMigrate:" << job->dataLeftToMigrate << ", Status:" << job->jobStatus << std::endl;
+//	*_log.debug << "Space:" << it->first << ", leftToProcess:" << job->jobSizeLeftToProcess << ", leftToMigrate:" << job->dataLeftToMigrate << ", Status:" << job->jobStatus << std::endl;
 	
 	
-	//TODO: move away from bools as statuses and use a Status enum
     //If the job is still processing, then 
 	if (job->jobStatus == Processing)
 	{
@@ -71,6 +93,7 @@ void JobModel::HandleJobProcessing()
       if (job->jobSizeLeftToProcess <= 0)
 	  {
 		//Set the job to ProcessingComplete
+        SetJobToDataMigrating(job);
 		job->jobStatus = DataMigrating;
 	  } 
 
@@ -80,7 +103,27 @@ void JobModel::HandleJobProcessing()
 			
 }
 
-void JobModel::HandleJobDataMigration()
+void JobModel::HandleJobDataMigration_ReserveTransaction()
+{
+  std::map<int, Job*>::iterator it;
+  for(it = jobMap.begin(); it != jobMap.end(); it++) 
+  {
+    Job* job = it->second;
+
+	//If the job is not yet fully complete, but the processing is complete, then the vehicle is backing up data
+	if (job->jobStatus == DataMigrating)
+	{		
+        //Since a job cannot be DataMigrating AND VMMigrating at the same time, the ActiveMigrationJobs will only have Data Migrations
+		std::list<MigrationJob*>::iterator itMJ;
+        for(itMJ = job->ActiveMigrationJobs.begin(); itMJ != job->ActiveMigrationJobs.end(); itMJ++) 
+        {
+			_networkModel.ReserveBandwidth(*itMJ);		
+		}
+	}
+  }
+}
+
+void JobModel::HandleJobDataMigration_CompleteTransaction()
 {
   std::list<int> jobEraseList;
 
@@ -88,17 +131,26 @@ void JobModel::HandleJobDataMigration()
   for(it = jobMap.begin(); it != jobMap.end(); it++) 
   {
     Job* job = it->second;
-  //Determine Congestion and Available Bandwidth Here
-  //TODO: 
 
 	//If the job is not yet fully complete, but the processing is complete, then the vehicle is backing up data
 	if (job->jobStatus == DataMigrating)
-	{		
-		//Migrate Data here
-		
-	
-		
-		if (job->dataLeftToMigrate <= 0)
+	{	
+		std::list<MigrationJob*>::iterator itMJ;
+        for(itMJ = job->ActiveMigrationJobs.begin(); itMJ != job->ActiveMigrationJobs.end(); itMJ++) 
+        {
+			(*itMJ)->dataLeftToMigrate = (*itMJ)->dataLeftToMigrate - (*itMJ)->currentBandwidthSize;
+			if ((*itMJ)->dataLeftToMigrate <=0)
+			{
+				//**Some statistics should be kept up here.
+				//**Update the list of DataMigrationSet vehicles.
+				job->ActiveMigrationJobs.erase(itMJ);
+				
+			}
+		}
+			
+
+
+		if (job->ActiveMigrationJobs.empty())
 		{
 			*_log.info << "Space:" << it->first << " -- Job Complete!" << std::endl;
 			
@@ -135,9 +187,9 @@ void JobModel::HandleJobVMMigration()
 	{		
 		//Migrate VM here
 		//TODO: incorporate congestion
-		job->VM_migration_remained-=1;
+		//job->VM_migration_remained-=1;
 				
-		if (job->VM_migration_remained <= 0)
+		if (false/*job->VM_migration_remained <= 0*/)
 		{
 			*_log.info << "Space:" << it->first << " -- VM Complete!" << std::endl;
 

@@ -29,6 +29,7 @@
 #include "Configuration.cpp"
 #include "Car.hpp"
 #include "Car.cpp"
+#include "MigrationJob.hpp"
 #include "Job.hpp"
 #include "Job.cpp"
 #include "CarResidencyDistributionModel.hpp"
@@ -51,6 +52,9 @@
 #include "CarModel.cpp"
 #include "JobModel.hpp"
 #include "JobModel.cpp"
+#include "NetworkModel.hpp"
+#include "NetworkModel.cpp"
+
 
 
 Configuration _configuration;
@@ -70,6 +74,7 @@ int main()
 	_log.Initialize();
 	*_log.info << "Showing Info Logs" << std::endl;
 	*_log.debug << "Showing Debug Logs" << std::endl;
+	*_log.trace << "Showing Trace Logs" << std::endl;
 	
 	
 	_carResidencyDistributionModel.Initialize();
@@ -81,13 +86,8 @@ int main()
 	while (_timeModel.getTime() < _configuration.MaxTime)
 	{
 	  *_log.info << "Time: " << _timeModel.getTime() << std::endl;
-      _carModel.HandleDepartingVehicles();
-  	  _carModel.HandleIncomingVehicles();
-      _jobModel.HandleJobProcessing();
-      _jobModel.HandleJobDataMigration();
-      _jobModel.HandleJobVMMigration();
-	  _jobModel.HandleCompletedJobs();
-	  _jobModel.HandleIncomingJobs();
+      _carModel.HandleCars();
+	  _jobModel.HandleJobs();
 
 	  
 	  _timeModel.increment();

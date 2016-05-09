@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include "Car.hpp"
+#include "MigrationJob.hpp"
 
 class Car;
 
@@ -30,11 +31,11 @@ class Job
 {
   public:
     //car number that the job belongs to
-	int car_number;
+//	int car_number;
 	Car * car;
     int job_number;
     double VM_size;
-    double VM_migration_remained;
+ //   double VM_migration_remained;
     //bool completed;
     
 	//meaning this job was assigned or not assigned to a car
@@ -50,34 +51,43 @@ class Job
 	int jobSizeLeftToProcess; //Starts at jobSize and is subtracted each minute. 
 	
 	int dataToMigrate;		  //In Megabytes
-	int dataLeftToMigrate;    //Starts at dataToMigrate and is subtracted by available bandwidth each minute 
+//	int dataLeftToMigrate;    //Starts at dataToMigrate and is subtracted by available bandwidth each minute 
 	
 	Car* MigrateToCar;
 	Car* MigrateFromCar;
 	Job* MigrateToJob;
 	Job* MigrateFromJob;
 	
-    //double job_duration;  // in minute
-    double data_this_job_will_produce;
-    double data_storage_time;
-    //double job_duration_remained;
-    int data1_car_number;
-    std::string replicated_data;
-    int data2_car_number;
-    int data3_car_number;
-    int data_replication_time_to_same_cluster;
-    int data_replication_time_to_same_region;
-    int migrated_successfully; // 2 for success and 3 for fail
-    bool job_flag_start_migration;
-    bool job_flag_end_migration;
-    int car_num_migration_to;
+
+	//A list of active migration jobs for the job
+    std::list<MigrationJob*> ActiveMigrationJobs;
+    //A list of vehicles that are in the latest current DataMigrationSet
+	std::list<int> DataMigrationSet;
+
+	
+//    //double job_duration;  // in minute
+//    double data_this_job_will_produce;
+//    double data_storage_time;
+//    //double job_duration_remained;
+//    int data1_car_number;
+//    std::string replicated_data;
+//    int data2_car_number;
+//    int data3_car_number;
+//    int data_replication_time_to_same_cluster;
+//    int data_replication_time_to_same_region;
+//    int migrated_successfully; // 2 for success and 3 for fail
+//    bool job_flag_start_migration;
+//    bool job_flag_end_migration;
+//    int car_num_migration_to;
 	
 
     Job();
-    void display_job_information(std::ofstream& outFile);
+    //void display_job_information(std::ofstream& outFile);
     //void calculate_VM_size();
     //void calculate_job_duration();
     
 };
+
+
 
 #endif
