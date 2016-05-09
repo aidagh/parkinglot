@@ -1,0 +1,7 @@
+*.o
+*.depend
+*.layout
+bin/Debug/
+*.dat
+bin/
+*.exe
