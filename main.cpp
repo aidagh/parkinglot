@@ -22,38 +22,39 @@
 
 
 #include "Logger.hpp"
-#include "Logger.cpp"
+//#include "Logger.cpp"
 #include "TimeModel.hpp"
-#include "Random.hpp"
+//#include "Random.hpp"
 #include "Configuration.hpp"
-#include "Configuration.cpp"
-#include "Car.hpp"
-#include "Car.cpp"
-#include "MigrationJob.hpp"
-#include "Job.hpp"
-#include "Job.cpp"
+//#include "Configuration.cpp"
+//#include "Car.hpp"
+//#include "Car.cpp"
+//#include "MigrationJob.hpp"
+//#include "Job.hpp"
+//#include "Job.cpp"
+//#include "NetworkModel.hpp"
+//#include "NetworkModel.cpp"
 #include "CarResidencyDistributionModel.hpp"
-#include "CarResidencyDistributionModel.cpp"
-#include "DistributionFactory/CarArrivalDistributionFactory.hpp"
-#include "DistributionFactory/CarArrivalDistributionFactory.cpp"
-#include "DistributionFactory/CarDepartureDistributionFactory.hpp"
-#include "DistributionFactory/CarDepartureDistributionFactory.cpp"
+//#include "CarResidencyDistributionModel.cpp"
+//#include "DistributionFactory/CarArrivalDistributionFactory.hpp"
+//#include "DistributionFactory/CarArrivalDistributionFactory.cpp"
+//#include "DistributionFactory/CarDepartureDistributionFactory.hpp"
+//#include "DistributionFactory/CarDepartureDistributionFactory.cpp"
 #include "JobDistributionModel.hpp"
-#include "JobDistributionModel.cpp"
-#include "DistributionFactory/JobArrivalDistributionFactory.hpp"
-#include "DistributionFactory/JobArrivalDistributionFactory.cpp"
-#include "DistributionFactory/JobLengthDistributionFactory.hpp"
-#include "DistributionFactory/JobLengthDistributionFactory.cpp"
-#include "DistributionFactory/JobVMSizeDistributionFactory.hpp"
-#include "DistributionFactory/JobVMSizeDistributionFactory.cpp"
-#include "StatisticsModel.hpp"
-#include "StatisticsModel.cpp"
+//#include "JobDistributionModel.cpp"
+//#include "DistributionFactory/JobArrivalDistributionFactory.hpp"
+//#include "DistributionFactory/JobArrivalDistributionFactory.cpp"
+//#include "DistributionFactory/JobLengthDistributionFactory.hpp"
+//#include "DistributionFactory/JobLengthDistributionFactory.cpp"
+//#include "DistributionFactory/JobVMSizeDistributionFactory.hpp"
+//#include "DistributionFactory/JobVMSizeDistributionFactory.cpp"
+//#include "StatisticsModel.hpp"
+//#include "StatisticsModel.cpp"
+
 #include "CarModel.hpp"
-#include "CarModel.cpp"
+//#include "CarModel.cpp"
 #include "JobModel.hpp"
-#include "JobModel.cpp"
-#include "NetworkModel.hpp"
-#include "NetworkModel.cpp"
+//#include "JobModel.cpp"
 
 
 
@@ -75,23 +76,23 @@ int main()
 	*_log.info << "Showing Info Logs" << std::endl;
 	*_log.debug << "Showing Debug Logs" << std::endl;
 	*_log.trace << "Showing Trace Logs" << std::endl;
-	
-	
+
+
 	_carResidencyDistributionModel.Initialize();
 	_jobDistributionModel.Initialize();
 	_carModel.Initialize();
 	_timeModel.initialize();
-	
-	
+
+
 	while (_timeModel.getTime() < _configuration.MaxTime)
 	{
 	  *_log.info << "Time: " << _timeModel.getTime() << std::endl;
       _carModel.HandleCars();
 	  _jobModel.HandleJobs();
 
-	  
+
 	  _timeModel.increment();
 	}
-	
+
 }
 

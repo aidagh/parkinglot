@@ -3,26 +3,31 @@
 
 #include "Logger.hpp"
 
+std::ostream * Logger::trace = &std::cout;
+std::ostream * Logger::debug = &std::cout;
+std::ostream * Logger::info = &std::cout;
+std::ostream * Logger::throwaway = NULL;
+
 void Logger::Initialize()
 {
 	int logLevel = _configuration.LogLevel;
 	if (logLevel == 0)
 	{
-		ShowAll();		
+		ShowAll();
 	}
 	else if (logLevel == 1)
 	{
-		ShowDebug();		
+		ShowDebug();
 	}
 	else if (logLevel == 2)
 	{
-		ShowInfo();		
+		ShowInfo();
 	}
 	else
 	{
 		ShowNone();
 	}
-	
+
 }
 
 //Show all logging messages

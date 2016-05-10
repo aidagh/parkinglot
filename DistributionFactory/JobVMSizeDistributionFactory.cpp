@@ -1,24 +1,25 @@
 //File:         JobVMSizeDistributionFactory.cpp
-//Description:  
-
+//Description:
+#include <random>
+#include "../Configuration.hpp"
 #include "JobVMSizeDistributionFactory.hpp"
 
 class NormalJobVMSize: public JobVMSizeDistributionFactory
 {
-	private: 
+	private:
 	std::default_random_engine generatorJobVMSize;
 	std::normal_distribution<double> * JobVMSizeNormalDistribution;
-	
-	
+
+
 	public:
 		void Initialize();
 		int getNext();
-	
+
 };
 
 void NormalJobVMSize::Initialize()
 {
-	Configuration _configuration;	
+	Configuration _configuration;
 	JobVMSizeNormalDistribution = new std::normal_distribution<double>(_configuration.JobVMSize_Normal_Mean, _configuration.JobVMSize_Normal_STDev);
 }
 
@@ -30,17 +31,17 @@ int NormalJobVMSize::getNext()
 
 class StaticJobVMSize: public JobVMSizeDistributionFactory
 {
-	private: 
+	private:
 	    int staticValue;
 	public:
 		void Initialize();
 		int getNext();
-	
+
 };
 
 void StaticJobVMSize::Initialize()
 {
-	Configuration _configuration;	
+	Configuration _configuration;
 	staticValue = _configuration.JobVMSize_Static_Value;
 }
 
@@ -50,7 +51,7 @@ int StaticJobVMSize::getNext()
 }
 
 JobVMSizeDistributionFactory *JobVMSizeDistributionFactory::make_JobVMSizeDistribution(DistributionType distribution)
-{ 
+{
 	if (distribution == Static)
 		return new StaticJobVMSize;
 	if (distribution == Normal)

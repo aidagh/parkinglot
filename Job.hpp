@@ -1,11 +1,12 @@
 //File:         Job.hpp
-//Description:  
+//Description:
 
 
 #ifndef __JOB_HPP__
 #define __JOB_HPP__
 
 #include <fstream>
+#include <list>
 #include "Car.hpp"
 #include "MigrationJob.hpp"
 
@@ -21,8 +22,8 @@ enum JobStatus
 	VMMigrationComplete,
 	DataMigrating,
 	Complete
-	
-	
+
+
 };
 
 
@@ -37,34 +38,34 @@ class Job
     double VM_size;
  //   double VM_migration_remained;
     //bool completed;
-    
+
 	//meaning this job was assigned or not assigned to a car
 	JobStatus jobStatus;
-//	bool assigned;													
-//	bool jobProcessingComplete; 
+//	bool assigned;
+//	bool jobProcessingComplete;
 //	bool jobComplete;
 //	bool jobMigratingFrom;
 //	bool jobMigratingTo;
 
-	
+
 	int jobSize;              //In Minutes
-	int jobSizeLeftToProcess; //Starts at jobSize and is subtracted each minute. 
-	
+	int jobSizeLeftToProcess; //Starts at jobSize and is subtracted each minute.
+
 	int dataToMigrate;		  //In Megabytes
-//	int dataLeftToMigrate;    //Starts at dataToMigrate and is subtracted by available bandwidth each minute 
-	
+//	int dataLeftToMigrate;    //Starts at dataToMigrate and is subtracted by available bandwidth each minute
+
 	Car* MigrateToCar;
 	Car* MigrateFromCar;
 	Job* MigrateToJob;
 	Job* MigrateFromJob;
-	
+
 
 	//A list of active migration jobs for the job
     std::list<MigrationJob*> ActiveMigrationJobs;
     //A list of vehicles that are in the latest current DataMigrationSet
 	std::list<int> DataMigrationSet;
 
-	
+
 //    //double job_duration;  // in minute
 //    double data_this_job_will_produce;
 //    double data_storage_time;
@@ -79,13 +80,13 @@ class Job
 //    bool job_flag_start_migration;
 //    bool job_flag_end_migration;
 //    int car_num_migration_to;
-	
+
 
     Job();
     //void display_job_information(std::ofstream& outFile);
     //void calculate_VM_size();
     //void calculate_job_duration();
-    
+
 };
 
 
