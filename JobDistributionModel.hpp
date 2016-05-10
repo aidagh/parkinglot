@@ -1,9 +1,10 @@
 //File:         JobDistributionModel.hpp
-//Description:  
+//Description:
 
 #include "TimeModel.hpp"
-#include "Random.hpp"
+//#include "Random.hpp"
 #include "Configuration.hpp"
+#include "Logger.hpp"
 
 #include "DistributionFactory/JobArrivalDistributionFactory.hpp"
 #include "DistributionFactory/JobLengthDistributionFactory.hpp"
@@ -14,12 +15,12 @@
 
 class JobDistributionModel
 {
-  private: 
+  private:
     Configuration _configuration;
     Logger _log;
-	Random _random;
+//	Random _random;
     TimeModel _time;
-    	
+
     static int NextArrival;
     static int NextJobLength;
 	static int NextVMSize;
@@ -27,21 +28,15 @@ class JobDistributionModel
 	static JobArrivalDistributionFactory * JobArrivalDistribution;
 	static JobLengthDistributionFactory * JobLengthDistribution;
 	static JobVMSizeDistributionFactory * JobVMSizeDistribution;
-  
-  public: 
+
+  public:
     void Initialize();
     int getNextArrival();
-    int getNextJobLength();    
+    int getNextJobLength();
 	int getNextVMSize();
 	double getNextJobDataToMigrate();
     int generateNext();
 };
 
-int JobDistributionModel::NextArrival = 0;
-int JobDistributionModel::NextJobLength = 0;
-int JobDistributionModel::NextVMSize = 0;
 
-JobArrivalDistributionFactory* JobDistributionModel::JobArrivalDistribution = NULL;
-JobLengthDistributionFactory* JobDistributionModel::JobLengthDistribution = NULL;
-JobVMSizeDistributionFactory* JobDistributionModel::JobVMSizeDistribution = NULL;
 #endif

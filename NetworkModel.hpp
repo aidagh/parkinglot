@@ -1,5 +1,5 @@
 //File:         NetworkModel.hpp
-//Description:  
+//Description:
 
 
 #ifndef __NETWORKMODEL_HPP__
@@ -15,23 +15,23 @@
 
 class NetworkModel
 {
-  private: 
+  private:
     Logger _log;
     Configuration _configuration;
-    TimeModel _time;  
+    TimeModel _time;
 //    CarModel _carModel;
 //	  JobModel _jobModel;
 	StatisticsModel _statisticsModel;
 
     static int lastCongestionDataUpdate;
     void updateCongestionData();
-	
-  public: 
+
+  public:
     void Initialize();
 	void ReserveBandwidth(MigrationJob* migrationJob);
 	void Allocate();
 };
 
-int NetworkModel::lastCongestionDataUpdate = 0;
+
 
 #endif

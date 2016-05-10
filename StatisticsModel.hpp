@@ -1,5 +1,5 @@
 //File:         StatisticsModel.cpp
-//Description:  
+//Description:
 
 #ifndef __STATISTICSMODEL_HPP__
 #define __STATISTICSMODEL_HPP__
@@ -11,7 +11,7 @@ class StatisticsModel
     static int jobs_completed;
     static int count_migrated_successfully;
     static int count_failed_to_migrate;
-	
+
 
     //A list of any possible statistic that we can think of
 	//jobs queued
@@ -23,7 +23,7 @@ class StatisticsModel
 	//avg job completion ( start to finish )
 	//avg job completion w/queue time
 	//avg cars in parking lot
-	//avg cars busy 
+	//avg cars busy
 	//failed jobs
 	//total number migrations
 	//number successful migrations
@@ -36,8 +36,6 @@ class StatisticsModel
 	void LogFailedMigration();
 };
 
-int StatisticsModel::jobs_completed = 0;
-int StatisticsModel::count_migrated_successfully = 0;
-int StatisticsModel::count_failed_to_migrate = 0;
+
 
 #endif

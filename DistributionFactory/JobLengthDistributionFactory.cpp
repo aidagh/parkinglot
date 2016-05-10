@@ -1,24 +1,26 @@
 //File:         JobLengthDistributionFactory.cpp
-//Description:  
+//Description:
 
+#include <random>
+#include "../Configuration.hpp"
 #include "JobLengthDistributionFactory.hpp"
 
 class NormalJobLength: public JobLengthDistributionFactory
 {
-	private: 
+	private:
 	std::default_random_engine generatorJobLength;
 	std::normal_distribution<double> * JobLengthNormalDistribution;
-	
-	
+
+
 	public:
 		void Initialize();
 		int getNext();
-	
+
 };
 
 void NormalJobLength::Initialize()
 {
-	Configuration _configuration;	
+	Configuration _configuration;
 	JobLengthNormalDistribution = new std::normal_distribution<double>(_configuration.JobLength_Normal_Mean, _configuration.JobLength_Normal_STDev);
 }
 
@@ -30,17 +32,17 @@ int NormalJobLength::getNext()
 
 class StaticJobLength: public JobLengthDistributionFactory
 {
-	private: 
+	private:
 	    int staticValue;
 	public:
 		void Initialize();
 		int getNext();
-	
+
 };
 
 void StaticJobLength::Initialize()
 {
-	Configuration _configuration;	
+	Configuration _configuration;
 	staticValue = _configuration.JobLength_Static_Value;
 }
 
@@ -50,7 +52,7 @@ int StaticJobLength::getNext()
 }
 
 JobLengthDistributionFactory *JobLengthDistributionFactory::make_JobLengthDistribution(DistributionType distribution)
-{ 
+{
 	if (distribution == Static)
 		return new StaticJobLength;
 	if (distribution == Normal)

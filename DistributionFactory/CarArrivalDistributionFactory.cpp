@@ -1,24 +1,26 @@
 //File:         CarArrivalDistributionFactory.cpp
-//Description:  
+//Description:
 
+#include <random>
+#include "../Configuration.hpp"
 #include "CarArrivalDistributionFactory.hpp"
 
 class PoissonArrival: public CarArrivalDistributionFactory
 {
-	private: 
+	private:
 	std::default_random_engine generatorArrival;
 	std::poisson_distribution<int> * ArrivalPoissonDistribution;
-	
-	
+
+
 	public:
 		void Initialize();
 		int getNext();
-	
+
 };
 
 void PoissonArrival::Initialize()
 {
-	Configuration _configuration;	
+	Configuration _configuration;
 	ArrivalPoissonDistribution = new std::poisson_distribution<int>(_configuration.CarArrival_Poisson_Lambda);
 }
 
@@ -30,17 +32,17 @@ int PoissonArrival::getNext()
 
 class StaticArrival: public CarArrivalDistributionFactory
 {
-	private: 
+	private:
 	    int staticValue;
 	public:
 		void Initialize();
 		int getNext();
-	
+
 };
 
 void StaticArrival::Initialize()
 {
-	Configuration _configuration;	
+	Configuration _configuration;
 	staticValue = _configuration.CarArrival_Static_Value;
 }
 
@@ -50,7 +52,7 @@ int StaticArrival::getNext()
 }
 
 CarArrivalDistributionFactory *CarArrivalDistributionFactory::make_CarArrivalDistribution(DistributionType distribution)
-{ 
+{
 	if (distribution == Static)
 		return new StaticArrival;
 	if (distribution == Poisson)

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ParkingLot" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/ParkingLot" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/ParkingLot" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-std=c++11" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="Car.cpp" />
+		<Unit filename="Car.hpp" />
+		<Unit filename="CarModel.cpp" />
+		<Unit filename="CarModel.hpp" />
+		<Unit filename="CarResidencyDistributionModel.cpp" />
+		<Unit filename="CarResidencyDistributionModel.hpp" />
+		<Unit filename="Configuration.cpp" />
+		<Unit filename="Configuration.hpp" />
+		<Unit filename="DistributionFactory/CarArrivalDistributionFactory.cpp" />
+		<Unit filename="DistributionFactory/CarArrivalDistributionFactory.hpp" />
+		<Unit filename="DistributionFactory/CarDepartureDistributionFactory.cpp" />
+		<Unit filename="DistributionFactory/CarDepartureDistributionFactory.hpp" />
+		<Unit filename="DistributionFactory/DistributionType.enum" />
+		<Unit filename="DistributionFactory/JobArrivalDistributionFactory.cpp" />
+		<Unit filename="DistributionFactory/JobArrivalDistributionFactory.hpp" />
+		<Unit filename="DistributionFactory/JobLengthDistributionFactory.cpp" />
+		<Unit filename="DistributionFactory/JobLengthDistributionFactory.hpp" />
+		<Unit filename="DistributionFactory/JobVMSizeDistributionFactory.cpp" />
+		<Unit filename="DistributionFactory/JobVMSizeDistributionFactory.hpp" />
+		<Unit filename="Job.cpp" />
+		<Unit filename="Job.hpp" />
+		<Unit filename="JobDistributionModel.cpp" />
+		<Unit filename="JobDistributionModel.hpp" />
+		<Unit filename="JobModel.cpp" />
+		<Unit filename="JobModel.hpp" />
+		<Unit filename="Logger.cpp" />
+		<Unit filename="Logger.hpp" />
+		<Unit filename="MigrationJob.hpp" />
+		<Unit filename="NetworkModel.cpp" />
+		<Unit filename="NetworkModel.hpp" />
+		<Unit filename="Random.hpp" />
+		<Unit filename="StatisticsModel.cpp" />
+		<Unit filename="StatisticsModel.hpp" />
+		<Unit filename="TimeModel.cpp" />
+		<Unit filename="TimeModel.hpp" />
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
