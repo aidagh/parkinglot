@@ -132,6 +132,7 @@ void CarModel::handleVehicleDepartingNOW()
 //	  add the space to the empty space list
 //	  update statistics
 //	  remove the car from the carmap
+  std::list<int> carsToErase;
 
   JobModel _jobModel;
   std::map<int, Car*>::iterator it;
@@ -148,13 +149,23 @@ void CarModel::handleVehicleDepartingNOW()
 	  //int jobId = leavingCar.job->job_number;
 	  if (leavingCar.job != NULL)
 	    _jobModel.CancelJob(leavingCarSpace);
+
   	  *_log.info << "Car in spot " << leavingCarSpace << " is leaving NOW" << std::endl;
 	  emptySpaces.push_back(leavingCarSpace);
   	  //** Need to save off some statistics here!
-  	  carmap.erase(leavingCarSpace);
+
+	  carsToErase.push_back(leavingCarSpace);
 
     }
   }
+
+  std::list<int>::iterator itCarsToErase;
+  for(itCarsToErase = carsToErase.begin(); itCarsToErase != carsToErase.end(); itCarsToErase++)
+  {
+  	  carmap.erase(*itCarsToErase);
+
+  }
+
 }
 
 
