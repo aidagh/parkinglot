@@ -6,7 +6,7 @@
 
 #include "Logger.hpp"
 #include "TimeModel.hpp"
-//#include "Random.hpp"
+#include "Random.hpp"
 #include "Configuration.hpp"
 #include "CarResidencyDistributionModel.hpp"
 #include "Job.hpp"
@@ -43,7 +43,9 @@ class CarModel
     void Initialize();
 
 	Car* AssignJob(Job* job);
+	std::list<Car*> AssignDataMigrationCars(Job* job);
 
+	void PrintVehicleInfo();
 	int getClusterNumber(int);
 	int getRegionNumber(int);
 	int getGroupNumber(int);

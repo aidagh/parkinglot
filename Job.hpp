@@ -60,10 +60,14 @@ class Job
 	Job* MigrateFromJob;
 
 
-	//A list of active migration jobs for the job
-    std::list<MigrationJob*> ActiveMigrationJobs;
+	//A list of Data migration jobs for the job that are currently active
+    std::list<MigrationJob*> DataMigrationJobs;
+
+	//A list of VM migration jobs for the job
+    std::list<MigrationJob*> VMMigrationJobs;
+
     //A list of vehicles that are in the latest current DataMigrationSet
-	std::list<int> DataMigrationSet;
+	//std::list<int> DataMigrationSet;
 
 
 //    //double job_duration;  // in minute
@@ -83,6 +87,9 @@ class Job
 
 
     Job();
+
+    void printJobDetails(bool printChildDetails, std::string tab);
+    std::string PrintJobStatus(JobStatus jobStatus);
     //void display_job_information(std::ofstream& outFile);
     //void calculate_VM_size();
     //void calculate_job_duration();

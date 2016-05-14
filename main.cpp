@@ -90,9 +90,17 @@ int main()
       _carModel.HandleCars();
 	  _jobModel.HandleJobs();
 
-
+      _carModel.PrintVehicleInfo();
 	  _timeModel.increment();
+
+//	  std::cin.get();
 	}
+
+
+	if (_configuration.PauseAtEndOfCode)
+    {
+        std::cin.get();
+    }
 
 }
 

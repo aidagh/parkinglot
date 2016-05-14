@@ -1,5 +1,5 @@
 //File:         Car.cpp
-//Description:  
+//Description:
 
 #include "Car.hpp"
 
@@ -10,7 +10,7 @@ Car::Car()
   // This is to keep track how many cars turned away when they try to occupy the parking space. Initially set to -1.
   // turned_away=0 - Car didn't turn away or got parking space.
   // turned_away=1 - Car turned away
-//  turned_away=-1;                                        
+//  turned_away=-1;
 
   car_spot_number=-1;
 //  job_has_been_migrated=false;
@@ -18,7 +18,7 @@ Car::Car()
 //  car_flag_end_migration=false;
 //  car_num_migration_to = -1;
  // print_migration_flag_counter=0;
-  
+
   job_number = 0;
   job = NULL;
 }
@@ -29,18 +29,45 @@ Car::Car()
 //Car has no current job, and isn't being migrated to
 bool Car::canAcceptJob()
 {
-  if (job == NULL) 
-    return true;	
-  return false; 
+  if (job == NULL)
+    return true;
+  return false;
 }
 
 
 
+void Car::printCarDetails(bool printChildDetails, std::string tab)
+{
+    Logger log;
+
+    *log.debug << tab <<  "Car at space:" << car_spot_number << std::endl;
+    *log.debug << tab <<  "    Arrived at   " << arrival_time_of_car << std::endl;
+    *log.debug << tab <<  "    Departing at " << departure_time_of_car << std::endl;
+
+	 if (job != NULL)
+	 {
+	     if (printChildDetails)
+	         job->printJobDetails(true, tab + "    ");
+	 }
+
+	 if (!DataMigrationTasks.empty())
+     {
+        std::list<MigrationJob*>::iterator it;
+        for(it = DataMigrationTasks.begin(); it != DataMigrationTasks.end(); it++)
+        {
+            (*it)->printMigrationJobDetails(true, tab + "    ");
+        }
+     }
+
+
+
+}
+
 //
 //// Displays all car information including the spot number to which the car belongs to. Initially when the simulation starts
 //// all the parking spots will be occupied by cars.
-//void Car::display_car_information(std::ofstream& outFile)                  
-//{                                                                
+//void Car::display_car_information(std::ofstream& outFile)
+//{
 //  outFile<<"\n";
 //  outFile<<"-----------------------------------------"<<"\n";
 //  outFile<<"		Car Details		        "<<"\n";
@@ -59,9 +86,9 @@ bool Car::canAcceptJob()
 //// min residency time of a car is 24 hours (1440 minutes) and max residency time is 7 days (10080 minutes)
 //// this function is for cars that are already in the parking lot when we start our simulation
 //void Car::calculate_departure_time()
-//{                                
-//  departure_time_of_car= rand()%(10080-1440)+1440;                          
-//}																     
+//{
+//  departure_time_of_car= rand()%(10080-1440)+1440;
+//}
 //
 //
 //// Car arrives 60 minutes earlier to the flight departure hence the arrival time.
@@ -71,23 +98,23 @@ bool Car::canAcceptJob()
 //  arrival_time_of_car = departure_time_of_flight - 60;
 //}
 //
-//// Get the departure time of car between 2561 to 5000 cars by making use of arrival time of a flight.														
+//// Get the departure time of car between 2561 to 5000 cars by making use of arrival time of a flight.
 ////The departure time is 60 minutes after the arrival.
 //void Car::get_departure_time_of_car(std::ifstream& inFile)
-//{	
+//{
 //  inFile>>arrival_time_of_flight;
 //  departure_time_of_car = arrival_time_of_flight + 60;
 //}
 //
 ////Calculates the residency time of a car based on the arrival and departure time of a car.
-//void Car::calculate_residency_time_of_car()                          
+//void Car::calculate_residency_time_of_car()
 //{
 //  residency_time = departure_time_of_car - arrival_time_of_car;
 //}
 //
 //
 ////This displays the details of a car which may fail if we don't do the migration.
-//void Car::display_failed_job_car_details(std::ofstream& outFileFailed)    
+//void Car::display_failed_job_car_details(std::ofstream& outFileFailed)
 //{
 //  outFileFailed<<"\n";
 //  outFileFailed<<"-----------------------------------------"<<"\n";
@@ -102,7 +129,7 @@ bool Car::canAcceptJob()
 //
 //
 ////This displays the details of a car which may pass during the simulation.
-//void Car::display_pass_job_car_details(std::ofstream& outFilePassJob)    
+//void Car::display_pass_job_car_details(std::ofstream& outFilePassJob)
 //{
 //  outFilePassJob<<"\n";
 //  outFilePassJob<<"-----------------------------------------"<<"\n";

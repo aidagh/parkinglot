@@ -17,9 +17,9 @@ void JobModel::HandleJobs()
   HandleJobProcessing();
 
   HandleJobDataMigration_ReserveTransaction();
-  //HandleJobVMMigration_CompleteTransaction();
+  //HandleJobVMMigration_ReserveTransaction();
 
-  HandleJobDataMigration_ReserveTransaction();
+  HandleJobDataMigration_CompleteTransaction();
   //HandleJobVMMigration_CompleteTransaction();
   HandleJobVMMigration();
 
@@ -69,12 +69,42 @@ void JobModel::createNewJob()
 
 void JobModel::SetJobToDataMigrating(Job * job)
 {
-	//1. Set job to DataMigrating
-	//2. Populate ActiveMigrationJobs
-	//3. Populate DataMigrationSet
-    //4. Update Car in MigrationSet with a Job * of the job it is holding data for.
+    *_log.trace << "Entering SetJobToDataMigrating()" << std::endl;
+    CarModel carModel;
 
+    *_log.info << "Data Migration Setup" << std::endl;
+    *_log.info << "   From Car: " << job->car->car_spot_number << std::endl;
+
+	//1. Set job to DataMigrating
+	//2. Populate DataMigrationJobs
+    //3. Update Car in MigrationSet with a MigrationJob * of the job it is holding data for.
 	job->jobStatus = DataMigrating;
+
+	std::list<Car*> migrationSet = carModel.AssignDataMigrationCars(job);
+
+	//Loop through migration cars
+	std::list<Car*>::iterator it;
+	for(it=migrationSet.begin(); it != migrationSet.end(); it++)
+    {
+        //  Create the MigrationJob
+        MigrationJob * migrationJob = new MigrationJob();
+        migrationJob->jobFrom = job;
+        migrationJob->carFrom = job->car;
+        migrationJob->carTo = *it;
+        migrationJob->type = Data;
+        migrationJob->totalDataSize = job->dataToMigrate;
+        migrationJob->dataLeftToMigrate = job->dataToMigrate;
+        //  Set the MigrationJob on the car
+        job->DataMigrationJobs.push_back(migrationJob);
+        //  Add the Migration Job to the job->DataMigrationJobs
+        (*it)->DataMigrationTasks.push_back(migrationJob);
+
+        *_log.info << "   To Car: " << (*it)->car_spot_number << std::endl;
+
+    }
+
+    *_log.trace << "Exiting SetJObToDataMigrating()" << std::endl;
+
 }
 
 void JobModel::HandleJobProcessing()
@@ -98,7 +128,6 @@ void JobModel::HandleJobProcessing()
 	  {
 		//Set the job to ProcessingComplete
         SetJobToDataMigrating(job);
-		job->jobStatus = DataMigrating;
 	  }
 
 	}
@@ -120,7 +149,7 @@ void JobModel::HandleJobDataMigration_ReserveTransaction()
 	{
         //Since a job cannot be DataMigrating AND VMMigrating at the same time, the ActiveMigrationJobs will only have Data Migrations
 		std::list<MigrationJob*>::iterator itMJ;
-        for(itMJ = job->ActiveMigrationJobs.begin(); itMJ != job->ActiveMigrationJobs.end(); itMJ++)
+        for(itMJ = job->DataMigrationJobs.begin(); itMJ != job->DataMigrationJobs.end(); itMJ++)
         {
 			_networkModel.ReserveBandwidth(*itMJ);
 		}
@@ -131,6 +160,7 @@ void JobModel::HandleJobDataMigration_ReserveTransaction()
 void JobModel::HandleJobDataMigration_CompleteTransaction()
 {
   std::list<int> jobEraseList;
+  std::list<MigrationJob*> migrationJobEraseList;
 
   std::map<int, Job*>::iterator it;
   for(it = jobMap.begin(); it != jobMap.end(); it++)
@@ -141,21 +171,26 @@ void JobModel::HandleJobDataMigration_CompleteTransaction()
 	if (job->jobStatus == DataMigrating)
 	{
 		std::list<MigrationJob*>::iterator itMJ;
-        for(itMJ = job->ActiveMigrationJobs.begin(); itMJ != job->ActiveMigrationJobs.end(); itMJ++)
+        for(itMJ = job->DataMigrationJobs.begin(); itMJ != job->DataMigrationJobs.end(); ++itMJ)
         {
 			(*itMJ)->dataLeftToMigrate = (*itMJ)->dataLeftToMigrate - (*itMJ)->currentBandwidthSize;
 			if ((*itMJ)->dataLeftToMigrate <=0)
 			{
 				//**Some statistics should be kept up here.
 				//**Update the list of DataMigrationSet vehicles.
-				job->ActiveMigrationJobs.erase(itMJ);
+				migrationJobEraseList.push_back(*itMJ);
+				itMJ = job->DataMigrationJobs.erase(itMJ);
 
 			}
 		}
 
+  //    std::list<MigrationJob*>::iterator itMJList;
+//      for(itMJ = migrationJobEraseList.begin(); itMJ != migrationJobEraseList.end(); ++itMJ)
+//      {
+//        job->DataMigrationJobs.erase(itMJ);
+//      }
 
-
-		if (job->ActiveMigrationJobs.empty())
+		if (job->DataMigrationJobs.empty())
 		{
 			*_log.info << "Space:" << it->first << " -- Job Complete!" << std::endl;
 

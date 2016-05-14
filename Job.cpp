@@ -1,5 +1,5 @@
 //File:         Job.cpp
-//Description:  
+//Description:
 
 #include "Job.hpp"
 
@@ -12,16 +12,73 @@ Job::Job()
 //  data_replication_time_to_same_region=0;
 //  data1_car_number = -1;
 //  data2_car_number = -1;
-  
+
   jobStatus = Idle;
-  
+
   jobSize = 0;
   jobSizeLeftToProcess = 999;
 
 //  std::list<MigrationJob> ActiveMigrationJobs;
-//  std::list<int> DataMigrationSet; 
-  
+//  std::list<int> DataMigrationSet;
+
 }
+
+
+
+void Job::printJobDetails(bool printChildDetails, std::string tab)
+{
+    Logger log;
+    *log.debug << tab << "Job Assigned" << std::endl;
+    *log.debug << tab << "    Job Number:     " << job_number << std::endl;
+    *log.debug << tab << "    Job Status:     " << PrintJobStatus(jobStatus) << std::endl;
+    *log.debug << tab << "    Car Number:     " << car->car_spot_number << std::endl;
+    *log.debug << tab << "    Job Processing: " << jobSizeLeftToProcess << " of " << jobSize << " left to process" << std::endl;
+
+    if (printChildDetails)
+    {
+        std::list<MigrationJob*>::iterator it;
+
+        if(!DataMigrationJobs.empty())
+        {
+            for(it = DataMigrationJobs.begin(); it != DataMigrationJobs.end(); it++)
+            {
+                (*it)->printMigrationJobDetails(true, tab + "    ");
+            }
+        }
+        if(!VMMigrationJobs.empty())
+        {
+            for(it = VMMigrationJobs.begin(); it != VMMigrationJobs.end(); it++)
+            {
+                (*it)->printMigrationJobDetails(true, tab + "    ");
+            }
+        }
+    }
+
+
+}
+
+std::string Job::PrintJobStatus(JobStatus jobStatus)
+{
+    switch (jobStatus)
+    {
+        case Idle:
+            return "Idle";
+        case Processing:
+            return "Processing";
+        case VMMigrating:
+            return "VMMigrating";
+        case VMMigrationComplete:
+            return "VMMigrationComplete";
+        case DataMigrating:
+            return "DataMigrating";
+        case Complete:
+            return "Complete";
+        default:
+            return "Status Not Mapped";
+    }
+
+}
+
 
 //
 ////This displays the job information which is assigned to all the cars in the parking lot as soon as simulation starts.
@@ -40,15 +97,15 @@ Job::Job()
 /*
 void Job::calculate_VM_size(){
   // our jobs are between 1 GB and 5 GB
-  VM_size= rand()%(5000-1000)+1000;                           
+  VM_size= rand()%(5000-1000)+1000;
   VM_migration_remained = VM_size;
 }
 
 
 // Calculates the time it takes to complete a job in a car.
-void Job::calculate_job_duration(){                                          
-  //we assume that 1 MB takes 1/10 minute to finish 
-  job_duration= (VM_size*0.1);												 
+void Job::calculate_job_duration(){
+  //we assume that 1 MB takes 1/10 minute to finish
+  job_duration= (VM_size*0.1);
   job_duration_remained = job_duration;
-}																
+}
 */

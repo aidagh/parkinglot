@@ -3,6 +3,7 @@
 
 #include "CarModel.hpp"
 
+
 std::map<int, Car*> CarModel::carmap;
 std::list<int> CarModel::emptySpaces;
 bool CarModel::initializing = false;
@@ -141,7 +142,7 @@ void CarModel::handleVehicleDepartingNOW()
     Car leavingCar = *(it->second);
     int leavingCarSpace = it->first;
 
-    *_log.debug << "Car in spot " << leavingCarSpace << " is leaving in at time:" << leavingCar.departure_time_of_car << std::endl;
+//    *_log.debug << "Car in spot " << leavingCarSpace << " is leaving in at time:" << leavingCar.departure_time_of_car << std::endl;
 
     //Check if car has left or is leaving
     if (leavingCar.departure_time_of_car <= _time.getTime())
@@ -193,6 +194,8 @@ void CarModel::handleVehicleDepartingSOON()
       //1. Choose car to migrate to
 	  //2. Set Migration to
 	  //3. Stop Job Processing / Data Migration
+	  leavingCar->job->jobStatus = VMMigrating;
+
 	  Car * carToMigrateTo = GetMigrationToVehicle(it->second);
 
 	  if (carToMigrateTo != NULL)
@@ -265,6 +268,59 @@ Car * CarModel::AssignJob(Job* job)
   *_log.info << "Job cannot be assigned to any cars :" << job->job_number << std::endl;
 
   return NULL;
+
+}
+
+std::list<Car*> CarModel::AssignDataMigrationCars(Job* job)
+{
+    std::list<Car*> MigrationSet;
+
+    Random random;
+
+    //random assignment
+    //loop through all Cars, randomly pick "n" to accept the data migration
+
+    static int NumberOfDataBackupsRequired;
+    if (_configuration.DataMigrationType_Random)
+    {
+        for (int i=0; i<_configuration.NumberOfDataBackupsRequired; i++)
+        {
+            //duplicates do not matter for this simple DataMigrationType
+            int dataMigrationCar = random.GetNextInt(carmap.size());
+            //iterate to the dataMigrationCar'th car in the carmap and assign it as a migration car.
+
+            std::map<int, Car*>::iterator it;
+
+            int j = 0;
+            for(it = carmap.begin(); it != carmap.end(); it++)
+            {
+                j++;
+                if (j == dataMigrationCar)
+                {
+                    MigrationSet.push_back(it->second);
+                }
+            }
+        }
+    }
+    else
+    {
+        *_log.info << "No DataMigrationType Setup" << std::endl;
+    }
+
+
+    return MigrationSet;
+}
+
+
+void CarModel::PrintVehicleInfo()
+{
+  std::map<int, Car*>::iterator it;
+
+
+  for(it = carmap.begin(); it != carmap.end(); it++)
+  {
+      it->second->printCarDetails(true, "");
+  }
 
 }
 

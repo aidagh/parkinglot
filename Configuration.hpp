@@ -44,16 +44,30 @@
 class Configuration
 {
   public:
-   static int LogLevel;
 
+   //Program level configurations
+   //  These are basic configurations that do not affect the logic
+   static int LogLevel;
+   static bool PauseAtEndOfCode;
+
+   //Time loop level configuration
+   //  The affect the time loop
    static int MaxTime;
    static int TimeStep;
+
+   //Network configuration
+   //  These affect the network
    static double BandwidthPerSecondForCluster;
+
    static int NumberOfParkingSpaces;
 
-
+   //Migration configuration
+   //  These affect the migrations
    static int VMMigrationOffset;
+   static int NumberOfDataBackupsRequired;
+   static bool DataMigrationType_Random;
 
+   //Car configuration
    static bool CarArrival_FromFile;
    static bool CarArrival_Static;
    static int CarArrival_Static_Value;
@@ -65,6 +79,8 @@ class Configuration
    static bool CarDeparture_Exponential;
    static double CarDeparture_Exponential_Lambda;
 
+
+   //Job configuration
    static bool JobArrival_Static;
    static int JobArrival_Static_Value;
    static bool JobArrival_Poisson;
