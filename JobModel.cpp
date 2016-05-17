@@ -37,7 +37,7 @@ Job * JobModel::GenerateJob()
   job->VM_size = _jobDistributionModel.getNextVMSize();
   job->jobStatus = Processing;
 
-  job->dataToMigrate = _jobDistributionModel.getNextJobDataToMigrate();
+  job->dataToMigrate = _jobDistributionModel.getNextDataSize();
 
   _jobDistributionModel.generateNext();
   numJobs++;
@@ -160,7 +160,6 @@ void JobModel::HandleJobDataMigration_ReserveTransaction()
 void JobModel::HandleJobDataMigration_CompleteTransaction()
 {
   std::list<int> jobEraseList;
-  std::list<MigrationJob*> migrationJobEraseList;
 
   std::map<int, Job*>::iterator it;
   for(it = jobMap.begin(); it != jobMap.end(); it++)
@@ -178,17 +177,10 @@ void JobModel::HandleJobDataMigration_CompleteTransaction()
 			{
 				//**Some statistics should be kept up here.
 				//**Update the list of DataMigrationSet vehicles.
-				migrationJobEraseList.push_back(*itMJ);
+				(*itMJ)->carTo->DataMigrationTasks.remove(*itMJ);
 				itMJ = job->DataMigrationJobs.erase(itMJ);
-
 			}
 		}
-
-  //    std::list<MigrationJob*>::iterator itMJList;
-//      for(itMJ = migrationJobEraseList.begin(); itMJ != migrationJobEraseList.end(); ++itMJ)
-//      {
-//        job->DataMigrationJobs.erase(itMJ);
-//      }
 
 		if (job->DataMigrationJobs.empty())
 		{
@@ -200,11 +192,7 @@ void JobModel::HandleJobDataMigration_CompleteTransaction()
             job->car->job = NULL;
 		}
 	}
-
-
   }
-
-
 
   std::list<int>::iterator itList;
   for(itList = jobEraseList.begin(); itList != jobEraseList.end(); itList++)

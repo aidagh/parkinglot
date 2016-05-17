@@ -30,6 +30,10 @@ void NetworkModel::ReserveBandwidth(MigrationJob* migrationJob)
 	//Update the congestion data to keep track of a message going from migrationJob->carFrom to migrationJob->carTo.
 	//The migrationJob->type marks the data as "Data" or "VM".  This can be used to determine a priority for the message
 
+
+	//This will hardcode the bandwidth to 1.  This is done for testing purposes only.  This
+	//code should be removed when replaced with the proper congestion model.
+	migrationJob->currentBandwidthSize = 1;
 }
 
 void NetworkModel::Allocate()

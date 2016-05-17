@@ -7,10 +7,12 @@
 int JobDistributionModel::NextArrival = 0;
 int JobDistributionModel::NextJobLength = 0;
 int JobDistributionModel::NextVMSize = 0;
+int JobDistributionModel::NextDataSize = 0;
 
 JobArrivalDistributionFactory* JobDistributionModel::JobArrivalDistribution = NULL;
 JobLengthDistributionFactory* JobDistributionModel::JobLengthDistribution = NULL;
 JobVMSizeDistributionFactory* JobDistributionModel::JobVMSizeDistribution = NULL;
+JobDataSizeDistributionFactory* JobDistributionModel::JobDataSizeDistribution = NULL;
 
 void JobDistributionModel::Initialize()
 {
@@ -65,6 +67,22 @@ void JobDistributionModel::Initialize()
     *_log.trace << "   Normal" << std::endl;
   }
 
+  *_log.trace << "Initializing JobDistributionModel - Data Size" << std::endl;
+
+  if (_configuration.JobDataSize_Static)
+  {
+      JobDataSizeDistribution = JobDataSizeDistributionFactory::make_JobDataSizeDistribution(Static);
+	  JobDataSizeDistribution->Initialize();
+
+	  *_log.trace << "   Static" << std::endl;
+  }
+  else if (_configuration.JobDataSize_Normal)
+  {
+    JobDataSizeDistribution = JobDataSizeDistributionFactory::make_JobDataSizeDistribution(Normal);
+	JobDataSizeDistribution->Initialize();
+    *_log.trace << "   Normal" << std::endl;
+  }
+
 
 }
 
@@ -79,11 +97,19 @@ int JobDistributionModel::getNextArrival()
 }
 int JobDistributionModel::getNextVMSize()
 {
-	if (NextVMSize == 0)
+	if (NextArrival == 0)
 	{
 		generateNext();
 	}
 	return NextVMSize;
+}
+int JobDistributionModel::getNextDataSize()
+{
+	if (NextArrival == 0)
+	{
+		generateNext();
+	}
+	return NextDataSize;
 }
 int JobDistributionModel::getNextJobLength()
 {
@@ -93,12 +119,6 @@ int JobDistributionModel::getNextJobLength()
 	}
 	return NextJobLength;
 }
-double JobDistributionModel::getNextJobDataToMigrate()
-{
-	return 0;
-}
-
-
 
 int JobDistributionModel::generateNext()
 {
@@ -107,5 +127,6 @@ int JobDistributionModel::generateNext()
   NextArrival = _time.getTime() + JobArrivalDistribution->getNext();
   NextJobLength = JobLengthDistribution->getNext();
   NextVMSize = JobVMSizeDistribution->getNext();
+  NextDataSize = JobDataSizeDistribution->getNext();
 }
 

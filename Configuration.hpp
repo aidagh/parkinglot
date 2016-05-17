@@ -98,6 +98,12 @@ class Configuration
    static double JobVMSize_Normal_Mean;
    static double JobVMSize_Normal_STDev;
 
+   static bool JobDataSize_Static;
+   static int JobDataSize_Static_Value;
+   static bool JobDataSize_Normal;
+   static double JobDataSize_Normal_Mean;
+   static double JobDataSize_Normal_STDev;
+
 
 
    void ReadFromFile();

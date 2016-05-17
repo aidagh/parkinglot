@@ -45,6 +45,12 @@ bool Configuration::JobVMSize_Normal = false;
 double Configuration::JobVMSize_Normal_Mean = 10;
 double Configuration::JobVMSize_Normal_STDev = 3;
 
+bool Configuration::JobDataSize_Static = true;
+int Configuration::JobDataSize_Static_Value = 5;
+bool Configuration::JobDataSize_Normal = false;
+double Configuration::JobDataSize_Normal_Mean = 10;
+double Configuration::JobDataSize_Normal_STDev = 3;
+
 
 void Configuration::ReadFromFile()
 {

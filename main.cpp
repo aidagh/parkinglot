@@ -93,7 +93,7 @@ int main()
       _carModel.PrintVehicleInfo();
 	  _timeModel.increment();
 
-//	  std::cin.get();
+	  std::cin.get();
 	}
 
 

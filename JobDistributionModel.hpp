@@ -9,6 +9,7 @@
 #include "DistributionFactory/JobArrivalDistributionFactory.hpp"
 #include "DistributionFactory/JobLengthDistributionFactory.hpp"
 #include "DistributionFactory/JobVMSizeDistributionFactory.hpp"
+#include "DistributionFactory/JobDataSizeDistributionFactory.hpp"
 
 #ifndef __JOBDISTRIBUTIONMODEL_HPP__
 #define __JOBDISTRIBUTIONMODEL_HPP__
@@ -24,17 +25,19 @@ class JobDistributionModel
     static int NextArrival;
     static int NextJobLength;
 	static int NextVMSize;
+	static int NextDataSize;
 
 	static JobArrivalDistributionFactory * JobArrivalDistribution;
 	static JobLengthDistributionFactory * JobLengthDistribution;
 	static JobVMSizeDistributionFactory * JobVMSizeDistribution;
+	static JobDataSizeDistributionFactory * JobDataSizeDistribution;
 
   public:
     void Initialize();
     int getNextArrival();
     int getNextJobLength();
 	int getNextVMSize();
-	double getNextJobDataToMigrate();
+	int getNextDataSize();
     int generateNext();
 };
 
