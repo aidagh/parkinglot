@@ -46,9 +46,9 @@ class JobModel
 	void HandleJobDataMigration_ReserveTransaction();
     void HandleJobDataMigration_CompleteTransaction();
 
-    //void HandleJobVMMigration_ReserveTransaction();
-  //  void HandleJobVMMigration_CompleteTransaction();
-	void HandleJobVMMigration();
+    void HandleJobVMMigration_ReserveTransaction();
+    void HandleJobVMMigration_CompleteTransaction();
+	//void HandleJobVMMigration();
 
 	void HandleIncomingJobs();
     void HandleCompletedJobs();

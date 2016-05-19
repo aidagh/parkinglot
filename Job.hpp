@@ -35,7 +35,7 @@ class Job
 //	int car_number;
 	Car * car;
     int job_number;
-    double VM_size;
+    double VMsize;
  //   double VM_migration_remained;
     //bool completed;
 
@@ -63,8 +63,8 @@ class Job
 	//A list of Data migration jobs for the job that are currently active
     std::list<MigrationJob*> DataMigrationJobs;
 
-	//A list of VM migration jobs for the job
-    std::list<MigrationJob*> VMMigrationJobs;
+	//A list of VM migration jobs for the job, there "should" only be 1.
+    MigrationJob* VMMigrationJob;
 
     //A list of vehicles that are in the latest current DataMigrationSet
 	//std::list<int> DataMigrationSet;

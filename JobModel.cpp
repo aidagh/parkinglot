@@ -17,11 +17,11 @@ void JobModel::HandleJobs()
   HandleJobProcessing();
 
   HandleJobDataMigration_ReserveTransaction();
-  //HandleJobVMMigration_ReserveTransaction();
+  HandleJobVMMigration_ReserveTransaction();
 
   HandleJobDataMigration_CompleteTransaction();
-  //HandleJobVMMigration_CompleteTransaction();
-  HandleJobVMMigration();
+  HandleJobVMMigration_CompleteTransaction();
+  //HandleJobVMMigration();
 
   HandleCompletedJobs();
   HandleIncomingJobs();
@@ -34,7 +34,7 @@ Job * JobModel::GenerateJob()
   job->job_number = numJobs;
   job->jobSize = _jobDistributionModel.getNextJobLength();  //Get this from distribution class
   job->jobSizeLeftToProcess = job->jobSize;
-  job->VM_size = _jobDistributionModel.getNextVMSize();
+  job->VMsize = _jobDistributionModel.getNextVMSize();
   job->jobStatus = Processing;
 
   job->dataToMigrate = _jobDistributionModel.getNextDataSize();
@@ -147,11 +147,14 @@ void JobModel::HandleJobDataMigration_ReserveTransaction()
 	//If the job is not yet fully complete, but the processing is complete, then the vehicle is backing up data
 	if (job->jobStatus == DataMigrating)
 	{
-        //Since a job cannot be DataMigrating AND VMMigrating at the same time, the ActiveMigrationJobs will only have Data Migrations
 		std::list<MigrationJob*>::iterator itMJ;
         for(itMJ = job->DataMigrationJobs.begin(); itMJ != job->DataMigrationJobs.end(); itMJ++)
         {
-			_networkModel.ReserveBandwidth(*itMJ);
+
+            if ((*itMJ)->type == Data)
+            {
+                _networkModel.ReserveBandwidth(*itMJ);
+            }
 		}
 	}
   }
@@ -166,7 +169,7 @@ void JobModel::HandleJobDataMigration_CompleteTransaction()
   {
     Job* job = it->second;
 
-	//If the job is not yet fully complete, but the processing is complete, then the vehicle is backing up data
+	//If there are data migration jobs, but the job is not "DataMigrating" then the job is not active.
 	if (job->jobStatus == DataMigrating)
 	{
 		std::list<MigrationJob*>::iterator itMJ;
@@ -179,6 +182,7 @@ void JobModel::HandleJobDataMigration_CompleteTransaction()
 				//**Update the list of DataMigrationSet vehicles.
 				(*itMJ)->carTo->DataMigrationTasks.remove(*itMJ);
 				itMJ = job->DataMigrationJobs.erase(itMJ);
+				itMJ--;
 			}
 		}
 
@@ -201,57 +205,60 @@ void JobModel::HandleJobDataMigration_CompleteTransaction()
   }
 }
 
-void JobModel::HandleJobVMMigration()
+
+void JobModel::HandleJobVMMigration_ReserveTransaction()
 {
-  std::list<int> jobEraseList;
+  NetworkModel _networkModel;
   std::map<int, Job*>::iterator it;
   for(it = jobMap.begin(); it != jobMap.end(); it++)
   {
     Job* job = it->second;
-  //Determine Congestion and Available Bandwidth Here
-  //TODO:
 
+	//If the job is not yet fully complete, but the processing is complete, then the vehicle is backing up data
 	if (job->jobStatus == VMMigrating)
 	{
-		//Migrate VM here
-		//TODO: incorporate congestion
-		//job->VM_migration_remained-=1;
-
-		if (false/*job->VM_migration_remained <= 0*/)
-		{
-			*_log.info << "Space:" << it->first << " -- VM Complete!" << std::endl;
-
-			//VM Completion
-			//1. job is the job being migrated
-			//2. Set job->MigrateFromCar->job to NULL
-			//3. Set job->car to job->MigrateToCar
-			//4. Set job->MigrateFromCar to NULL
-			//5. Set job->MigrateToCar to NULL
-			//6. Set Status to either Processing or Data Migration.
-            //7. Update Statistics
-
-            job->MigrateFromCar->job = NULL;
-			job->car = job->MigrateToCar;
-			job->MigrateFromCar = NULL;
-			job->MigrateToCar = NULL;
-
-			//Do we restart the job processing, or data migration?
-			job->jobStatus = Processing;
-
-		    //TODO: update statistics
-
-
-		}
+        _networkModel.ReserveBandwidth(job->VMMigrationJob);
 	}
   }
+}
 
-  std::list<int>::iterator itList;
-  for(itList = jobEraseList.begin(); itList != jobEraseList.end(); itList++)
-  {
-    jobMap.erase(*itList);
-  }
+void JobModel::HandleJobVMMigration_CompleteTransaction()
+{
+    std::list<int> jobEraseList;
+    std::map<int, Job*>::iterator it;
+    for(it = jobMap.begin(); it != jobMap.end(); it++)
+    {
+        Job* job = it->second;
+        //Determine Congestion and Available Bandwidth Here
+        //TODO:
+
+        if (job->jobStatus == VMMigrating)
+        {
+            job->VMMigrationJob->dataLeftToMigrate = job->VMMigrationJob->dataLeftToMigrate - job->VMMigrationJob->currentBandwidthSize;
+            if (job->VMMigrationJob->dataLeftToMigrate <=0)
+            {
+                //**Some statistics should be kept up here.
+                //**Update the list of DataMigrationSet vehicles.
+
+                //Erase the record from the jobMap for the FROM car
+                jobMap.erase(job->car->car_spot_number);
 
 
+                job->car->job = NULL;
+                job->car = job->VMMigrationJob->carTo;
+
+                //Add the record to the jobMap for the TO car
+                jobMap[job->car->car_spot_number] = job;
+
+                delete job->VMMigrationJob;
+                job->VMMigrationJob = NULL;
+                *_log.info << "Space:" << it->first << " -- VM Complete!" << std::endl;
+
+                //Is it always appropriate to set this to Processing?
+                job->jobStatus = Processing;
+            }
+        }
+    }
 }
 
 
@@ -292,31 +299,30 @@ void JobModel::CancelJob(int spaceId)
 void JobModel::SetupVMMigration(Car* leavingCar, Car* carToMigrateTo)
 {
     //1. leavingCar->job should already equal the job.
-	//2. set carToMigrateTo->job to the job.
-	//3. Set job->MigrateToCar to carToMigrateTo
-	//4. Set job->MigrateFromCar to leaving Car.
+    //2. set carToMigrateTo->job to the job.
+    //3. Create a new VMMigrationJob vmMigrationJob
+    //   a. set vmMigrationJob->jobFrom to the Job
+    //   b. set vmMigrationJob->carFrom to leavingCar
+    //   c. set vmMigrationJob->carTo to carToMigrateTo
+    //   d. set vmMigrationJob->type to VM
+    //   e. set vmMigrationJob->totalDataSize to job->VMSize
+    //   f. set vmMigrationJob->dataLeftToMigrate to job->VMSize
+    //   g. set vmMigrationJob->currentBandwidthSize to 1  ****Reset this when the congestion model is complete.
+    //4. set job->VMMigrationJob = vmMigrationJob;
 
     Job * job = leavingCar->job;
 	carToMigrateTo->job = job;
-	job->MigrateToCar = carToMigrateTo;
-	job->MigrateFromCar = leavingCar;
+    MigrationJob * vmMigrationJob = new MigrationJob;
+    vmMigrationJob->jobFrom = job;
+    vmMigrationJob->carFrom = leavingCar;
+    vmMigrationJob->carTo = carToMigrateTo;
+    vmMigrationJob->type = VM;
+    vmMigrationJob->totalDataSize = job->VMsize;
+    vmMigrationJob->dataLeftToMigrate = job->VMsize;
+    //  ****Reset this when the congestion model is complete.
+    vmMigrationJob->currentBandwidthSize = 1;
+    job->VMMigrationJob = vmMigrationJob;
 
-//	leavingCar->job->VM_migration_remained = leavingCar->job->VM_size;
-//    leavingCar->job->MigrateToCar = carToMigrateTo;
-//    leavingCar->job->jobStatus = VMMigratingAwayFrom;
-//
-//	Job * MigrateToJob = new Job();
-//	leavingCar->job->MigrateToJob = MigrateToJob;
-//	MigrateToJob->job_number = leavingCar->job->job_number;
-//	MigrateToJob->VM_size = 0;
-//    MigrateToJob->MigrateFromCar = leavingCar;
-//    MigrateToJob->jobStatus = VMMigratingTo;
-//	MigrateToJob->jobSize = leavingCar->job->jobSize;
-//	MigrateToJob->jobSizeLeftToProcess = leavingCar->job->jobSizeLeftToProcess;
-//	MigrateToJob->dataToMigrate = leavingCar->job->dataToMigrate;
-//	MigrateToJob->dataLeftToMigrate = leavingCar->job->dataLeftToMigrate;
-//
-//    carToMigrateTo->job = MigrateToJob;
 
 	*_log.info << "Job " << job->job_number << " from Car " << leavingCar->car_spot_number << "to Car " << carToMigrateTo->car_spot_number << std::endl;
 }

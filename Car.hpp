@@ -18,7 +18,7 @@ class MigrationJob;
 class Car
 {
   public:
-    int car_number;  //Is this needed?
+//    int car_number;  //Is this needed?
     int car_spot_number;
     int arrival_time_of_car;
     int departure_time_of_flight; //is this needed?
@@ -29,7 +29,11 @@ class Car
     //int residency_time;
     int turned_away;	//This will be moved to statistics model
 
+    //A list of DataMigationTask coming IN to the car.
     std::list<MigrationJob*> DataMigrationTasks;
+
+    //A list of VM Migration Tasks coming IN to the car.
+    //std::list<MigrationJob*> VMMigrationTasks;
 
 	//True if car has a job, or is getting a job migrated to it.
 	//False otherwise.

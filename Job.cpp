@@ -18,6 +18,7 @@ Job::Job()
   jobSize = 0;
   jobSizeLeftToProcess = 999;
 
+  VMMigrationJob = NULL;
 //  std::list<MigrationJob> ActiveMigrationJobs;
 //  std::list<int> DataMigrationSet;
 
@@ -45,12 +46,9 @@ void Job::printJobDetails(bool printChildDetails, std::string tab)
                 (*it)->printMigrationJobDetails(true, tab + "    ");
             }
         }
-        if(!VMMigrationJobs.empty())
+        if(VMMigrationJob != NULL)
         {
-            for(it = VMMigrationJobs.begin(); it != VMMigrationJobs.end(); it++)
-            {
-                (*it)->printMigrationJobDetails(true, tab + "    ");
-            }
+            VMMigrationJob->printMigrationJobDetails(true, tab + "    ");
         }
     }
 
