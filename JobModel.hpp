@@ -25,7 +25,7 @@ class JobModel
 
     //jobMap contains jobs that are assigned to vehicles
 	//  jobMap is indexed by parking spot number
-	public: static std::map<int, Job*> jobMap;
+	static std::map<int, Job*> jobMap;
 
 	//jobQueue contains jobs that could not be assigned to any vehicles
 	static std::queue<Job*> jobQueue;
