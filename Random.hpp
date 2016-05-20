@@ -11,7 +11,6 @@
 class Random
 {
   private:
-    std::random_device device;
     std::mt19937 mersenneTwisterEngine; //gen(rd());
     std::uniform_int_distribution<> uniformDistribution; //dis(1, 6);
 

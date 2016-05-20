@@ -5,7 +5,8 @@
 
 void Random::Initialize()
 {
-  mersenneTwisterEngine = std::mt19937(device());
+  int seed = 0;
+  mersenneTwisterEngine = std::mt19937(seed);
   uniformDistribution = std::uniform_int_distribution<> (0, RAND_MAX);
 }
 
