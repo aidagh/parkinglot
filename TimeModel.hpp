@@ -2,10 +2,7 @@
 //Description:
 
 #ifndef TIMEMODEL_HPP
-//#if !defined( TIMEMODEL_HPP )
 #define TIMEMODEL_HPP
-
-
 
 class TimeModel
 {
@@ -16,8 +13,6 @@ class TimeModel
     void initialize();
 	void increment();
 	int getTime();
-
 };
-
 
 #endif

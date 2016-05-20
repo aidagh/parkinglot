@@ -1,7 +1,6 @@
 //File:         JobDistributionModel.cpp
 //Description:
 
-
 #include "JobDistributionModel.hpp"
 
 int JobDistributionModel::NextArrival = 0;
@@ -31,7 +30,6 @@ void JobDistributionModel::Initialize()
 	JobArrivalDistribution->Initialize();
     *_log.trace << "   Poisson" << std::endl;
   }
-
 
 
   *_log.trace << "Initializing JobDistributionModel - Job Length" << std::endl;
@@ -67,6 +65,7 @@ void JobDistributionModel::Initialize()
     *_log.trace << "   Normal" << std::endl;
   }
 
+
   *_log.trace << "Initializing JobDistributionModel - Data Size" << std::endl;
 
   if (_configuration.JobDataSize_Static)
@@ -82,8 +81,6 @@ void JobDistributionModel::Initialize()
 	JobDataSizeDistribution->Initialize();
     *_log.trace << "   Normal" << std::endl;
   }
-
-
 }
 
 
@@ -95,6 +92,8 @@ int JobDistributionModel::getNextArrival()
 	}
 	return NextArrival;
 }
+
+
 int JobDistributionModel::getNextVMSize()
 {
 	if (NextArrival == 0)
@@ -103,6 +102,8 @@ int JobDistributionModel::getNextVMSize()
 	}
 	return NextVMSize;
 }
+
+
 int JobDistributionModel::getNextDataSize()
 {
 	if (NextArrival == 0)
@@ -111,6 +112,8 @@ int JobDistributionModel::getNextDataSize()
 	}
 	return NextDataSize;
 }
+
+
 int JobDistributionModel::getNextJobLength()
 {
 	if (NextArrival == 0)
@@ -119,6 +122,7 @@ int JobDistributionModel::getNextJobLength()
 	}
 	return NextJobLength;
 }
+
 
 int JobDistributionModel::generateNext()
 {
@@ -129,4 +133,3 @@ int JobDistributionModel::generateNext()
   NextVMSize = JobVMSizeDistribution->getNext();
   NextDataSize = JobDataSizeDistribution->getNext();
 }
-

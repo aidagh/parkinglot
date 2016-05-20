@@ -44,7 +44,6 @@ void Logger::ShowInfo()
 	trace = throwaway;
 }
 
-
 //Show only Debug or higher messages
 void Logger::ShowDebug()
 {

@@ -1,7 +1,6 @@
 //File:         JobModel.hpp
 //Description:
 
-
 #ifndef __JOBMODEL_HPP__
 #define __JOBMODEL_HPP__
 
@@ -20,15 +19,13 @@ class JobModel
   private:
     Logger _log;
     Configuration _configuration;
-//    Random _random;
     TimeModel _time;
     JobDistributionModel _jobDistributionModel;
-//    CarModel _carModel;
 	StatisticsModel _statisticsModel;
 
     //jobMap contains jobs that are assigned to vehicles
 	//  jobMap is indexed by parking spot number
-	static std::map<int, Job*> jobMap;
+	public: static std::map<int, Job*> jobMap;
 
 	//jobQueue contains jobs that could not be assigned to any vehicles
 	static std::queue<Job*> jobQueue;
@@ -48,7 +45,6 @@ class JobModel
 
     void HandleJobVMMigration_ReserveTransaction();
     void HandleJobVMMigration_CompleteTransaction();
-	//void HandleJobVMMigration();
 
 	void HandleIncomingJobs();
     void HandleCompletedJobs();
@@ -59,11 +55,7 @@ class JobModel
 
 	void CancelJob(int);
 	void SetupVMMigration(Car* leavingCar, Car* carToMigrateTo);
-
 };
-
-
-
 
 
 #endif

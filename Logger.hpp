@@ -22,14 +22,11 @@ class Logger
       static std::ostream * debug;
       static std::ostream * info;
 
-
       void Initialize();
 	  void ShowAll();
 	  void ShowInfo();
       void ShowDebug();
 	  void ShowNone();
 };
-
-
 
 #endif

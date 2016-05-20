@@ -9,7 +9,6 @@ CarArrivalDistributionFactory* CarResidencyDistributionModel::CarArrivalDistribu
 CarDepartureDistributionFactory* CarResidencyDistributionModel::CarDepartureDistribution = NULL;
 
 
-
 void CarResidencyDistributionModel::Initialize()
 {
   *_log.trace << "Initializing CarResidencyDistributionModel - Car Arrival" << std::endl;
@@ -35,18 +34,10 @@ void CarResidencyDistributionModel::Initialize()
     *_log.trace << "   Poisson" << std::endl;
   }
 
-
-
   *_log.trace << "Initializing CarResidencyDistributionModel - Car Departure" << std::endl;
 
-//  if (_configuration.CarArrival_FromFile)
-//  {
-//	  //Use pre-existing file
-//	  *_log.trace << "   From File" << std::endl;
-//
-//  }
-//  else
-	  if (_configuration.CarDeparture_Static)
+
+  if (_configuration.CarDeparture_Static)
   {
 	  //CarResidency_Static_Hours;
       CarDepartureDistribution = CarDepartureDistributionFactory::make_CarDepartureDistribution(Static);
@@ -60,9 +51,8 @@ void CarResidencyDistributionModel::Initialize()
 	CarDepartureDistribution->Initialize();
     *_log.trace << "   Exponential" << std::endl;
   }
-
-
 }
+
 
 int CarResidencyDistributionModel::getNextArrival()
 {
@@ -83,11 +73,11 @@ int CarResidencyDistributionModel::getNextDeparture()
 	return NextDeparture;
 }
 
+
 int CarResidencyDistributionModel::generateNext()
 {
   *_log.trace << "CarResidencyDistributionModel.generateNext()" << std::endl;
   NextArrival = _time.getTime() + CarArrivalDistribution->getNext();
   NextDeparture = NextArrival + CarDepartureDistribution->getNext();
-
 }
 

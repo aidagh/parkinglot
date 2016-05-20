@@ -7,10 +7,12 @@ void TimeModel::initialize()
 	time = 0;
 }
 
+
 void TimeModel::increment()
 {
 	time++;
 }
+
 
 int TimeModel::getTime()
 {

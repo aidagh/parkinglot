@@ -7,18 +7,7 @@
 Car::Car()
 {
 
-  // This is to keep track how many cars turned away when they try to occupy the parking space. Initially set to -1.
-  // turned_away=0 - Car didn't turn away or got parking space.
-  // turned_away=1 - Car turned away
-//  turned_away=-1;
-
   car_spot_number=-1;
-//  job_has_been_migrated=false;
-//  car_flag_start_migration=false;
-//  car_flag_end_migration=false;
-//  car_num_migration_to = -1;
- // print_migration_flag_counter=0;
-
   job_number = 0;
   job = NULL;
 }

@@ -12,24 +12,18 @@
 #include <random>
 #include "Logger.hpp"
 #include "TimeModel.hpp"
-//#include "Random.hpp"
 #include "Configuration.hpp"
 #include "DistributionFactory/CarArrivalDistributionFactory.hpp"
 #include "DistributionFactory/CarDepartureDistributionFactory.hpp"
-
-
-
 
 class CarResidencyDistributionModel
 {
   private:
     Logger _log;
     Configuration _configuration;
-    //Random _random;
     TimeModel _time;
     static int NextArrival;
 	static int NextDeparture;
-
 
 	static CarArrivalDistributionFactory * CarArrivalDistribution;
 	static CarDepartureDistributionFactory * CarDepartureDistribution;
@@ -41,6 +35,5 @@ class CarResidencyDistributionModel
     int generateNext();
 
 };
-
 
 #endif

@@ -2,7 +2,6 @@
 //Description:
 
 #include "TimeModel.hpp"
-//#include "Random.hpp"
 #include "Configuration.hpp"
 #include "Logger.hpp"
 
@@ -19,7 +18,6 @@ class JobDistributionModel
   private:
     Configuration _configuration;
     Logger _log;
-//	Random _random;
     TimeModel _time;
 
     static int NextArrival;
@@ -40,6 +38,5 @@ class JobDistributionModel
 	int getNextDataSize();
     int generateNext();
 };
-
 
 #endif

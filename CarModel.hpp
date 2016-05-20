@@ -20,7 +20,6 @@ class CarModel
   private:
     Logger _log;
 	Configuration _configuration;
-//    Random _random;
     TimeModel _time;
 	CarResidencyDistributionModel _carResidencyDistributionModel;
 
@@ -51,9 +50,6 @@ class CarModel
 	int getGroupNumber(int);
 
 	void HandleCars();
-
 };
-
-
 
 #endif

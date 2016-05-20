@@ -21,7 +21,6 @@ void JobModel::HandleJobs()
 
   HandleJobDataMigration_CompleteTransaction();
   HandleJobVMMigration_CompleteTransaction();
-  //HandleJobVMMigration();
 
   HandleCompletedJobs();
   HandleIncomingJobs();
@@ -32,11 +31,10 @@ Job * JobModel::GenerateJob()
 {
   Job * job = new Job();
   job->job_number = numJobs;
-  job->jobSize = _jobDistributionModel.getNextJobLength();  //Get this from distribution class
+  job->jobSize = _jobDistributionModel.getNextJobLength();
   job->jobSizeLeftToProcess = job->jobSize;
   job->VMsize = _jobDistributionModel.getNextVMSize();
   job->jobStatus = Processing;
-
   job->dataToMigrate = _jobDistributionModel.getNextDataSize();
 
   _jobDistributionModel.generateNext();
@@ -53,7 +51,6 @@ void JobModel::createNewJob()
 	if (car != NULL)
 	{
       *_log.info << "New Job assigned to car:" << car->car_spot_number << std::endl;
-//	  job->car_number = car->car_number;
 	  job->car = car;
 	  jobMap[car->car_spot_number] = job;
 	}
@@ -114,9 +111,6 @@ void JobModel::HandleJobProcessing()
   {
     Job* job = it->second;
 
-//	*_log.debug << "Space:" << it->first << ", leftToProcess:" << job->jobSizeLeftToProcess << ", leftToMigrate:" << job->dataLeftToMigrate << ", Status:" << job->jobStatus << std::endl;
-
-
     //If the job is still processing, then
 	if (job->jobStatus == Processing)
 	{
@@ -132,8 +126,6 @@ void JobModel::HandleJobProcessing()
 
 	}
   }
-
-
 }
 
 void JobModel::HandleJobDataMigration_ReserveTransaction()
@@ -150,7 +142,6 @@ void JobModel::HandleJobDataMigration_ReserveTransaction()
 		std::list<MigrationJob*>::iterator itMJ;
         for(itMJ = job->DataMigrationJobs.begin(); itMJ != job->DataMigrationJobs.end(); itMJ++)
         {
-
             if ((*itMJ)->type == Data)
             {
                 _networkModel.ReserveBandwidth(*itMJ);
@@ -229,8 +220,6 @@ void JobModel::HandleJobVMMigration_CompleteTransaction()
     for(it = jobMap.begin(); it != jobMap.end(); it++)
     {
         Job* job = it->second;
-        //Determine Congestion and Available Bandwidth Here
-        //TODO:
 
         if (job->jobStatus == VMMigrating)
         {
@@ -238,10 +227,7 @@ void JobModel::HandleJobVMMigration_CompleteTransaction()
             if (job->VMMigrationJob->dataLeftToMigrate <=0)
             {
                 //**Some statistics should be kept up here.
-                //**Update the list of DataMigrationSet vehicles.
 
-                //Erase the record from the jobMap for the FROM car
-                jobMap.erase(job->car->car_spot_number);
 
 
                 job->car->job = NULL;
@@ -252,7 +238,12 @@ void JobModel::HandleJobVMMigration_CompleteTransaction()
 
                 delete job->VMMigrationJob;
                 job->VMMigrationJob = NULL;
+
                 *_log.info << "Space:" << it->first << " -- VM Complete!" << std::endl;
+
+                //Erase the record from the jobMap for the FROM car
+                it = jobMap.erase(it);
+                it--;
 
                 //Is it always appropriate to set this to Processing?
                 job->jobStatus = Processing;
@@ -289,11 +280,49 @@ void JobModel::HandleCompletedJobs()
 
 void JobModel::CancelJob(int spaceId)
 {
-  Job * job = jobMap[spaceId];
-  //Handle Statistics!
-  jobMap.erase(spaceId);
-  *_log.debug << "Erased job in space" << spaceId << std::endl;
+  //1. Get the job from the jobMap using the space
+  //2. Check the job status and handle appropriately.
+  //   a. If processing  [Can this happen?]
+  //   b. If data Migration [Can this happen?]
+  //   c. If vm Migrating [Cancel Migration and log VM Migration Failure]
+  //3. Delete the job
+  //4. clear the spaceId from the JobMap
 
+  if (jobMap.find(spaceId) != jobMap.end())
+  {
+      Job * job = jobMap[spaceId];
+
+      if (job->jobStatus == Processing)
+      {
+        *_log.debug << "Possible Issue - Job failed while Processing " << spaceId << std::endl;
+      }
+      else if (job->jobStatus == DataMigrating)
+      {
+        *_log.debug << "Possible Issue - Job failed while DataMigrating " << spaceId << std::endl;
+      }
+      else if (job->jobStatus == VMMigrating)
+      {
+
+        job->VMMigrationJob->carTo->job = NULL;
+        *_log.debug << "Migration Failure - Job failed while VM Migration From " << spaceId << " to " << job->VMMigrationJob->carTo->car_spot_number << std::endl;
+
+        delete job->VMMigrationJob;
+      }
+
+
+      delete job;
+      //Handle Statistics!
+      jobMap.erase(spaceId);
+
+
+
+      *_log.debug << "Erased job in space" << spaceId << std::endl;
+  }
+  else
+  {
+        *_log.debug << "No job to erase in space" << spaceId << std::endl;
+
+  }
 }
 
 void JobModel::SetupVMMigration(Car* leavingCar, Car* carToMigrateTo)

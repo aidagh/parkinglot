@@ -136,6 +136,24 @@ void CarModel::handleVehicleDepartingNOW()
   std::list<int> carsToErase;
 
   JobModel _jobModel;
+
+  for (int i = 0; i <= 10; i++)
+  {
+     *_log.info << "jobMap[" << i << "] : ";
+
+     if (_jobModel.jobMap.find(i) == _jobModel.jobMap.end())
+     {
+         *_log.info << " empty " << std::endl;
+     }
+     else
+     {
+         *_log.info << " " << _jobModel.jobMap[i]->job_number << std::endl;
+     }
+
+
+
+  }
+
   std::map<int, Car*>::iterator it;
   for(it = carmap.begin(); it != carmap.end(); it++)
   {
