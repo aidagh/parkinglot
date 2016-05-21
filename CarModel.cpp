@@ -305,17 +305,24 @@ void CarModel::PrintVehicleInfo()
 
 int CarModel::getClusterNumber(int spotId)
 {
-	return spotId % 40;
+	if(spotId%40 == 0) return (spotId/40);
+
+	else return ((spotId/40)+1);
 }
-
-
-int CarModel::getRegionNumber(int spotId)
-{
-	return spotId % 160;
-}
-
 
 int CarModel::getGroupNumber(int spotId)
 {
-	return spotId % 640;
+    if(spotId%160 == 0) return (spotId/160);
+
+	else return ((spotId/160)+1);
 }
+
+int CarModel::getRegionNumber(int spotId)
+{
+
+    if(spotId%640 == 0) return (spotId/640);
+
+	else return ((spotId/640)+1);
+
+}
+
