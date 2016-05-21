@@ -57,4 +57,7 @@ JobLengthDistributionFactory *JobLengthDistributionFactory::make_JobLengthDistri
 		return new StaticJobLength;
 	if (distribution == Normal)
 		return new NormalJobLength;
+
+    //Default to Static
+    return new StaticJobLength;
 }

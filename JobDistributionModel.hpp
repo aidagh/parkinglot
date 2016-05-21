@@ -36,7 +36,7 @@ class JobDistributionModel
     int getNextJobLength();
 	int getNextVMSize();
 	int getNextDataSize();
-    int generateNext();
+    void generateNext();
 };
 
 #endif

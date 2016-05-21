@@ -124,7 +124,7 @@ int JobDistributionModel::getNextJobLength()
 }
 
 
-int JobDistributionModel::generateNext()
+void JobDistributionModel::generateNext()
 {
   *_log.trace << "JobDistributionModel.generateNext()" << std::endl;
 

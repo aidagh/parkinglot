@@ -22,23 +22,21 @@ void CarModel::Initialize()
 		createNewCar();
 	}
 
-
 	initializing = false;
 }
+
 
 void CarModel::HandleCars()
 {
   HandleDepartingVehicles();
   HandleIncomingVehicles();
-
 }
-
 
 
 //Creates a new car if there is an empty space for a new car
 //Returns false if a new car was not created
 //Returns true is a new car was created
-bool CarModel::createNewCar()
+void CarModel::createNewCar()
 {
 //	Check is emptySpaces is empty, if empty, do not create a car
 //	randomly select a parking space to populate
@@ -51,7 +49,7 @@ bool CarModel::createNewCar()
     if (!initializing)
 	  _carResidencyDistributionModel.generateNext();
  	//TODO: Update Statistics
-	return false;
+	return;
   }
 
 
@@ -67,7 +65,6 @@ bool CarModel::createNewCar()
 		  randomEmptySpace = *it;
 		  break;
 	  }
-
 	  counter++;
   }
 
@@ -86,15 +83,13 @@ bool CarModel::createNewCar()
     newCar->departure_time_of_car = _carResidencyDistributionModel.getNextDeparture();
     _carResidencyDistributionModel.generateNext();
   }
-  //newCar.busy = false;
 
   carmap[randomEmptySpace] = newCar;
-
   emptySpaces.remove(randomEmptySpace);
-
   *_log.info << "Car in spot " << randomEmptySpace << " has arrived" << std::endl;
 
 }
+
 
 void CarModel::HandleIncomingVehicles()
 {
@@ -103,6 +98,7 @@ void CarModel::HandleIncomingVehicles()
 		createNewCar();
 	}
 }
+
 
 //For a car that is migrating, choose the car to migrate to
 Car * CarModel::GetMigrationToVehicle(Car* FromCar)
@@ -120,12 +116,12 @@ Car * CarModel::GetMigrationToVehicle(Car* FromCar)
 		 latestDepartingCar = it->second;
 		 latestDepartureTime = latestDepartingCar->departure_time_of_car;
 		 *_log.trace << "Car " << it->first << " can accept job, leaving " << latestDepartingCar->departure_time_of_car << std::endl;
-
 	 }
   }
 
   return latestDepartingCar;
 }
+
 
 void CarModel::handleVehicleDepartingNOW()
 {
@@ -134,22 +130,16 @@ void CarModel::handleVehicleDepartingNOW()
 //	  update statistics
 //	  remove the car from the carmap
   std::list<int> carsToErase;
-
   JobModel _jobModel;
-
-
   std::map<int, Car*>::iterator it;
   for(it = carmap.begin(); it != carmap.end(); it++)
   {
     Car leavingCar = *(it->second);
     int leavingCarSpace = it->first;
 
-//    *_log.debug << "Car in spot " << leavingCarSpace << " is leaving in at time:" << leavingCar.departure_time_of_car << std::endl;
-
     //Check if car has left or is leaving
     if (leavingCar.departure_time_of_car <= _time.getTime())
     {
-	  //int jobId = leavingCar.job->job_number;
 	  if (leavingCar.job != NULL)
 	    _jobModel.CancelJob(leavingCarSpace);
 
@@ -158,7 +148,6 @@ void CarModel::handleVehicleDepartingNOW()
   	  //** Need to save off some statistics here!
 
 	  carsToErase.push_back(leavingCarSpace);
-
     }
   }
 
@@ -166,11 +155,8 @@ void CarModel::handleVehicleDepartingNOW()
   for(itCarsToErase = carsToErase.begin(); itCarsToErase != carsToErase.end(); itCarsToErase++)
   {
   	  carmap.erase(*itCarsToErase);
-
   }
-
 }
-
 
 
 void CarModel::handleVehicleDepartingSOON()
@@ -211,12 +197,11 @@ void CarModel::handleVehicleDepartingSOON()
 	  else
 	  {
 		  //There is no car to migrate to..  Currently, the code will just try again next minute.
-
 	  }
     }
   }
-
 }
+
 
 //This method handles the following two cases:
 //  1. Handle cars that are departing NOW
@@ -227,15 +212,12 @@ void CarModel::HandleDepartingVehicles()
 {
 	handleVehicleDepartingNOW();
 	handleVehicleDepartingSOON();
-
-//* Handle jobs properly when a vehicle is leaving.
 }
 
 
 //Assign Job returns a pointer to the car it is assigned to.
 Car * CarModel::AssignJob(Job* job)
 {
-
   std::map<int, Car*>::iterator it;
 
   for(it = carmap.begin(); it != carmap.end(); it++)
@@ -260,8 +242,7 @@ Car * CarModel::AssignJob(Job* job)
   	  *_log.info << "Car in spot " << carSpace << " is assigned Job " << job->job_number << std::endl;
 	  car->job_number = job->job_number;
 	  car->job = job;
-//	  car->busy = true;
-//	  assignedToCar = car->car_spot_number;
+
 	  return car;
 	  break;
     }
@@ -270,19 +251,17 @@ Car * CarModel::AssignJob(Job* job)
   *_log.info << "Job cannot be assigned to any cars :" << job->job_number << std::endl;
 
   return NULL;
-
 }
+
 
 std::list<Car*> CarModel::AssignDataMigrationCars(Job* job)
 {
     std::list<Car*> MigrationSet;
-
     Random random;
 
     //random assignment
     //loop through all Cars, randomly pick "n" to accept the data migration
 
-    static int NumberOfDataBackupsRequired;
     if (_configuration.DataMigrationType_Random)
     {
         for (int i=0; i<_configuration.NumberOfDataBackupsRequired; i++)
@@ -309,7 +288,6 @@ std::list<Car*> CarModel::AssignDataMigrationCars(Job* job)
         *_log.info << "No DataMigrationType Setup" << std::endl;
     }
 
-
     return MigrationSet;
 }
 
@@ -318,12 +296,10 @@ void CarModel::PrintVehicleInfo()
 {
   std::map<int, Car*>::iterator it;
 
-
   for(it = carmap.begin(); it != carmap.end(); it++)
   {
       it->second->printCarDetails(true, "");
   }
-
 }
 
 
@@ -331,10 +307,14 @@ int CarModel::getClusterNumber(int spotId)
 {
 	return spotId % 40;
 }
+
+
 int CarModel::getRegionNumber(int spotId)
 {
 	return spotId % 160;
 }
+
+
 int CarModel::getGroupNumber(int spotId)
 {
 	return spotId % 640;

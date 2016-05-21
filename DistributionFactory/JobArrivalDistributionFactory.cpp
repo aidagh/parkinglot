@@ -57,4 +57,8 @@ JobArrivalDistributionFactory *JobArrivalDistributionFactory::make_JobArrivalDis
 		return new StaticJobArrival;
 	if (distribution == Poisson)
 		return new PoissonJobArrival;
+
+    //Default to Static
+    return new StaticJobArrival;
+
 }

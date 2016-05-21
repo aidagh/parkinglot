@@ -56,4 +56,7 @@ JobVMSizeDistributionFactory *JobVMSizeDistributionFactory::make_JobVMSizeDistri
 		return new StaticJobVMSize;
 	if (distribution == Normal)
 		return new NormalJobVMSize;
+
+    //Default to Static
+    return new StaticJobVMSize;
 }

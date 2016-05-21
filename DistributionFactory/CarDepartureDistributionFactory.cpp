@@ -57,4 +57,8 @@ CarDepartureDistributionFactory *CarDepartureDistributionFactory::make_CarDepart
 		return new StaticDeparture;
 	if (distribution == Exponential)
 		return new ExponentialDeparture;
+
+    //Default to Static
+    return new StaticDeparture;
+
 }

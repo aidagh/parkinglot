@@ -14,12 +14,10 @@ class Random
     std::mt19937 mersenneTwisterEngine; //gen(rd());
     std::uniform_int_distribution<> uniformDistribution; //dis(1, 6);
 
-
   public:
-  void Initialize();
-  int GetNextInt(int max);
-  double GetNextDouble(double max);
-
+    void Initialize();
+    int GetNextInt(int max);
+    double GetNextDouble(double max);
 
 };
 

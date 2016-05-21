@@ -57,4 +57,7 @@ CarArrivalDistributionFactory *CarArrivalDistributionFactory::make_CarArrivalDis
 		return new StaticArrival;
 	if (distribution == Poisson)
 		return new PoissonArrival;
+
+    //Default to Static
+    return new StaticArrival;
 }

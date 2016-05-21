@@ -32,7 +32,7 @@ class CarResidencyDistributionModel
     void Initialize();
     int getNextArrival();
 	int getNextDeparture();
-    int generateNext();
+    void generateNext();
 
 };
 

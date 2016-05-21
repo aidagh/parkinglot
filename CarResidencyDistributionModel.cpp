@@ -74,7 +74,7 @@ int CarResidencyDistributionModel::getNextDeparture()
 }
 
 
-int CarResidencyDistributionModel::generateNext()
+void CarResidencyDistributionModel::generateNext()
 {
   *_log.trace << "CarResidencyDistributionModel.generateNext()" << std::endl;
   NextArrival = _time.getTime() + CarArrivalDistribution->getNext();

@@ -31,7 +31,7 @@ class CarModel
 	static bool initializing;
 
 
-	bool createNewCar();
+	void createNewCar();
 	Car * GetMigrationToVehicle(Car* FromCar);
 	void handleVehicleDepartingNOW();
 	void handleVehicleDepartingSOON();

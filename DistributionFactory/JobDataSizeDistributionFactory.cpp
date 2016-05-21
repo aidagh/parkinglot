@@ -56,4 +56,8 @@ JobDataSizeDistributionFactory *JobDataSizeDistributionFactory::make_JobDataSize
 		return new StaticJobDataSize;
 	if (distribution == Normal)
 		return new NormalJobDataSize;
+
+    //Default to Static
+    return new StaticJobDataSize;
+
 }
