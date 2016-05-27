@@ -11,7 +11,9 @@
 #include "JobDistributionModel.hpp"
 #include "CarModel.hpp"
 #include "StatisticsModel.hpp"
+#include <map>
 
+using namespace std;
 
 class NetworkModel
 {

@@ -5,7 +5,7 @@
 
 std::map<int, Job*> JobModel::jobMap;
 std::queue<Job*> JobModel::jobQueue;
-int JobModel::numJobs = 0;
+int JobModel::numJobs = 1;
 
 void JobModel::Initialize()
 {

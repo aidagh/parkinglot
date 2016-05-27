@@ -12,12 +12,12 @@ bool CarModel::initializing = false;
 void CarModel::Initialize()
 {
 	initializing = true;
-	for (int i=0; i < _configuration.NumberOfParkingSpaces; i++)
+	for (int i=1; i <= _configuration.NumberOfParkingSpaces; i++)
 	{
 		emptySpaces.push_back(i);
 	}
 
-	for (int i=0; i < _configuration.NumberOfParkingSpaces; i++)
+	for (int i=1; i <= _configuration.NumberOfParkingSpaces; i++)
 	{
 		createNewCar();
 	}
@@ -71,6 +71,7 @@ void CarModel::createNewCar()
 
   Car * newCar = new Car();
   newCar->car_spot_number = randomEmptySpace;
+  newCar->car_cluster_number = getClusterNumber(randomEmptySpace);
   newCar->arrival_time_of_car = _time.getTime();
 
   if (initializing)
@@ -86,7 +87,7 @@ void CarModel::createNewCar()
 
   carmap[randomEmptySpace] = newCar;
   emptySpaces.remove(randomEmptySpace);
-  *_log.info << "Car in spot " << randomEmptySpace << " has arrived" << std::endl;
+  *_log.info << "Car in spot " << randomEmptySpace << ", and cluster " << newCar->car_cluster_number << " has arrived" << std::endl;
 
 }
 
@@ -244,7 +245,7 @@ Car * CarModel::AssignJob(Job* job)
 	  car->job = job;
 
 	  return car;
-	  break;
+	  //break;
     }
   }
 

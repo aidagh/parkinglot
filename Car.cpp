@@ -8,6 +8,7 @@ Car::Car()
 {
 
   car_spot_number=-1;
+  car_cluster_number= -1;
   job_number = 0;
   job = NULL;
 }
