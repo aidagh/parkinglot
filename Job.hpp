@@ -7,9 +7,11 @@
 #include <fstream>
 #include <list>
 #include "Car.hpp"
+#include "JobTask.hpp"
 #include "MigrationJob.hpp"
 
 class Car;
+class JobTask;
 
 enum JobStatus
 {
@@ -34,8 +36,10 @@ class Job
 
 	JobStatus jobStatus;
 
-	int jobSize;              //In Minutes
-	int jobSizeLeftToProcess; //Starts at jobSize and is subtracted each minute.
+	std::list<JobTask*> JobTasks;
+
+	int jobProcessingTime;              //In Minutes
+	int jobProcessingTimeLeft; //Starts at jobProcessingTime and is subtracted each minute.
 
 	int dataToMigrate;		  //In Megabytes
 

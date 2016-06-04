@@ -29,13 +29,50 @@ void JobModel::HandleJobs()
 
 Job * JobModel::GenerateJob()
 {
+  int jobLength = _jobDistributionModel.getNextJobLength();
+  int jobDataToMigrate = _jobDistributionModel.getNextDataSize();
+
   Job * job = new Job();
   job->job_number = numJobs;
-  job->jobSize = _jobDistributionModel.getNextJobLength();
-  job->jobSizeLeftToProcess = job->jobSize;
+  job->jobProcessingTime = jobLength;
+  job->jobProcessingTimeLeft = jobLength;
   job->VMsize = _jobDistributionModel.getNextVMSize();
   job->jobStatus = Processing;
-  job->dataToMigrate = _jobDistributionModel.getNextDataSize();
+  job->dataToMigrate = jobDataToMigrate;
+
+  if (_configuration.TaskScheme_AlternateProcessAndDataMigrate)
+  {
+      JobTaskType taskType = Task_Process;
+
+      //Only half the tasks are Processing tasks, so divide by 2
+      int jobLengthPerTask = jobLength / (_configuration.NumberTasksPerJob / 2);
+      //Only half the tasks are Migration tasks, so divide by 2
+      int DataToMigratePerTask = jobDataToMigrate / (_configuration.NumberTasksPerJob / 2);
+
+      for(int i=0; i <= _configuration.NumberTasksPerJob; i++ )
+      {
+          JobTask* task = new JobTask;
+          task->job = job;
+          task->taskType = taskType;
+          if (taskType == Task_Process)
+          {
+              task->taskProcessingTime = jobLengthPerTask;
+              task->taskProcessingTimeLeft = jobLengthPerTask;
+              taskType = Task_DataMigrate;
+          }
+          else if (taskType == Task_DataMigrate)
+          {
+              task->taskDataToMigrate = DataToMigratePerTask;
+              taskType = Task_Process;
+          }
+          job->JobTasks.push_back(task);
+
+      }
+  }
+  else
+  {
+    *_log.debug << "Error: No Job Task Scheme Defined" << std::endl;
+  }
 
   _jobDistributionModel.generateNext();
   numJobs++;
@@ -115,10 +152,10 @@ void JobModel::HandleJobProcessing()
 	if (job->jobStatus == Processing)
 	{
       //subtract time from the time left to process
-      job->jobSizeLeftToProcess-=_configuration.TimeStep;
+      job->jobProcessingTimeLeft -= _configuration.TimeStep;
 
       //If the job is no longer processing
-      if (job->jobSizeLeftToProcess <= 0)
+      if (job->jobProcessingTimeLeft <= 0)
 	  {
 		//Set the job to ProcessingComplete
         SetJobToDataMigrating(job);

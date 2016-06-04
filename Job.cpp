@@ -6,8 +6,8 @@
 Job::Job()
 {
   jobStatus = Idle;
-  jobSize = 0;
-  jobSizeLeftToProcess = 999;
+  jobProcessingTime = 0;
+  jobProcessingTimeLeft = 999;
   VMMigrationJob = NULL;
 }
 
@@ -19,7 +19,7 @@ void Job::printJobDetails(bool printChildDetails, std::string tab)
     *log.debug << tab << "    Job Number:     " << job_number << std::endl;
     *log.debug << tab << "    Job Status:     " << PrintJobStatus(jobStatus) << std::endl;
     *log.debug << tab << "    Car Number:     " << car->car_spot_number << std::endl;
-    *log.debug << tab << "    Job Processing: " << jobSizeLeftToProcess << " of " << jobSize << " left to process" << std::endl;
+    *log.debug << tab << "    Job Processing: " << jobProcessingTimeLeft << " of " << jobProcessingTime << " left to process" << std::endl;
 
     if (printChildDetails)
     {

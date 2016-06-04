@@ -61,6 +61,8 @@
 		<Unit filename="JobDistributionModel.hpp" />
 		<Unit filename="JobModel.cpp" />
 		<Unit filename="JobModel.hpp" />
+		<Unit filename="JobTask.cpp" />
+		<Unit filename="JobTask.hpp" />
 		<Unit filename="Logger.cpp" />
 		<Unit filename="Logger.hpp" />
 		<Unit filename="MigrationJob.cpp" />

@@ -12,6 +12,10 @@ int Configuration::TimeStep = 1;
 double Configuration::BandwidthPerSecondForCluster = .125;
 int Configuration::NumberOfParkingSpaces = 10;
 
+int Configuration::NumberTasksPerJob = 4;
+bool Configuration::TaskScheme_AlternateProcessAndDataMigrate = true;
+
+
 int Configuration::VMMigrationOffset = 10;
 int Configuration::NumberOfDataBackupsRequired = 3;
 bool Configuration::DataMigrationType_Random = true;
@@ -81,6 +85,14 @@ void Configuration::ReadFromFile()
     if (left == "NumberOfParkingSpaces")
     {
       NumberOfParkingSpaces = ConvertToInt(right);
+    }
+    if (left == "NumberTasksPerJob")
+    {
+      NumberTasksPerJob = ConvertToInt(right);
+    }
+    if (left == "TaskScheme_AlternateProcessAndDataMigrate")
+    {
+      TaskScheme_AlternateProcessAndDataMigrate = ConvertToInt(right);
     }
     if (left == "VMMigrationOffset")
     {

@@ -102,7 +102,7 @@ void CarModel::HandleIncomingVehicles()
 
 
 //For a car that is migrating, choose the car to migrate to
-Car * CarModel::GetMigrationToVehicle(Car* FromCar)
+Car * CarModel::GetVMMigrationToVehicle(Car* FromCar)
 {
   //Loop through and find the latest departing vehicle that currently is not running a job.
   //ToDo: This needs to consider cluster
@@ -185,7 +185,7 @@ void CarModel::handleVehicleDepartingSOON()
 	  //3. Stop Job Processing / Data Migration
 	  leavingCar->job->jobStatus = VMMigrating;
 
-	  Car * carToMigrateTo = GetMigrationToVehicle(it->second);
+	  Car * carToMigrateTo = GetVMMigrationToVehicle(it->second);
 
 	  if (carToMigrateTo != NULL)
 	  {

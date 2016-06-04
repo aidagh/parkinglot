@@ -32,7 +32,7 @@ class CarModel
 
 
 	void createNewCar();
-	Car * GetMigrationToVehicle(Car* FromCar);
+	Car * GetVMMigrationToVehicle(Car* FromCar);
 	void handleVehicleDepartingNOW();
 	void handleVehicleDepartingSOON();
     void HandleDepartingVehicles();

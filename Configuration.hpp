@@ -61,6 +61,12 @@ class Configuration
 
    static int NumberOfParkingSpaces;
 
+   //Job configuration
+   //  These affect the jobs and tasks
+   static int NumberTasksPerJob;
+   static bool TaskScheme_AlternateProcessAndDataMigrate;
+
+
    //Migration configuration
    //  These affect the migrations
    static int VMMigrationOffset;
