@@ -9,7 +9,7 @@ int Configuration::LogLevel = 0;
 bool Configuration::PauseAtEndOfCode = true;
 int Configuration::MaxTime = 100;
 int Configuration::TimeStep = 1;
-double Configuration::BandwidthPerSecondForCluster = .125;
+double Configuration::BandwidthPerMinuteForClusterInMegaBytes = 75;
 int Configuration::NumberOfParkingSpaces = 10;
 
 int Configuration::NumberTasksPerJob = 4;
@@ -78,9 +78,9 @@ void Configuration::ReadFromFile()
     {
       TimeStep = ConvertToInt(right);
     }
-    if (left == "BandwidthPerSecondForCluster")
+    if (left == "BandwidthPerMinuteForClusterInMegaBytes")
     {
-      BandwidthPerSecondForCluster = ConvertToDouble(right);
+      BandwidthPerMinuteForClusterInMegaBytes = ConvertToDouble(right);
     }
     if (left == "NumberOfParkingSpaces")
     {
