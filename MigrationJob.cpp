@@ -6,11 +6,8 @@ void MigrationJob::printMigrationJobDetails(bool printChildDetails, std::string 
     *log.info << tab << "Migration Task" << std::endl;
 
 
-    *log.info << tab << "    from Car             " << carFrom->car_spot_number << std::endl;
-    *log.info << tab << "    to Car               " << carTo->car_spot_number << std::endl;
-    *log.info << tab << "    type                 " << PrintMigrationType(type) << std::endl;
-    *log.info << tab << "    total Data           " << totalDataSize << std::endl;
-    *log.info << tab << "    Data left to Migrate " << dataLeftToMigrate << std::endl;
+    *log.info << tab << "    type:  " << PrintMigrationType(type) << ", from Car(" << carFrom->car_spot_number << ") to Car (" << carTo->car_spot_number << ")." << std::endl;
+    *log.info << tab << "    Data left to Migrate " << dataLeftToMigrate << " of " << totalDataSize << std::endl;
     *log.info << tab << "    currentBandwidth     " << currentBandwidthSize << std::endl;
 }
 

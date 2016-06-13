@@ -37,7 +37,6 @@ Job * JobModel::GenerateJob()
   job->jobProcessingTime = jobLength;
   job->jobProcessingTimeLeft = jobLength;
   job->VMsize = _jobDistributionModel.getNextVMSize();
-  job->jobStatus = Processing;
   job->dataToMigrate = jobDataToMigrate;
 
   if (_configuration.TaskScheme_AlternateProcessAndDataMigrate)
@@ -49,7 +48,7 @@ Job * JobModel::GenerateJob()
       //Only half the tasks are Migration tasks, so divide by 2
       int DataToMigratePerTask = jobDataToMigrate / (_configuration.NumberTasksPerJob / 2);
 
-      for(int i=0; i <= _configuration.NumberTasksPerJob; i++ )
+      for(int i=0; i<_configuration.NumberTasksPerJob; i++)
       {
           JobTask* task = new JobTask;
           task->job = job;
@@ -59,14 +58,26 @@ Job * JobModel::GenerateJob()
               task->taskProcessingTime = jobLengthPerTask;
               task->taskProcessingTimeLeft = jobLengthPerTask;
               taskType = Task_DataMigrate;
+              if (i == 0)
+              {
+                  job->ActiveJobTask = task;
+                  task->jobTaskStatus = Task_InProgress;
+                  job->jobStatus = Processing;
+              }
+
           }
           else if (taskType == Task_DataMigrate)
           {
               task->taskDataToMigrate = DataToMigratePerTask;
               taskType = Task_Process;
+              if (i == 0)
+              {
+                  job->ActiveJobTask = task;
+                  job->jobStatus = DataMigrating;
+              }
+
           }
           job->JobTasks.push_back(task);
-
       }
   }
   else
@@ -100,6 +111,60 @@ void JobModel::createNewJob()
 
 
 }
+void JobModel::SetActiveTaskComplete(Job * job)
+{
+    job->ActiveJobTask->jobTaskStatus = Task_Complete;
+}
+
+
+
+void JobModel::StartNextJobTask(Job * job)
+{
+
+    std::list<int> jobEraseList;
+    bool found = false;
+
+    //I think this can be done with iterators in a better way.
+    std::list<JobTask*>::iterator it;
+	for(it=job->JobTasks.begin(); it != job->JobTasks.end(); it++)
+    {
+        if ((*it)->jobTaskStatus != Task_Complete)
+        {
+            job->ActiveJobTask = (*it);
+            found = true;
+            job->ActiveJobTask->jobTaskStatus = Task_InProgress;
+
+            if (job->ActiveJobTask->taskType == Task_DataMigrate)
+            {
+                SetJobToDataMigrating(job);
+            }
+            if (job->ActiveJobTask->taskType == Task_Process)
+            {
+                SetJobToDataProcessing(job);
+            }
+
+            break;
+        }
+    }
+
+    if (found == false)
+    {
+        *_log.info << "Space:" << job->car->car_spot_number << " -- Job Complete!" << std::endl;
+
+        job->jobStatus = Complete;
+        //TODO: update statistics
+//        jobEraseList.push_back(job->car->car_spot_number);
+        job->car->job = NULL;
+    }
+/*
+    std::list<int>::iterator itList;
+    for(itList = jobEraseList.begin(); itList != jobEraseList.end(); itList++)
+    {
+        jobMap.erase(*itList);
+    }
+*/
+}
+
 
 void JobModel::SetJobToDataMigrating(Job * job)
 {
@@ -141,8 +206,22 @@ void JobModel::SetJobToDataMigrating(Job * job)
 
 }
 
+void JobModel::SetJobToDataProcessing(Job * job)
+{
+    *_log.trace << "Entering SetJobToDataProcessing()" << std::endl;
+
+	job->jobStatus = Processing;
+
+
+    *_log.trace << "Exiting SetJObToDataProcessing()" << std::endl;
+
+}
+
+
 void JobModel::HandleJobProcessing()
 {
+  std::list<int> jobEraseList;
+
   std::map<int, Job*>::iterator it;
   for(it = jobMap.begin(); it != jobMap.end(); it++)
   {
@@ -152,18 +231,30 @@ void JobModel::HandleJobProcessing()
 	if (job->jobStatus == Processing)
 	{
       //subtract time from the time left to process
-      job->jobProcessingTimeLeft -= _configuration.TimeStep;
+      job->ActiveJobTask->taskProcessingTimeLeft -= _configuration.TimeStep;
 
       //If the job is no longer processing
-      if (job->jobProcessingTimeLeft <= 0)
+      if (job->ActiveJobTask->taskProcessingTimeLeft <= 0)
 	  {
-		//Set the job to ProcessingComplete
-        SetJobToDataMigrating(job);
-	  }
+        SetActiveTaskComplete(job);
+		StartNextJobTask(job);
 
+        if (job->jobStatus == Complete)
+        {
+            jobEraseList.push_back(it->first);
+        }
+	  }
 	}
   }
+
+  std::list<int>::iterator itList;
+  for(itList = jobEraseList.begin(); itList != jobEraseList.end(); itList++)
+  {
+    jobMap.erase(*itList);
+  }
 }
+
+
 
 void JobModel::HandleJobDataMigration_ReserveTransaction()
 {
@@ -216,12 +307,21 @@ void JobModel::HandleJobDataMigration_CompleteTransaction()
 
 		if (job->DataMigrationJobs.empty())
 		{
-			*_log.info << "Space:" << it->first << " -- Job Complete!" << std::endl;
+            SetActiveTaskComplete(job);
+			StartNextJobTask(job);
 
-			job->jobStatus = Complete;
+            if (job->jobStatus == Complete)
+            {
+                jobEraseList.push_back(it->first);
+            }
+
+
+//			*_log.info << "Space:" << it->first << " -- Job Complete!" << std::endl;
+
+//			job->jobStatus = Complete;
 		    //TODO: update statistics
-			jobEraseList.push_back(it->first);
-            job->car->job = NULL;
+//			jobEraseList.push_back(it->first);
+//            job->car->job = NULL;
 		}
 	}
   }
@@ -282,8 +382,9 @@ void JobModel::HandleJobVMMigration_CompleteTransaction()
                 it = jobMap.erase(it);
                 it--;
 
+                StartNextJobTask(job);
                 //Is it always appropriate to set this to Processing?
-                job->jobStatus = Processing;
+                //job->jobStatus = Processing;
             }
         }
     }

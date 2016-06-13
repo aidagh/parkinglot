@@ -32,6 +32,10 @@ class JobModel
 	void createNewJob();
 	void HandleJobProcessing();
     void SetJobToDataMigrating(Job * job);
+    void SetJobToDataProcessing(Job * job);
+
+    void SetActiveTaskComplete(Job * job);
+    void StartNextJobTask(Job * job);
 
 	//Due to the congestion Model the HandleJobDataMigration and HandleJobVMMigration must be handled in two parts.
 	//First the network space must be allocated.

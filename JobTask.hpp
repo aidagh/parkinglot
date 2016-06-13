@@ -14,7 +14,7 @@ class Job;
 enum JobTaskStatus
 {
 	Task_NotStarted,
-	Task_Processing,
+	Task_InProgress,
 	Task_Complete
 };
 
@@ -55,6 +55,7 @@ class JobTask
 
     void printJobTaskDetails(bool printChildDetails, std::string tab);
     std::string PrintJobTaskStatus(JobTaskStatus jobTaskStatus);
+    std::string PrintJobTaskType(JobTaskType jobTaskType);
 
 };
 

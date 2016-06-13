@@ -23,6 +23,17 @@ void Job::printJobDetails(bool printChildDetails, std::string tab)
 
     if (printChildDetails)
     {
+        std::list<JobTask*>::iterator it_jobTask;
+
+        if(!JobTasks.empty())
+        {
+            for(it_jobTask = JobTasks.begin(); it_jobTask != JobTasks.end(); it_jobTask++)
+            {
+                (*it_jobTask)->printJobTaskDetails(true, tab + "    ");
+            }
+        }
+
+
         std::list<MigrationJob*>::iterator it;
 
         if(!DataMigrationJobs.empty())

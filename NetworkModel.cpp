@@ -102,6 +102,7 @@ void NetworkModel::ReserveBandwidth(MigrationJob* migrationJob)
 
 	//This will hardcode the bandwidth to 1.  This is done for testing purposes only.  This
 	//code should be removed when replaced with the proper congestion model.
+	migrationJob->currentBandwidthSize = 1;
 }
 
 void NetworkModel::Allocate()

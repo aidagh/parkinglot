@@ -37,6 +37,8 @@ class Job
 	JobStatus jobStatus;
 
 	std::list<JobTask*> JobTasks;
+    JobTask* ActiveJobTask;
+
 
 	int jobProcessingTime;              //In Minutes
 	int jobProcessingTimeLeft; //Starts at jobProcessingTime and is subtracted each minute.
