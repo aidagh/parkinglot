@@ -19,6 +19,9 @@ void JobModel::HandleJobs()
   HandleJobDataMigration_ReserveTransaction();
   HandleJobVMMigration_ReserveTransaction();
 
+  NetworkModel _networkModel;
+  _networkModel.Allocate();
+
   HandleJobDataMigration_CompleteTransaction();
   HandleJobVMMigration_CompleteTransaction();
 
@@ -172,7 +175,10 @@ void JobModel::SetJobToDataMigrating(Job * job)
     CarModel carModel;
 
     *_log.info << "Data Migration Setup" << std::endl;
-    *_log.info << "   From Car: " << job->car->car_spot_number << std::endl;
+    *_log.info << "   From Car: " << job->car->car_spot_number << ", cluster number: "
+                                  << job->car->car_cluster_number << ", group number: "
+                                  << job->car->car_group_number << ", region number: "
+                                  << job->car->car_region_number << std::endl;
 
 	//1. Set job to DataMigrating
 	//2. Populate DataMigrationJobs
@@ -198,7 +204,10 @@ void JobModel::SetJobToDataMigrating(Job * job)
         //  Add the Migration Job to the job->DataMigrationJobs
         (*it)->DataMigrationTasks.push_back(migrationJob);
 
-        *_log.info << "   To Car: " << (*it)->car_spot_number << std::endl;
+        *_log.info << "   To Car: " << (*it)->car_spot_number << ", cluster number: "
+                                  << (*it)->car_cluster_number << ", group number: "
+                                  << (*it)->car_group_number << ", region number: "
+                                  << (*it)->car_region_number << std::endl;
 
     }
 

@@ -4,13 +4,11 @@
 #include "NetworkModel.hpp"
 
 int NetworkModel::lastCongestionDataUpdate = 0;
+list<MigrationJob*> NetworkModel::migrationJobList;
 
 // calling constructor to initialize the map
 NetworkModel::NetworkModel() {
-    for(int i = 1; i <= 64; ++i) {
-        migrations_in_cluster.insert(make_pair(i, 0));
-        bandwithAllocationMap.insert(make_pair(i, _configuration.BandwidthPerMinuteForClusterInMegaBytes));
-    }
+
 }
 
 void NetworkModel::Initialize()
@@ -21,9 +19,16 @@ void NetworkModel::Initialize()
 void NetworkModel::resetMigrationMap()
 {
     for(int i = 1; i <= 64; ++i) {
+        /// initializing the number of jobs in each cluster to zero
+        migrations_in_cluster.insert(make_pair(i, 0));
+        /// initializing the the bandwidth of each cluster to full value = 75
+        bandwithAllocationMap.insert(make_pair(i, _configuration.BandwidthPerMinuteForClusterInMegaBytes));
+    }
+    /*
+    for(int i = 1; i <= 64; ++i) {
         migrations_in_cluster[i] = 0;
         bandwithAllocationMap[i] = bandwidthPerMin;
-    }
+    }*/
 }
 
 void NetworkModel::updateCongestionData()
@@ -31,63 +36,55 @@ void NetworkModel::updateCongestionData()
   //This makes sure the congestion data is only update 1 time for every time step.
   if (lastCongestionDataUpdate < _time.getTime())
   {
-      // reset the map every time step
+      /// reset the map every time step
       resetMigrationMap();
 	  //1. Loop through each of the data migration and VM migrations
 	  //2. calculate the number of jobs at each cluster/group/region/data center
 	  //3. Evenly distribute the amount of bandwidth between each job at the cluster level
 	  //4. Given the distribution of bandwidth at the cluster level, make sure the amount of
 	  //   bandwidth is not exceeded at the group, region, datacenter level.
-	  std::map<int, Job*>::iterator it;
-	  list<MigrationJob*> allMigrationJobs;
-	  Job * jobPtr = nullptr;
+	  //Job * jobPtr = nullptr;
 	  Car* carFrom = nullptr;
 	  Car* carTo = nullptr;
-	  for(it = JobModel::jobMap.begin(); it != JobModel::jobMap.end(); ++it) {
-        //spotNumber = it->first;
-        jobPtr = it->second;
-        if(jobPtr->jobStatus == DataMigrating) {
-            for(list<MigrationJob*>::iterator dataItr = jobPtr->DataMigrationJobs.begin(); dataItr != jobPtr->DataMigrationJobs.end(); ++dataItr) {
-                allMigrationJobs.push_back(*dataItr);
-                carFrom = (*dataItr)->carFrom;
-                carTo = (*dataItr)->carTo;
-                migrations_in_cluster[carFrom->car_cluster_number]++;
-                migrations_in_cluster[carTo->car_cluster_number]++;
-            }
-        } else if (jobPtr->jobStatus == VMMigrating) {
-                allMigrationJobs.push_back(jobPtr->VMMigrationJob);
-                carFrom = jobPtr->VMMigrationJob->carFrom;
-                carTo = jobPtr->VMMigrationJob->carTo;
-                migrations_in_cluster[carFrom->car_cluster_number]++;
-                migrations_in_cluster[carTo->car_cluster_number]++;
-        }
-         carFrom = nullptr;
-         carTo = nullptr;
-	  }
+	  /// loop through all the migrationJobList (static list to store all the migration jobs) to calculate the number of
+	  /// jobs in each cluster
+	  for(list<MigrationJob*>::iterator dataItr = migrationJobList.begin(); dataItr != migrationJobList.end(); ++dataItr) {
+	      carFrom = (*dataItr)->carFrom;
+          carTo = (*dataItr)->carTo;
+          cout << "Car from cluster number: " << carFrom->car_cluster_number << endl;
+          cout << "Car TO cluster number: " << carTo->car_cluster_number << endl;
+          migrations_in_cluster[carFrom->car_cluster_number]++;
+          migrations_in_cluster[carTo->car_cluster_number]++;
+          if(carFrom->car_group_number != carTo->car_group_number) {
+            // since they are not in the same group, we can say there is a message passing between group
+            // TODO: create a map to take care of number of jobs at group level
+          }
+          if(carFrom->car_region_number != carTo->car_region_number) {
+            // since carFrom and carTo are not in the same region, so there should be a message passing between region
+            //TO DO: take care of region
+          }
+      }
+      carFrom = nullptr;
+      carTo = nullptr;
       map<int, int>::iterator mapItr = migrations_in_cluster.begin();
-
       while(mapItr != migrations_in_cluster.end()) {
+          /// we loop through the map we just created in order to evenly distribute the bandwidth.
+          /// we store the calculated value in bandwithAllocationMap which is mapping bandwidth with cluster number
           if(mapItr->second != 0) bandwithAllocationMap[mapItr->first] =
                 _configuration.BandwidthPerMinuteForClusterInMegaBytes / (double) mapItr->second;
           ++mapItr;
       }
-      double bandWidth = 0;
-      for(list<MigrationJob*>::iterator it = allMigrationJobs.begin(); it != allMigrationJobs.end(); ++it) {
-            carFrom = (*it)->carFrom;
-            carTo = (*it)->carTo;
-            if(carFrom->car_cluster_number != carTo->car_cluster_number) {
-                bandWidth = bandwithAllocationMap[carFrom->car_cluster_number]
-                                < bandwithAllocationMap[carTo->car_cluster_number]
-                                ? bandwithAllocationMap[carFrom->car_cluster_number]
-                                : bandwithAllocationMap[carTo->car_cluster_number];
-                (*it)->currentBandwidthSize = bandWidth;
-            } else if (carFrom->car_cluster_number == carTo->car_cluster_number) {
-                (*it)->currentBandwidthSize = 2 * bandwithAllocationMap[(*it)->carFrom->car_cluster_number];
-            }
-            carFrom = nullptr;
-            carTo = nullptr;
+      /*
+      map<int, double>::iterator mapItr2 = bandwithAllocationMap.begin();
+      while(mapItr2 != bandwithAllocationMap.end()) {
+          /// we loop through the map we just created in order to evenly distribute the bandwidth.
+          /// we store the calculated value in bandwithAllocationMap which is mapping bandwidth with cluster number
+          if(mapItr2->second != 0) {
+                cout << "cluster number: " << mapItr2->first << ", bandwidth: " << mapItr2->second << endl;
+          }
+          ++mapItr2;
+      }*/
 
-      }
       lastCongestionDataUpdate = _time.getTime();
 
   }
@@ -102,14 +99,46 @@ void NetworkModel::ReserveBandwidth(MigrationJob* migrationJob)
 
 	//This will hardcode the bandwidth to 1.  This is done for testing purposes only.  This
 	//code should be removed when replaced with the proper congestion model.
-	migrationJob->currentBandwidthSize = 1;
+	//migrationJob->currentBandwidthSize = 1;
+	migrationJobList.push_back(migrationJob);
 }
 
 void NetworkModel::Allocate()
 {
     updateCongestionData();
-	//Calculate how much bandwidth can be allocated to each migrationJob.
+    //Calculate how much bandwidth can be allocated to each migrationJob.
 	//Loop through each of the migrationJobs and update the migrationJob->currentBandwidthSize with the available bandwidth for that job.
 
+    double bandWidth = 0;
+    Car* carFrom = nullptr;
+    Car* carTo = nullptr;
+    /// we have to loop through the migration jobs again to assign/update the bandwidth to each migration job
+    for(list<MigrationJob*>::iterator it = migrationJobList.begin(); it != migrationJobList.end(); ++it) {
+        carFrom = (*it)->carFrom;
+        carTo = (*it)->carTo;
+        /// find out the minimum bandwidth of the two cars and then choose the minimum one
+        bandWidth = bandwithAllocationMap[carFrom->car_cluster_number]
+                            < bandwithAllocationMap[carTo->car_cluster_number]
+                            ? bandwithAllocationMap[carFrom->car_cluster_number]
+                            : bandwithAllocationMap[carTo->car_cluster_number];
+        /// assign the bandwidth to the migrationJob's currentBandwithSize
+        (*it)->currentBandwidthSize = bandWidth;
+        /*
+        if(carFrom->car_cluster_number != carTo->car_cluster_number) {
+            bandWidth = bandwithAllocationMap[carFrom->car_cluster_number]
+                            < bandwithAllocationMap[carTo->car_cluster_number]
+                            ? bandwithAllocationMap[carFrom->car_cluster_number]
+                            : bandwithAllocationMap[carTo->car_cluster_number];
+            (*it)->currentBandwidthSize = bandWidth;
+        } else if (carFrom->car_cluster_number == carTo->car_cluster_number) {
+            (*it)->currentBandwidthSize = 2 * bandwithAllocationMap[(*it)->carFrom->car_cluster_number];
+        }
+        */
+        carFrom = nullptr;
+        carTo = nullptr;
+
+    }
+    /// clear the migrationJobList to be prepared for the next time step
+    migrationJobList.clear();
 }
 

@@ -72,6 +72,8 @@ void CarModel::createNewCar()
   Car * newCar = new Car();
   newCar->car_spot_number = randomEmptySpace;
   newCar->car_cluster_number = getClusterNumber(randomEmptySpace);
+  newCar->car_group_number = getGroupNumber(randomEmptySpace);
+  newCar->car_region_number = getRegionNumber(randomEmptySpace);
   newCar->arrival_time_of_car = _time.getTime();
 
   if (initializing)
@@ -87,7 +89,10 @@ void CarModel::createNewCar()
 
   carmap[randomEmptySpace] = newCar;
   emptySpaces.remove(randomEmptySpace);
-  *_log.info << "Car in spot " << randomEmptySpace << ", and cluster " << newCar->car_cluster_number << " has arrived" << std::endl;
+  *_log.info << "Car in spot " << randomEmptySpace << ", and cluster "
+                << newCar->car_cluster_number << ", group "
+                << newCar->car_group_number << ", region "
+                << newCar->car_region_number << " has arrived" << std::endl;
 
 }
 

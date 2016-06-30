@@ -22,6 +22,7 @@ class NetworkModel
     Configuration _configuration;
     map<int, int> migrations_in_cluster;
     map<int, double> bandwithAllocationMap;
+    static list<MigrationJob*> migrationJobList;
     double bandwidthPerMin;
     TimeModel _time;
 //    CarModel _carModel;

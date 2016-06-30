@@ -18,7 +18,7 @@ class Car
   public:
     int car_spot_number;
     int car_cluster_number;
-    // int car_group_number, car_region_number;
+    int car_group_number, car_region_number;
     int arrival_time_of_car;
     int departure_time_of_car;
     int job_number;
