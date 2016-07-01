@@ -58,6 +58,7 @@ class Configuration
    //Network configuration
    //  These affect the network
    static double BandwidthPerMinuteForClusterInMegaBytes;
+   static double BandwidthPerMinuteForWiredLinksInMegaBytes;
 
    static int NumberOfParkingSpaces;
 

@@ -24,6 +24,16 @@ void NetworkModel::resetMigrationMap()
         /// initializing the the bandwidth of each cluster to full value = 75
         bandwithAllocationMap.insert(make_pair(i, _configuration.BandwidthPerMinuteForClusterInMegaBytes));
     }
+    for(int i = 1; i <= 16; ++i) {
+        migratios_in_group.insert(make_pair(i, 0));
+        bandwithAllocationMapGroup.insert(make_pair(i, _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes));
+    }
+    for(int i = 1; i <= 4; ++i) {
+        migrations_in_region.insert(make_pair(i, 0));
+        bandwithAllocationMapRegion.insert(make_pair(i, _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes));
+    }
+    migartion_in_datacenter = 0;
+    bandwidthAllocationDataCenter = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
     /*
     for(int i = 1; i <= 64; ++i) {
         migrations_in_cluster[i] = 0;
@@ -48,20 +58,35 @@ void NetworkModel::updateCongestionData()
 	  Car* carTo = nullptr;
 	  /// loop through all the migrationJobList (static list to store all the migration jobs) to calculate the number of
 	  /// jobs in each cluster
+	  cout << "Inside Network Congestion UpdateCongestionData() " << endl;
 	  for(list<MigrationJob*>::iterator dataItr = migrationJobList.begin(); dataItr != migrationJobList.end(); ++dataItr) {
 	      carFrom = (*dataItr)->carFrom;
           carTo = (*dataItr)->carTo;
-          cout << "Car from cluster number: " << carFrom->car_cluster_number << endl;
-          cout << "Car TO cluster number: " << carTo->car_cluster_number << endl;
+          cout << "\tCar from cluster number: " << carFrom->car_cluster_number << endl;
+          cout << "\tCar TO cluster number: " << carTo->car_cluster_number << endl;
           migrations_in_cluster[carFrom->car_cluster_number]++;
           migrations_in_cluster[carTo->car_cluster_number]++;
-          if(carFrom->car_group_number != carTo->car_group_number) {
-            // since they are not in the same group, we can say there is a message passing between group
-            // TODO: create a map to take care of number of jobs at group level
-          }
+          /// if the regions are different, then we know it is going to pass from data center
+          /// and each of the regions and groups need to be incremented
           if(carFrom->car_region_number != carTo->car_region_number) {
-            // since carFrom and carTo are not in the same region, so there should be a message passing between region
-            //TO DO: take care of region
+            migartion_in_datacenter++;
+            migrations_in_region[carFrom->car_region_number]++;
+            migrations_in_region[carTo->car_region_number]++;
+            migratios_in_group[carFrom->car_group_number]++;
+            migratios_in_group[carTo->car_group_number]++;
+          } else {
+              /// else we have different scenarios
+              if(carFrom->car_group_number != carTo->car_group_number) {
+                /// does not matter if we increment by carTo or carFrom region number, but we have to increment only once
+                migrations_in_region[carTo->car_region_number]++;
+                /// we increment both groups for carFrom and carTo
+                migratios_in_group[carFrom->car_group_number]++;
+                migratios_in_group[carTo->car_group_number]++;
+              } else if(carFrom->car_group_number == carTo->car_group_number && carFrom->car_cluster_number != carTo->car_cluster_number) {
+                  /// does not matter if we increment by carTo or carFrom group number, but we have to increment only once
+                    migratios_in_group[carTo->car_group_number]++;
+                }
+
           }
       }
       carFrom = nullptr;

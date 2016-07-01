@@ -10,6 +10,7 @@ bool Configuration::PauseAtEndOfCode = true;
 int Configuration::MaxTime = 100;
 int Configuration::TimeStep = 1;
 double Configuration::BandwidthPerMinuteForClusterInMegaBytes = 75;
+double Configuration::BandwidthPerMinuteForWiredLinksInMegaBytes = 7500;
 int Configuration::NumberOfParkingSpaces = 10;
 
 int Configuration::NumberTasksPerJob = 4;
