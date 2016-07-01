@@ -9,6 +9,7 @@
 #include "Random.hpp"
 #include "Configuration.hpp"
 #include "CarResidencyDistributionModel.hpp"
+#include "StatisticsModel.hpp"
 #include "Job.hpp"
 #include "JobModel.hpp"
 
@@ -21,6 +22,7 @@ class CarModel
     Logger _log;
 	Configuration _configuration;
     TimeModel _time;
+    StatisticsModel _statisticsModel;
 	CarResidencyDistributionModel _carResidencyDistributionModel;
 
     //carmap is indexed by parking spot number

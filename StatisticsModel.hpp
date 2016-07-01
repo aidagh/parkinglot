@@ -4,13 +4,23 @@
 #ifndef __STATISTICSMODEL_HPP__
 #define __STATISTICSMODEL_HPP__
 
+#include "Logger.hpp"
+#include <list>
 
 class StatisticsModel
 {
   private:
+    static Logger _log;
+
+    static int cars_arrived;
+    static int cars_departed;
+    static int jobs_total;
     static int jobs_completed;
-    static int count_migrated_successfully;
-    static int count_failed_to_migrate;
+    static int jobs_failed;
+    static int count_failed_migrate_vm;
+    static int count_success_migrate_vm;
+
+    static std::list<int> jobCompletionTimes;
 
 
     //A list of any possible statistic that we can think of
@@ -31,11 +41,19 @@ class StatisticsModel
 
   //Update these Log methods to include more data about what is going on.
   public:
-    void LogJobCompleted();
-	void LogSuccessfulMigration();
-	void LogFailedMigration();
-};
 
+    static void Initialize();
+
+    static void LogCarArrived();
+    static void LogCarDeparted();
+    static void LogJobCompleted();
+    static void LogJobFailed();
+	static void LogSuccessfulVMMigration();
+	static void LogFailedVMMigration();
+	static void LogJobCompletionTime(int);
+
+	static void PrintResults();
+};
 
 
 #endif

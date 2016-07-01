@@ -34,6 +34,11 @@ class Job
     int job_number;
     double VMsize;
 
+    int JobStartTime;
+    int JobEndTime;
+
+
+
 	JobStatus jobStatus;
 
 	std::list<JobTask*> JobTasks;

@@ -102,6 +102,8 @@ void CarModel::HandleIncomingVehicles()
 	while (_time.getTime() >= _carResidencyDistributionModel.getNextArrival())
 	{
 		createNewCar();
+
+        _statisticsModel.LogCarArrived();
 	}
 }
 
@@ -146,6 +148,7 @@ void CarModel::handleVehicleDepartingNOW()
     //Check if car has left or is leaving
     if (leavingCar.departure_time_of_car <= _time.getTime())
     {
+        _statisticsModel.LogCarDeparted();
 	  if (leavingCar.job != NULL)
 	    _jobModel.CancelJob(leavingCarSpace);
 

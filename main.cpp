@@ -65,6 +65,7 @@ CarModel _carModel;
 TimeModel _timeModel;
 JobModel _jobModel;
 Logger _log;
+StatisticsModel _statisticsModel;
 
 
 
@@ -72,6 +73,8 @@ Logger _log;
 
 int main()
 {
+    _statisticsModel.Initialize();
+
 	_log.Initialize();
 	*_log.info << "Showing Info Logs" << std::endl;
 	*_log.debug << "Showing Debug Logs" << std::endl;
@@ -93,8 +96,11 @@ int main()
       _carModel.PrintVehicleInfo();
 	  _timeModel.increment();
 
-	  std::cin.get();
+	//  std::cin.get();
 	}
+
+
+	_statisticsModel.PrintResults();
 
 
 	if (_configuration.PauseAtEndOfCode)

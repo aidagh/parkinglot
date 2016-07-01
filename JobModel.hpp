@@ -37,6 +37,7 @@ class JobModel
 	void HandleJobProcessing();
     void SetJobToDataMigrating(Job * job);
     void SetJobToDataProcessing(Job * job);
+    void SetJobComplete(Job * job);
 
     void SetActiveTaskComplete(Job * job);
     void StartNextJobTask(Job * job);

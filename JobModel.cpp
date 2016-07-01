@@ -42,6 +42,8 @@ Job * JobModel::GenerateJob()
   job->VMsize = _jobDistributionModel.getNextVMSize();
   job->dataToMigrate = jobDataToMigrate;
 
+  job->JobStartTime = _time.getTime();
+
   if (_configuration.TaskScheme_AlternateProcessAndDataMigrate)
   {
       JobTaskType taskType = Task_Process;
@@ -152,12 +154,7 @@ void JobModel::StartNextJobTask(Job * job)
 
     if (found == false)
     {
-        *_log.info << "Space:" << job->car->car_spot_number << " -- Job Complete!" << std::endl;
-
-        job->jobStatus = Complete;
-        //TODO: update statistics
-//        jobEraseList.push_back(job->car->car_spot_number);
-        job->car->job = NULL;
+        SetJobComplete(job);
     }
 /*
     std::list<int>::iterator itList;
@@ -167,6 +164,8 @@ void JobModel::StartNextJobTask(Job * job)
     }
 */
 }
+
+
 
 
 void JobModel::SetJobToDataMigrating(Job * job)
@@ -226,6 +225,26 @@ void JobModel::SetJobToDataProcessing(Job * job)
 
 }
 
+void JobModel::SetJobComplete(Job *job)
+{
+
+        *_log.info << "Space:" << job->car->car_spot_number << " -- Job Complete!" << std::endl;
+
+
+        job->jobStatus = Complete;
+        //It seems silly to set this now, but we may want to print these out in the future.
+        job->JobEndTime = _time.getTime();
+
+        _statisticsModel.LogJobCompleted();
+
+        _statisticsModel.LogJobCompletionTime(job->JobEndTime - job->JobStartTime);
+
+
+        //TODO: update statistics
+//        jobEraseList.push_back(job->car->car_spot_number);
+        job->car->job = NULL;
+
+}
 
 void JobModel::HandleJobProcessing()
 {
@@ -391,6 +410,8 @@ void JobModel::HandleJobVMMigration_CompleteTransaction()
                 it = jobMap.erase(it);
                 it--;
 
+                _statisticsModel.LogSuccessfulVMMigration();
+
                 StartNextJobTask(job);
                 //Is it always appropriate to set this to Processing?
                 //job->jobStatus = Processing;
@@ -437,6 +458,8 @@ void JobModel::CancelJob(int spaceId)
 
   if (jobMap.find(spaceId) != jobMap.end())
   {
+      _statisticsModel.LogJobFailed();
+
       Job * job = jobMap[spaceId];
 
       if (job->jobStatus == Processing)
@@ -452,6 +475,8 @@ void JobModel::CancelJob(int spaceId)
 
         job->VMMigrationJob->carTo->job = NULL;
         *_log.debug << "Migration Failure - Job failed while VM Migration From " << spaceId << " to " << job->VMMigrationJob->carTo->car_spot_number << std::endl;
+
+        _statisticsModel.LogFailedVMMigration();
 
         delete job->VMMigrationJob;
       }
