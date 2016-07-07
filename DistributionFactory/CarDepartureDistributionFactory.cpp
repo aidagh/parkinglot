@@ -21,7 +21,7 @@ class ExponentialDeparture: public CarDepartureDistributionFactory
 void ExponentialDeparture::Initialize()
 {
 	Configuration _configuration;
-	DepartureExponentialDistribution = new std::exponential_distribution<double>(_configuration.CarDeparture_Exponential_Lambda);
+	DepartureExponentialDistribution = new std::exponential_distribution<double>(1/_configuration.CarDeparture_Exponential_Mean);
 }
 
 int ExponentialDeparture::getNext()

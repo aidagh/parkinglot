@@ -73,6 +73,13 @@ StatisticsModel _statisticsModel;
 
 int main()
 {
+    _configuration.ReadFromFile();
+
+    _configuration.PrintConfiguration();
+
+   // std::cin.get();
+
+
     _statisticsModel.Initialize();
 
 	_log.Initialize();
@@ -93,10 +100,10 @@ int main()
       _carModel.HandleCars();
 	  _jobModel.HandleJobs();
 
-      _carModel.PrintVehicleInfo();
+      //_carModel.PrintVehicleInfo();
 	  _timeModel.increment();
 
-	//  std::cin.get();
+	 // std::cin.get();
 	}
 
 

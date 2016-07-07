@@ -14,22 +14,6 @@
 #include <map>
 #include <queue>
 
-class comparison
-{
-    bool reversed;
-    public:
-        comparison(const bool& revparam=false)
-        {reversed=revparam;}
-    bool operator()(const Job* lhs, const Job* rhs) const
-    {
-        if(reversed) return lhs->JobStartTime < rhs->JobStartTime;
-        else return lhs->JobStartTime > rhs->JobStartTime;
-    }
-};
-
-// using comparison:
-typedef std::priority_queue<Job*,std::vector<Job*>,comparison> jobPQ_type;
-
 class JobModel
 {
   private:
@@ -40,7 +24,7 @@ class JobModel
 	StatisticsModel _statisticsModel;
 
 	//jobQueue contains jobs that could not be assigned to any vehicles
-	static jobPQ_type jobQueue;
+	static std::queue<Job*> jobQueue;
 
     //jobMap contains jobs that are assigned to vehicles
 	//  jobMap is indexed by parking spot number

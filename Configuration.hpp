@@ -16,7 +16,7 @@
 //    CarDeparture_Static -
 //    CarDeparture_Static_Value -
 //    CarDeparture_Exponential -
-//    CarDeparture_Exponential_Lambda -
+//    CarDeparture_Exponential_Mean -
 //    JobArrival_Static -
 //    JobArrival_Static_Value -
 //    JobArrival_Poisson -
@@ -84,7 +84,7 @@ class Configuration
    static bool CarDeparture_Static;
    static int CarDeparture_Static_Value;
    static bool CarDeparture_Exponential;
-   static double CarDeparture_Exponential_Lambda;
+   static double CarDeparture_Exponential_Mean;
 
 
    //Job configuration
@@ -117,7 +117,7 @@ class Configuration
    bool ConvertToBool(std::string &data);
    int ConvertToInt(std::string &data);
    double ConvertToDouble(std::string &data);
-
+   void PrintConfiguration();
 };
 
 

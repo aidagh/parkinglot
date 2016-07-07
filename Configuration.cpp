@@ -2,6 +2,7 @@
 //Description: 	Provides configuration data to the application
 
 #include <fstream>
+#include <iostream>
 
 #include "Configuration.hpp"
 
@@ -11,7 +12,7 @@ int Configuration::MaxTime = 100;
 int Configuration::TimeStep = 1;
 double Configuration::BandwidthPerMinuteForClusterInMegaBytes = 75;
 double Configuration::BandwidthPerMinuteForWiredLinksInMegaBytes = 7500;
-int Configuration::NumberOfParkingSpaces = 10;
+int Configuration::NumberOfParkingSpaces = 2560;
 
 int Configuration::NumberTasksPerJob = 4;
 bool Configuration::TaskScheme_AlternateProcessAndDataMigrate = true;
@@ -30,7 +31,7 @@ double Configuration::CarArrival_Poisson_Lambda = 0.1;
 bool Configuration::CarDeparture_Static = true;
 int Configuration::CarDeparture_Static_Value = 25;
 bool Configuration::CarDeparture_Exponential = false;
-double Configuration::CarDeparture_Exponential_Lambda = 0.1;
+double Configuration::CarDeparture_Exponential_Mean = 10;
 
 
 bool Configuration::JobArrival_Static = true;
@@ -93,7 +94,7 @@ void Configuration::ReadFromFile()
     }
     if (left == "TaskScheme_AlternateProcessAndDataMigrate")
     {
-      TaskScheme_AlternateProcessAndDataMigrate = ConvertToInt(right);
+      TaskScheme_AlternateProcessAndDataMigrate = ConvertToBool(right);
     }
     if (left == "VMMigrationOffset")
     {
@@ -139,37 +140,108 @@ void Configuration::ReadFromFile()
 	{
 	  CarDeparture_Exponential = ConvertToBool(right);
 	}
-    if (left == "CarDeparture_Exponential_Lambda")
+    if (left == "CarDeparture_Exponential_Mean")
 	{
-	  CarDeparture_Exponential_Lambda = ConvertToDouble(right);
+	  CarDeparture_Exponential_Mean = ConvertToDouble(right);
 	}
-/*
-JobArrival_Static
-JobArrival_Static_Value
-JobArrival_Poisson
-JobArrival_Poisson_Lambda
 
-JobLength_Static
-JobLength_Static_Value
-JobLength_Normal
-JobLength_Normal_Mean
-JobLength_Normal_STDev
+    if (left == "JobArrival_Static")
+    {
+        JobArrival_Static = ConvertToBool(right);
+    }
+    if (left == "JobArrival_Static_Value")
+    {
+        JobArrival_Static_Value = ConvertToInt(right);
+    }
+    if (left == "JobArrival_Poisson")
+    {
+        JobArrival_Poisson = ConvertToBool(right);
+    }
+    if (left == "JobArrival_Poisson_Lambda")
+    {
+        JobArrival_Poisson_Lambda = ConvertToDouble(right);
+    }
 
-JobVMSize_Static
-JobVMSize_Static_Value
-JobVMSize_Normal
-JobVMSize_Normal_Mean
-JobVMSize_Normal_STDev
-*/
+    if (left == "JobLength_Static")
+    {
+        JobLength_Static = ConvertToBool(right);
+    }
+    if (left == "JobLength_Static_Value")
+    {
+        JobLength_Static_Value = ConvertToInt(right);
+    }
+    if (left == "JobLength_Normal")
+    {
+        JobLength_Normal = ConvertToBool(right);
+    }
+    if (left == "JobLength_Normal_Mean")
+    {
+        JobLength_Normal_Mean = ConvertToDouble(right);
+    }
+    if (left == "JobLength_Normal_STDev")
+    {
+        JobLength_Normal_STDev = ConvertToDouble(right);
+    }
+
+
+
+    if (left == "JobVMSize_Static")
+    {
+        JobVMSize_Static = ConvertToBool(right);
+    }
+    if (left == "JobVMSize_Static_Value")
+    {
+        JobVMSize_Static_Value = ConvertToInt(right);
+    }
+    if (left == "JobVMSize_Normal")
+    {
+        JobVMSize_Normal = ConvertToBool(right);
+    }
+    if (left == "JobVMSize_Normal_Mean")
+    {
+        JobVMSize_Normal_Mean = ConvertToDouble(right);
+    }
+    if (left == "JobVMSize_Normal_STDev")
+    {
+        JobVMSize_Normal_STDev = ConvertToDouble(right);
+    }
+
+
+    if (left == "JobDataSize_Static")
+    {
+        JobDataSize_Static = ConvertToBool(right);
+    }
+    if (left == "JobDataSize_Static_Value")
+    {
+        JobDataSize_Static_Value = ConvertToInt(right);
+    }
+    if (left == "JobDataSize_Normal")
+    {
+        JobDataSize_Normal = ConvertToBool(right);
+    }
+    if (left == "JobDataSize_Normal_Mean")
+    {
+        JobDataSize_Normal_Mean = ConvertToDouble(right);
+    }
+    if (left == "JobDataSize_Normal_STDev")
+    {
+        JobDataSize_Normal_STDev = ConvertToDouble(right);
+    }
+
+
 
   }
 }
 
 bool Configuration::ConvertToBool(std::string &data)
 {
-  std::istringstream istrs(data);
-  bool result;
-  return istrs >> result ? result : 0;
+  if (data.compare("true") == 0)
+    return true;
+  return false;
+
+//  std::istringstream istrs(data);
+//  bool result;
+//  return istrs >> result ? result : 0;
 }
 
 int Configuration::ConvertToInt(std::string &data)
@@ -184,4 +256,51 @@ double Configuration::ConvertToDouble(std::string &data)
   std::istringstream istrs(data);
   double result;
   return istrs >> result ? result : 0;
+}
+
+
+void Configuration::PrintConfiguration()
+{
+
+  std::cout << "LogLevel = " << LogLevel << std::endl;
+  std::cout << "PauseAtEndOfCode = " << PauseAtEndOfCode << std::endl;
+  std::cout << "MaxTime = " << MaxTime << std::endl;
+  std::cout << "TimeStep = " << TimeStep << std::endl;
+  std::cout << "BandwidthPerMinuteForClusterInMegaBytes = " << BandwidthPerMinuteForClusterInMegaBytes << std::endl;
+  std::cout << "BandwidthPerMinuteForWiredLinksInMegaBytes = " << BandwidthPerMinuteForWiredLinksInMegaBytes << std::endl;
+  std::cout << "NumberOfParkingSpaces = " << NumberOfParkingSpaces << std::endl;
+  std::cout << "NumberTasksPerJob = " << NumberTasksPerJob << std::endl;
+  std::cout << "TaskScheme_AlternateProcessAndDataMigrate = " << TaskScheme_AlternateProcessAndDataMigrate << std::endl;
+  std::cout << "VMMigrationOffset = " << VMMigrationOffset << std::endl;
+  std::cout << "NumberOfDataBackupsRequired = " << NumberOfDataBackupsRequired << std::endl;
+  std::cout << "DataMigrationType_Random = " << DataMigrationType_Random << std::endl;
+  std::cout << "CarArrival_FromFile = " << CarArrival_FromFile << std::endl;
+  std::cout << "CarArrival_Static = " << CarArrival_Static << std::endl;
+  std::cout << "CarArrival_Static_Value = " << CarArrival_Static_Value << std::endl;
+  std::cout << "CarArrival_Poisson = " << CarArrival_Poisson << std::endl;
+  std::cout << "CarArrival_Poisson_Lambda = " << CarArrival_Poisson_Lambda << std::endl;
+  std::cout << "CarDeparture_Static = " << CarDeparture_Static << std::endl;
+  std::cout << "CarDeparture_Static_Value = " << CarDeparture_Static_Value << std::endl;
+  std::cout << "CarDeparture_Exponential = " << CarDeparture_Exponential << std::endl;
+  std::cout << "CarDeparture_Exponential_Mean = " << CarDeparture_Exponential_Mean << std::endl;
+  std::cout << "JobArrival_Static = " << JobArrival_Static << std::endl;
+  std::cout << "JobArrival_Static_Value = " << JobArrival_Static_Value << std::endl;
+  std::cout << "JobArrival_Poisson = " << JobArrival_Poisson << std::endl;
+  std::cout << "JobArrival_Poisson_Lambda = " << JobArrival_Poisson_Lambda << std::endl;
+  std::cout << "JobLength_Static = " << JobLength_Static << std::endl;
+  std::cout << "JobLength_Static_Value = " << JobLength_Static_Value << std::endl;
+  std::cout << "JobLength_Normal = " << JobLength_Normal << std::endl;
+  std::cout << "JobLength_Normal_Mean = " << JobLength_Normal_Mean << std::endl;
+  std::cout << "JobLength_Normal_STDev = " << JobLength_Normal_STDev << std::endl;
+  std::cout << "JobVMSize_Static = " << JobVMSize_Static << std::endl;
+  std::cout << "JobVMSize_Static_Value = " << JobVMSize_Static_Value << std::endl;
+  std::cout << "JobVMSize_Normal = " << JobVMSize_Normal << std::endl;
+  std::cout << "JobVMSize_Normal_Mean = " << JobVMSize_Normal_Mean << std::endl;
+  std::cout << "JobVMSize_Normal_STDev = " << JobVMSize_Normal_STDev << std::endl;
+  std::cout << "JobDataSize_Static = " << JobDataSize_Static << std::endl;
+  std::cout << "JobDataSize_Static_Value = " << JobDataSize_Static_Value << std::endl;
+  std::cout << "JobDataSize_Normal = " << JobDataSize_Normal << std::endl;
+  std::cout << "JobDataSize_Normal_Mean = " << JobDataSize_Normal_Mean << std::endl;
+  std::cout << "JobDataSize_Normal_STDev = " << JobDataSize_Normal_STDev << std::endl;
+
 }

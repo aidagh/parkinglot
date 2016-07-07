@@ -76,16 +76,16 @@ void CarModel::createNewCar()
   newCar->car_region_number = getRegionNumber(randomEmptySpace);
   newCar->arrival_time_of_car = _time.getTime();
 
-  if (initializing)
-  {
-    //This is a poor way to initialize the parkinglot.
-    newCar->departure_time_of_car = 40;
-  }
-  else
-  {
+//  if (initializing)
+//  {
+//    //This is a poor way to initialize the parkinglot.
+//    newCar->departure_time_of_car = 300;
+//  }
+//  else
+//  {
     newCar->departure_time_of_car = _carResidencyDistributionModel.getNextDeparture();
     _carResidencyDistributionModel.generateNext();
-  }
+//  }
 
   carmap[randomEmptySpace] = newCar;
   emptySpaces.remove(randomEmptySpace);
@@ -188,15 +188,16 @@ void CarModel::handleVehicleDepartingSOON()
     {
   	  *_log.info << "Starting Migration of Car in spot " << leavingCarSpace << " " << std::endl;
 
+	  Car * carToMigrateTo = GetVMMigrationToVehicle(it->second);
+
+	  if (carToMigrateTo != NULL)
+	  {
       //1. Choose car to migrate to
 	  //2. Set Migration to
 	  //3. Stop Job Processing / Data Migration
 	  leavingCar->job->jobStatus = VMMigrating;
 
-	  Car * carToMigrateTo = GetVMMigrationToVehicle(it->second);
 
-	  if (carToMigrateTo != NULL)
-	  {
         _jobModel.SetupVMMigration(leavingCar, carToMigrateTo) ;
 
 	    //emptySpaces.push_back(leavingCarSpace);
@@ -229,7 +230,7 @@ Car * CarModel::AssignJob(Job* job)
 {
   std::map<int, Car*>::iterator it;
 
-  for(it = carmap.begin(); it != carmap.end(); it++)
+/*  for(it = carmap.begin(); it != carmap.end(); it++)
   {
 	 if (it->second->job != NULL)
 	 {
@@ -240,7 +241,7 @@ Car * CarModel::AssignJob(Job* job)
 		 *_log.debug << "Space:" << it->first << " is not busy " << std::endl;
 	 }
   }
-
+*/
   for(it = carmap.begin(); it != carmap.end(); it++)
   {
     Car* car = it->second;
@@ -307,7 +308,8 @@ void CarModel::PrintVehicleInfo()
 
   for(it = carmap.begin(); it != carmap.end(); it++)
   {
-      it->second->printCarDetails(true, "");
+      if (it->second->job != NULL)
+        it->second->printCarDetails(true, "");
   }
 }
 
