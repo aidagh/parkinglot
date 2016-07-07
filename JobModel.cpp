@@ -4,7 +4,7 @@
 #include "JobModel.hpp"
 
 std::map<int, Job*> JobModel::jobMap;
-std::queue<Job*> JobModel::jobQueue;
+jobPQ_type JobModel::jobQueue(comparison(true));
 int JobModel::numJobs = 1;
 
 void JobModel::Initialize()
@@ -97,10 +97,12 @@ Job * JobModel::GenerateJob()
 
 void JobModel::createNewJob()
 {
-	CarModel _carModel;
+	//CarModel _carModel;
 	Job* job = GenerateJob();
-	Car* car = _carModel.AssignJob(job);
-
+	//Car* car = _carModel.AssignJob(job);
+    *_log.info << "New Job assigned to JobQueue:" << std::endl;
+    jobQueue.push(job);
+    /*
 	if (car != NULL)
 	{
       *_log.info << "New Job assigned to car:" << car->car_spot_number << std::endl;
@@ -112,7 +114,7 @@ void JobModel::createNewJob()
       *_log.info << "New Job assigned to JobQueue:" << std::endl;
 
       jobQueue.push(job);
-	}
+	}*/
 
 
 }
@@ -429,6 +431,18 @@ void JobModel::HandleIncomingJobs()
     while (_time.getTime() >= _jobDistributionModel.getNextArrival())
 	{
 		createNewJob();
+		if(!jobQueue.empty()) {
+            Job* jobPtr = jobQueue.top();
+            CarModel _carModel;
+            Car* car = _carModel.AssignJob(jobPtr);
+            if (car != NULL)
+            {
+                *_log.info << "New Job assigned to car:" << car->car_spot_number << std::endl;
+                jobPtr->car = car;
+                jobMap[car->car_spot_number] = jobPtr;
+                jobQueue.pop();
+            }
+		}
 	}
 }
 
