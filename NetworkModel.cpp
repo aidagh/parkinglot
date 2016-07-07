@@ -58,12 +58,12 @@ void NetworkModel::updateCongestionData()
 	  Car* carTo = nullptr;
 	  /// loop through all the migrationJobList (static list to store all the migration jobs) to calculate the number of
 	  /// jobs in each cluster
-	  cout << "Inside Network Congestion UpdateCongestionData() " << endl;
+	  //cout << "Inside Network Congestion UpdateCongestionData() " << endl;
 	  for(list<MigrationJob*>::iterator dataItr = migrationJobList.begin(); dataItr != migrationJobList.end(); ++dataItr) {
 	      carFrom = (*dataItr)->carFrom;
           carTo = (*dataItr)->carTo;
-          cout << "\tCar from cluster number: " << carFrom->car_cluster_number << endl;
-          cout << "\tCar TO cluster number: " << carTo->car_cluster_number << endl;
+          //cout << "\tCar from cluster number: " << carFrom->car_cluster_number << endl;
+          //cout << "\tCar TO cluster number: " << carTo->car_cluster_number << endl;
           migrations_in_cluster[carFrom->car_cluster_number]++;
           migrations_in_cluster[carTo->car_cluster_number]++;
           /// if the regions are different, then we know it is going to pass from data center
