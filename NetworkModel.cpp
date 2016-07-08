@@ -99,6 +99,20 @@ void NetworkModel::updateCongestionData()
                 _configuration.BandwidthPerMinuteForClusterInMegaBytes / (double) mapItr->second;
           ++mapItr;
       }
+      map<int, int>::iterator mapItrGrp = migratios_in_group.begin();
+      while(mapItrGrp != migratios_in_group.end()) {
+          if(mapItrGrp->second != 0) bandwithAllocationMapGroup[mapItrGrp->first] =
+                _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes / (double) mapItrGrp->second;
+          ++mapItrGrp;
+      }
+      map<int, int>::iterator mapItrRgn = migrations_in_region.begin();
+      while(mapItrRgn != migrations_in_region.end()) {
+          if(mapItrRgn->second != 0) bandwithAllocationMapRegion[mapItrRgn->first] =
+                _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes / (double) mapItrRgn->second;
+          ++mapItrRgn;
+      }
+      if(migartion_in_datacenter != 0)
+        bandwidthAllocationDataCenter = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes / (double) migartion_in_datacenter;
       /*
       map<int, double>::iterator mapItr2 = bandwithAllocationMap.begin();
       while(mapItr2 != bandwithAllocationMap.end()) {
@@ -134,18 +148,39 @@ void NetworkModel::Allocate()
     //Calculate how much bandwidth can be allocated to each migrationJob.
 	//Loop through each of the migrationJobs and update the migrationJob->currentBandwidthSize with the available bandwidth for that job.
 
-    double bandWidth = 0;
+    double bandWidth = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
+    double allBandwidth[4] = {};
     Car* carFrom = nullptr;
     Car* carTo = nullptr;
     /// we have to loop through the migration jobs again to assign/update the bandwidth to each migration job
     for(list<MigrationJob*>::iterator it = migrationJobList.begin(); it != migrationJobList.end(); ++it) {
         carFrom = (*it)->carFrom;
         carTo = (*it)->carTo;
+        /// set the initial bandwidth to maximum bandwidth and then we find the minimum.
+        bandWidth = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
         /// find out the minimum bandwidth of the two cars and then choose the minimum one
-        bandWidth = bandwithAllocationMap[carFrom->car_cluster_number]
+        allBandwidth[0] = bandwithAllocationMap[carFrom->car_cluster_number]
                             < bandwithAllocationMap[carTo->car_cluster_number]
                             ? bandwithAllocationMap[carFrom->car_cluster_number]
                             : bandwithAllocationMap[carTo->car_cluster_number];
+
+        allBandwidth[1] = bandwithAllocationMapGroup[carFrom->car_group_number]
+                            < bandwithAllocationMapGroup[carTo->car_group_number]
+                            ? bandwithAllocationMapGroup[carFrom->car_group_number]
+                            : bandwithAllocationMapGroup[carTo->car_group_number];
+
+        allBandwidth[2] = bandwithAllocationMapRegion[carFrom->car_region_number]
+                            < bandwithAllocationMapRegion[carTo->car_region_number]
+                            ? bandwithAllocationMapRegion[carFrom->car_region_number]
+                            : bandwithAllocationMapRegion[carTo->car_region_number];
+        allBandwidth[3] = bandwidthAllocationDataCenter;
+
+        for(int i = 0; i < 4; ++i) {
+            /// get the minimum out of four possible bandwidth
+            if(allBandwidth[i] < bandWidth) {
+                bandWidth = allBandwidth[i];
+            }
+        }
         /// assign the bandwidth to the migrationJob's currentBandwithSize
         (*it)->currentBandwidthSize = bandWidth;
         /*
