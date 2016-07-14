@@ -1,10 +1,11 @@
 //File:         Configuration.cpp
 //Description: 	Provides configuration data to the application
 
-#include <fstream>
+//#include <sstream>
 #include <iostream>
 
 #include "Configuration.hpp"
+#include "ResultsLogger.hpp"
 
 int Configuration::LogLevel = 0;
 bool Configuration::PauseAtEndOfCode = true;
@@ -304,3 +305,51 @@ void Configuration::PrintConfiguration()
   std::cout << "JobDataSize_Normal_STDev = " << JobDataSize_Normal_STDev << std::endl;
 
 }
+
+
+void Configuration::WriteConfigSettings()
+{
+   ResultsLogger _results;
+
+
+    _results.results << MaxTime
+      << "," << BandwidthPerMinuteForClusterInMegaBytes
+      << "," << BandwidthPerMinuteForWiredLinksInMegaBytes
+      << "," << NumberOfParkingSpaces
+      << "," << NumberTasksPerJob
+      << "," << TaskScheme_AlternateProcessAndDataMigrate
+      << "," << VMMigrationOffset
+      << "," << NumberOfDataBackupsRequired
+      << "," << DataMigrationType_Random
+      << "," << CarArrival_FromFile
+      << "," << CarArrival_Static
+      << "," << CarArrival_Static_Value
+      << "," << CarArrival_Poisson
+      << "," << CarArrival_Poisson_Lambda
+      << "," << CarDeparture_Static
+      << "," << CarDeparture_Static_Value
+      << "," << CarDeparture_Exponential
+      << "," << CarDeparture_Exponential_Mean
+      << "," << JobArrival_Static
+      << "," << JobArrival_Static_Value
+      << "," << JobArrival_Poisson
+      << "," << JobArrival_Poisson_Lambda
+      << "," << JobLength_Static
+      << "," << JobLength_Static_Value
+      << "," << JobLength_Normal
+      << "," << JobLength_Normal_Mean
+      << "," << JobLength_Normal_STDev
+      << "," << JobVMSize_Static
+      << "," << JobVMSize_Static_Value
+      << "," << JobVMSize_Normal
+      << "," << JobVMSize_Normal_Mean
+      << "," << JobVMSize_Normal_STDev
+      << "," << JobDataSize_Static
+      << "," << JobDataSize_Static_Value
+      << "," << JobDataSize_Normal
+      << "," << JobDataSize_Normal_Mean
+      << "," << JobDataSize_Normal_STDev;
+
+
+
+      }

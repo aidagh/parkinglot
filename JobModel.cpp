@@ -495,14 +495,15 @@ void JobModel::CancelJob(int spaceId)
         delete job->VMMigrationJob;
       }
 
-
-      delete job;
+      jobQueue.push(job);
+      //delete job;
       //Handle Statistics!
       jobMap.erase(spaceId);
 
+      //Add job back to the jobQueue
 
 
-      *_log.debug << "Erased job in space" << spaceId << std::endl;
+      *_log.debug << "Cancelled job in space" << spaceId << "; added back into Queue" << std::endl;
   }
   else
   {

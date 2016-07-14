@@ -34,11 +34,11 @@
 //    JobVMSize_Normal_Mean -
 //    JobVMSize_Normal_STDev -
 
-#include <sstream>
 
 #ifndef __CONFIGURATION_HPP__
 #define __CONFIGURATION_HPP__
 
+#include <sstream>
 
 
 class Configuration
@@ -118,6 +118,7 @@ class Configuration
    int ConvertToInt(std::string &data);
    double ConvertToDouble(std::string &data);
    void PrintConfiguration();
+   void WriteConfigSettings();
 };
 
 

@@ -5,12 +5,14 @@
 #define __STATISTICSMODEL_HPP__
 
 #include "Logger.hpp"
+#include "ResultsLogger.hpp"
 #include <list>
 
 class StatisticsModel
 {
   private:
     static Logger _log;
+    static ResultsLogger _results;
 
     static int cars_arrived;
     static int cars_departed;
@@ -20,8 +22,11 @@ class StatisticsModel
     static int count_failed_migrate_vm;
     static int count_success_migrate_vm;
 
-    static std::list<int> jobCompletionTimes;
 
+    static std::list<int> jobCompletionTimes;
+    static double average_job_completion_time;
+
+    static void setAverageJobCompletionTime();
 
     //A list of any possible statistic that we can think of
 	//jobs queued
@@ -53,6 +58,8 @@ class StatisticsModel
 	static void LogJobCompletionTime(int);
 
 	static void PrintResults();
+    static void WriteResults();
+
 };
 
 

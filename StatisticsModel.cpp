@@ -11,6 +11,9 @@ int StatisticsModel::jobs_failed = 0;
 int StatisticsModel::count_failed_migrate_vm = 0;
 int StatisticsModel::count_success_migrate_vm = 0;
 
+double StatisticsModel::average_job_completion_time = 0;
+
+
 std::list<int> StatisticsModel::jobCompletionTimes;
 
 void StatisticsModel::Initialize()
@@ -18,7 +21,8 @@ void StatisticsModel::Initialize()
   jobs_completed = 0;
   count_failed_migrate_vm = 0;
   count_success_migrate_vm = 0;
-
+  average_job_completion_time = 0;
+  //jobCompletionTimes.clear?
   jobCompletionTimes = std::list<int>();
 
 }
@@ -59,6 +63,22 @@ void StatisticsModel::LogJobCompletionTime(int completionTime)
 }
 
 
+void StatisticsModel::setAverageJobCompletionTime()
+{
+    int totalSum = 0;
+    int count = 0;
+
+    std::list<int>::iterator it;
+    for (it = jobCompletionTimes.begin(); it != jobCompletionTimes.end(); it++)
+    {
+        totalSum += *it;
+        count++;
+    }
+
+    average_job_completion_time = totalSum / count;
+}
+
+
 void StatisticsModel::PrintResults()
 {
 
@@ -69,7 +89,7 @@ void StatisticsModel::PrintResults()
   int vm_migrations_failed = count_failed_migrate_vm;
   int vm_migrations_total = count_success_migrate_vm + count_failed_migrate_vm;
 
-
+  setAverageJobCompletionTime();
 
 
   *_log.info << "Results" << std::endl;
@@ -85,6 +105,35 @@ void StatisticsModel::PrintResults()
   *_log.info << "Successful VM Migrations: " << vm_migrations_successful << std::endl;
   *_log.info << "Failed VM Migrations: " <<  vm_migrations_failed << std::endl;
   *_log.info << "Total VM Migrations: " << vm_migrations_total << std::endl;
+
+  *_log.info << "Average Job Completion Time: " << average_job_completion_time << std::endl;
+
+
+
+}
+
+void StatisticsModel::WriteResults()
+{
+
+  //int jobs_completed = jobs_completed;
+  int jobs_total = jobs_completed + jobs_failed;
+
+  int vm_migrations_successful = count_success_migrate_vm;
+  int vm_migrations_failed = count_failed_migrate_vm;
+  int vm_migrations_total = count_success_migrate_vm + count_failed_migrate_vm;
+
+  setAverageJobCompletionTime();
+
+  _results.results <<",Results," << cars_arrived
+       << "," << cars_departed
+       << "," << jobs_completed
+       << "," << jobs_failed
+       << "," << jobs_total
+       << "," << vm_migrations_successful
+       << "," << vm_migrations_failed
+       << "," << vm_migrations_total
+       << "," << average_job_completion_time << std::endl;
+
 
 
 }

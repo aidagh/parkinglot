@@ -22,39 +22,17 @@
 
 
 #include "Logger.hpp"
-//#include "Logger.cpp"
+//#include "ResultsLogger.hpp"
 #include "TimeModel.hpp"
-//#include "Random.hpp"
 #include "Configuration.hpp"
-//#include "Configuration.cpp"
-//#include "Car.hpp"
-//#include "Car.cpp"
-//#include "MigrationJob.hpp"
-//#include "Job.hpp"
-//#include "Job.cpp"
-//#include "NetworkModel.hpp"
-//#include "NetworkModel.cpp"
+
 #include "CarResidencyDistributionModel.hpp"
-//#include "CarResidencyDistributionModel.cpp"
-//#include "DistributionFactory/CarArrivalDistributionFactory.hpp"
-//#include "DistributionFactory/CarArrivalDistributionFactory.cpp"
-//#include "DistributionFactory/CarDepartureDistributionFactory.hpp"
-//#include "DistributionFactory/CarDepartureDistributionFactory.cpp"
 #include "JobDistributionModel.hpp"
-//#include "JobDistributionModel.cpp"
-//#include "DistributionFactory/JobArrivalDistributionFactory.hpp"
-//#include "DistributionFactory/JobArrivalDistributionFactory.cpp"
-//#include "DistributionFactory/JobLengthDistributionFactory.hpp"
-//#include "DistributionFactory/JobLengthDistributionFactory.cpp"
-//#include "DistributionFactory/JobVMSizeDistributionFactory.hpp"
-//#include "DistributionFactory/JobVMSizeDistributionFactory.cpp"
-//#include "StatisticsModel.hpp"
-//#include "StatisticsModel.cpp"
+
 
 #include "CarModel.hpp"
-//#include "CarModel.cpp"
 #include "JobModel.hpp"
-//#include "JobModel.cpp"
+
 
 
 
@@ -65,6 +43,7 @@ CarModel _carModel;
 TimeModel _timeModel;
 JobModel _jobModel;
 Logger _log;
+ResultsLogger _results;
 StatisticsModel _statisticsModel;
 
 
@@ -82,11 +61,12 @@ int main()
 
     _statisticsModel.Initialize();
 
+    _results.Initialize();
+
 	_log.Initialize();
 	*_log.info << "Showing Info Logs" << std::endl;
 	*_log.debug << "Showing Debug Logs" << std::endl;
 	*_log.trace << "Showing Trace Logs" << std::endl;
-
 
 	_carResidencyDistributionModel.Initialize();
 	_jobDistributionModel.Initialize();
@@ -110,10 +90,15 @@ int main()
 	_statisticsModel.PrintResults();
 
 
+    _configuration.WriteConfigSettings();
+    _statisticsModel.WriteResults();
+
 	if (_configuration.PauseAtEndOfCode)
     {
         std::cin.get();
     }
+
+    _results.results.close();
 
 }
 
