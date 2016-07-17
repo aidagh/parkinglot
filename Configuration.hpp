@@ -40,11 +40,11 @@
 
 #include <sstream>
 
-
 class Configuration
 {
   public:
 
+    static char* ConfigFileName;
    //Program level configurations
    //  These are basic configurations that do not affect the logic
    static int LogLevel;
@@ -113,6 +113,7 @@ class Configuration
 
 
 
+   void SetConfigFile(char* filename);
    void ReadFromFile();
    bool ConvertToBool(std::string &data);
    int ConvertToInt(std::string &data);

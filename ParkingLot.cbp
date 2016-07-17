@@ -71,6 +71,8 @@
 		<Unit filename="NetworkModel.hpp" />
 		<Unit filename="Random.cpp" />
 		<Unit filename="Random.hpp" />
+		<Unit filename="ResultsLogger.cpp" />
+		<Unit filename="ResultsLogger.hpp" />
 		<Unit filename="StatisticsModel.cpp" />
 		<Unit filename="StatisticsModel.hpp" />
 		<Unit filename="TimeModel.cpp" />

@@ -21,9 +21,11 @@ class Logger
 	  static std::ostream * trace;
       static std::ostream * debug;
       static std::ostream * info;
+      static std::ostream * standard;
 
       void Initialize();
 	  void ShowAll();
+	  void ShowStandard();
 	  void ShowInfo();
       void ShowDebug();
 	  void ShowNone();

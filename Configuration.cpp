@@ -7,6 +7,8 @@
 #include "Configuration.hpp"
 #include "ResultsLogger.hpp"
 
+char* Configuration::ConfigFileName = "config.in";
+
 int Configuration::LogLevel = 0;
 bool Configuration::PauseAtEndOfCode = true;
 int Configuration::MaxTime = 100;
@@ -59,11 +61,17 @@ double Configuration::JobDataSize_Normal_Mean = 10;
 double Configuration::JobDataSize_Normal_STDev = 3;
 
 
+void Configuration::SetConfigFile(char * filename)
+{
+    ConfigFileName = filename;
+}
+
+
 void Configuration::ReadFromFile()
 {
   std::ifstream file;
   std::string line;
-  file.open("config.in", std::fstream::in);
+  file.open(ConfigFileName, std::fstream::in);
   while (std::getline(file, line))
   {
     std::string left = line.substr(0, line.find("="));
@@ -349,7 +357,5 @@ void Configuration::WriteConfigSettings()
       << "," << JobDataSize_Normal
       << "," << JobDataSize_Normal_Mean
       << "," << JobDataSize_Normal_STDev;
-
-
 
       }

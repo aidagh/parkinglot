@@ -18,18 +18,11 @@
 #include <map>
 #include <list>
 #include <queue>
-
-
-
 #include "Logger.hpp"
-//#include "ResultsLogger.hpp"
 #include "TimeModel.hpp"
 #include "Configuration.hpp"
-
 #include "CarResidencyDistributionModel.hpp"
 #include "JobDistributionModel.hpp"
-
-
 #include "CarModel.hpp"
 #include "JobModel.hpp"
 
@@ -49,14 +42,18 @@ StatisticsModel _statisticsModel;
 
 
 
+int main(int argc,char *argv[]) {
 
-int main()
-{
+     if (argc == 2) {
+        _configuration.SetConfigFile(argv[1]);
+     }
+
+
     _configuration.ReadFromFile();
 
     _configuration.PrintConfiguration();
 
-   // std::cin.get();
+    //std::cin.get();
 
 
     _statisticsModel.Initialize();
@@ -83,7 +80,7 @@ int main()
       //_carModel.PrintVehicleInfo();
 	  _timeModel.increment();
 
-	 // std::cin.get();
+	  //std::cin.get();
 	}
 
 
@@ -95,7 +92,7 @@ int main()
 
 	if (_configuration.PauseAtEndOfCode)
     {
-        std::cin.get();
+      //  std::cin.get();
     }
 
     _results.results.close();
