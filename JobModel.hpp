@@ -67,6 +67,10 @@ class JobModel
     void HandleJobVMMigration_ReserveTransaction();
     void HandleJobVMMigration_CompleteTransaction();
 
+    void handleMigrationJobsAtDataCenter_ReserveTransaction();
+    void handleMigrationJobsAtDataCenter_CompleteTransaction();
+    void addMigrationJobToDataCenter(Job* jobPtr, Car* car);
+
 	void HandleIncomingJobs();
     void HandleCompletedJobs();
 

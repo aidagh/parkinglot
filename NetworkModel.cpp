@@ -64,53 +64,75 @@ void NetworkModel::updateCongestionData()
           carTo = (*dataItr)->carTo;
           //cout << "\tCar from cluster number: " << carFrom->car_cluster_number << endl;
           //cout << "\tCar TO cluster number: " << carTo->car_cluster_number << endl;
-          migrations_in_cluster[carFrom->car_cluster_number]++;
-          migrations_in_cluster[carTo->car_cluster_number]++;
-          /// if the regions are different, then we know it is going to pass from data center
-          /// and each of the regions and groups need to be incremented
-          if(carFrom->car_region_number != carTo->car_region_number) {
-            migartion_in_datacenter++;
-            migrations_in_region[carFrom->car_region_number]++;
-            migrations_in_region[carTo->car_region_number]++;
-            migratios_in_group[carFrom->car_group_number]++;
-            migratios_in_group[carTo->car_group_number]++;
+          if((*dataItr)->type == DC) {
+              /// if data is coming from/going to datacenter, then it passes from region, group and cluster to reach to our car
+              /// For convenience, we assign datacenter to CarFrom in both cases ( going to datacenter or coming from datacenter)
+              /// so we can have the carTo for counting the network congestion
+              migartion_in_datacenter++;
+              migrations_in_region[carTo->car_region_number]++;
+              migratios_in_group[carTo->car_group_number]++;
+              migrations_in_cluster[carTo->car_cluster_number]++;
           } else {
-              /// else we have different scenarios
-              if(carFrom->car_group_number != carTo->car_group_number) {
-                /// does not matter if we increment by carTo or carFrom region number, but we have to increment only once
+              migrations_in_cluster[carFrom->car_cluster_number]++;
+              migrations_in_cluster[carTo->car_cluster_number]++;
+              /// if the regions are different, then we know it is going to pass from data center
+              /// and each of the regions and groups need to be incremented
+              if(carFrom->car_region_number != carTo->car_region_number) {
+                migartion_in_datacenter++;
+                migrations_in_region[carFrom->car_region_number]++;
                 migrations_in_region[carTo->car_region_number]++;
-                /// we increment both groups for carFrom and carTo
                 migratios_in_group[carFrom->car_group_number]++;
                 migratios_in_group[carTo->car_group_number]++;
-              } else if(carFrom->car_group_number == carTo->car_group_number && carFrom->car_cluster_number != carTo->car_cluster_number) {
-                  /// does not matter if we increment by carTo or carFrom group number, but we have to increment only once
+              } else {
+                  /// else we have different scenarios
+                  if(carFrom->car_group_number != carTo->car_group_number) {
+                    /// does not matter if we increment by carTo or carFrom region number, but we have to increment only once
+                    migrations_in_region[carTo->car_region_number]++;
+                    /// we increment both groups for carFrom and carTo
+                    migratios_in_group[carFrom->car_group_number]++;
                     migratios_in_group[carTo->car_group_number]++;
-                }
+                  } else if(carFrom->car_group_number == carTo->car_group_number && carFrom->car_cluster_number != carTo->car_cluster_number) {
+                      /// does not matter if we increment by carTo or carFrom group number, but we have to increment only once
+                        migratios_in_group[carTo->car_group_number]++;
+                  }
 
+             }
           }
       }
       carFrom = nullptr;
       carTo = nullptr;
       map<int, int>::iterator mapItr = migrations_in_cluster.begin();
+      //std::cin.get();
+      //cout << "***************** Migrations in clusters **********************" << endl;
       while(mapItr != migrations_in_cluster.end()) {
           /// we loop through the map we just created in order to evenly distribute the bandwidth.
           /// we store the calculated value in bandwithAllocationMap which is mapping bandwidth with cluster number
           if(mapItr->second != 0) bandwithAllocationMap[mapItr->first] =
                 _configuration.BandwidthPerMinuteForClusterInMegaBytes / (double) mapItr->second;
+          //cout << "Cluster No: " << mapItr->first << ", Number of messages: " << mapItr->second << endl;
           ++mapItr;
       }
       map<int, int>::iterator mapItrGrp = migratios_in_group.begin();
+      //cin.get();
+      //cout << "***************** Migrations in groups **********************" << endl;
       while(mapItrGrp != migratios_in_group.end()) {
           if(mapItrGrp->second != 0) bandwithAllocationMapGroup[mapItrGrp->first] =
                 _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes / (double) mapItrGrp->second;
+          //cout << "Group No: " << mapItrGrp->first << ", Number of messages: " << mapItrGrp->second << endl;
           ++mapItrGrp;
       }
       map<int, int>::iterator mapItrRgn = migrations_in_region.begin();
+      //cin.get();
+      //cout << "***************** Migrations in Region **********************" << endl;
       while(mapItrRgn != migrations_in_region.end()) {
           if(mapItrRgn->second != 0) bandwithAllocationMapRegion[mapItrRgn->first] =
                 _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes / (double) mapItrRgn->second;
+          //cout << "Region No: " <<  mapItrRgn->first << ", Number of messages: " << mapItrRgn->second << endl;
           ++mapItrRgn;
       }
+      //cin.get();
+      //cout << "***************** Migrations in Data center **********************" << endl;
+      //cout << "Number of messages: " << migartion_in_datacenter << endl;
       if(migartion_in_datacenter != 0)
         bandwidthAllocationDataCenter = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes / (double) migartion_in_datacenter;
       /*
@@ -123,7 +145,9 @@ void NetworkModel::updateCongestionData()
           }
           ++mapItr2;
       }*/
-
+      bandwithAllocationMapRegion[-1] = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
+      bandwithAllocationMapGroup[-1] = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
+      bandwithAllocationMap[-1] = _configuration.BandwidthPerMinuteForClusterInMegaBytes;
       lastCongestionDataUpdate = _time.getTime();
 
   }

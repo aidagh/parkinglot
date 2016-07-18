@@ -12,6 +12,8 @@ Car::Car()
   car_group_number = -1;
   car_region_number = -1;
   job_number = 0;
+  arrival_time_of_car = -1;
+  departure_time_of_car = -1;
   job = NULL;
 }
 

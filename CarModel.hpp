@@ -41,9 +41,11 @@ class CarModel
 	void HandleIncomingVehicles();
 
   public:
+    static Car* dataCenter;
     void Initialize();
 
 	Car* AssignJob(Job* job);
+	Car* findCarForAssignment(Job* job);
 	std::list<Car*> AssignDataMigrationCars(Job* job);
 
 	void PrintVehicleInfo();

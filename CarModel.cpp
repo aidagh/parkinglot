@@ -7,6 +7,7 @@
 std::map<int, Car*> CarModel::carmap;
 std::list<int> CarModel::emptySpaces;
 bool CarModel::initializing = false;
+Car* CarModel::dataCenter = new Car();
 
 //Initialize the carmap and empty spaces structures
 void CarModel::Initialize()
@@ -183,7 +184,7 @@ void CarModel::handleVehicleDepartingSOON()
     int leavingCarSpace = it->first;
 
 	//Check if car is leaving soon, and has a VM
-	bool carHasAMigratableJob = (leavingCar->job != NULL) && (leavingCar->job->jobStatus == Processing || leavingCar->job->jobStatus == DataMigrating);
+	bool carHasAMigratableJob = (leavingCar->job != NULL) && (leavingCar->job->jobStatus == Processing || leavingCar->job->jobStatus == DataMigrating || leavingCar->job->jobStatus == Idle);
     if (carHasAMigratableJob && leavingCar->departure_time_of_car <= _time.getTime() + _configuration.VMMigrationOffset )
     {
   	  *_log.info << "Starting Migration of Car in spot " << leavingCarSpace << " " << std::endl;
@@ -261,6 +262,24 @@ Car * CarModel::AssignJob(Job* job)
   *_log.info << "Job cannot be assigned to any cars :" << job->job_number << std::endl;
 
   return NULL;
+}
+
+Car * CarModel::findCarForAssignment(Job* job)
+{
+    for(std::map<int, Car*>::iterator it = carmap.begin(); it != carmap.end(); it++)
+    {
+        Car* car = it->second;
+        //Check if car has a job or is getting a job migrated
+        if (car->canAcceptJob())
+        {
+          return car;
+          //break;
+        }
+    }
+
+      *_log.info << "Job cannot be assigned to any cars :" << job->job_number << std::endl;
+
+      return NULL;
 }
 
 

@@ -12,8 +12,8 @@ class Job;
 enum MigrationType
 {
 	Data,
-	VM
-
+	VM,
+    DC
 };
 
 
