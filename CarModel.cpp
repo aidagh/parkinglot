@@ -184,9 +184,10 @@ void CarModel::handleVehicleDepartingSOON()
     int leavingCarSpace = it->first;
 
 	//Check if car is leaving soon, and has a VM
-	bool carHasAMigratableJob = (leavingCar->job != NULL) && (leavingCar->job->jobStatus == Processing || leavingCar->job->jobStatus == DataMigrating || leavingCar->job->jobStatus == Idle);
+	bool carHasAMigratableJob = (leavingCar->job != NULL) && (leavingCar->job->jobStatus == Processing || leavingCar->job->jobStatus == DataMigrating);// || leavingCar->job->jobStatus == InitialSetup);
     if (carHasAMigratableJob && leavingCar->departure_time_of_car <= _time.getTime() + _configuration.VMMigrationOffset )
     {
+
   	  *_log.info << "Starting Migration of Car in spot " << leavingCarSpace << " " << std::endl;
 
 	  Car * carToMigrateTo = GetVMMigrationToVehicle(it->second);
@@ -327,7 +328,7 @@ void CarModel::PrintVehicleInfo()
 
   for(it = carmap.begin(); it != carmap.end(); it++)
   {
-      if (it->second->job != NULL)
+      //if (it->second->job != NULL)
         it->second->printCarDetails(true, "");
   }
 }
@@ -355,4 +356,10 @@ int CarModel::getRegionNumber(int spotId)
 	else return ((spotId/640)+1);
 
 }
+
+int CarModel::CarsInParkingLot()
+{
+    return carmap.size();
+}
+
 

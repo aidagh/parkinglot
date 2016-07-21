@@ -55,7 +55,7 @@ Job * JobModel::GenerateJob()
       //Only half the tasks are Migration tasks, so divide by 2
       int DataToMigratePerTask = jobDataToMigrate / (_configuration.NumberTasksPerJob / 2);
 
-      for(int i=0; i<_configuration.NumberTasksPerJob; i++)
+      for(int i=0; i<_configuration.NumberTasksPerJob-1; i++)
       {
           JobTask* task = new JobTask;
           task->job = job;
@@ -87,7 +87,76 @@ Job * JobModel::GenerateJob()
           job->JobTasks.push_back(task);
       }
   }
-  else
+//  else if (_configuration.TaskScheme_AlternateProcessAndDataMigrateWithInitialAndFinalLoadtoDC)
+//  {
+//      JobTaskType taskType = Task_InitialVMMigrate;
+//
+//      //Add InitialVMMigration Job
+//      JobTask* task = new JobTask;
+//      task->job = job;
+//      task->taskDataToMigrate = job->VMsize;
+//      task->taskType = Task_InitialVMMigrate;
+//      task->jobTaskStatus = Task_InProgress;
+//      job->ActiveJobTask = task;
+//      job->jobStatus = InitialSetup;
+//      job->JobTasks.push_back(task);
+//
+//      //Add InitialDataMigration Job
+//      task = new JobTask;
+//      task->job = job;
+//      task->taskDataToMigrate = jobDataToMigrate;
+//      task->taskType = Task_InitialDataMigrate;
+//      job->JobTasks.push_back(task);
+//
+//
+//      //Only half the tasks are Processing tasks, so divide by 2
+//      // -1 because the last data is transferred to the DC
+//      int jobLengthPerTask = jobLength / (_configuration.NumberTasksPerJob / 2) - 1;
+//
+//      //Only half the tasks are Migration tasks, so divide by 2
+//      int DataToMigratePerTask = jobDataToMigrate / (_configuration.NumberTasksPerJob / 2);
+//
+//      for(int i=0; i<_configuration.NumberTasksPerJob; i++)
+//      {
+//          JobTask* task = new JobTask;
+//          task->job = job;
+//          task->taskType = taskType;
+//          if (taskType == Task_Process)
+//          {
+//              task->taskProcessingTime = jobLengthPerTask;
+//              task->taskProcessingTimeLeft = jobLengthPerTask;
+//              taskType = Task_DataMigrate;
+//              if (i == 0)
+//              {
+//                  job->ActiveJobTask = task;
+//                  task->jobTaskStatus = Task_InProgress;
+//                  job->jobStatus = Processing;
+//              }
+//
+//          }
+//          else if (taskType == Task_DataMigrate)
+//          {
+//              task->taskDataToMigrate = DataToMigratePerTask;
+//              taskType = Task_Process;
+//              if (i == 0)
+//              {
+//                  job->ActiveJobTask = task;
+//                  job->jobStatus = DataMigrating;
+//              }
+//
+//          }
+//          job->JobTasks.push_back(task);
+//      }
+//
+//        //Add InitialDataMigration Job
+//      task = new JobTask;
+//      task->job = job;
+//      task->taskDataToMigrate = jobDataToMigrate;
+//      task->taskType = Task_FinalDataMigrate;
+//      job->JobTasks.push_back(task);
+//
+//  }
+   else
   {
     *_log.debug << "Error: No Job Task Scheme Defined" << std::endl;
   }
@@ -259,7 +328,7 @@ void JobModel::HandleJobProcessing()
   {
     Job* job = it->second;
 
-    //If the job is still processing, then
+    //If the job is still f, then
 	if (job->jobStatus == Processing)
 	{
       //subtract time from the time left to process
@@ -437,18 +506,59 @@ void JobModel::HandleIncomingJobs()
     while (_time.getTime() >= _jobDistributionModel.getNextArrival())
 	{
 		createNewJob();
-		if(!jobQueue.empty()) {
-            Job* jobPtr = jobQueue.top();
-            CarModel _carModel;
+	}
 
-            Car* car = _carModel.findCarForAssignment(jobPtr);
-            if (car != NULL)
-            {
-                //*_log.info << "New Job is assigning to car: " << car->car_spot_number << std::endl;
-                addMigrationJobToDataCenter(jobPtr, car);
-                jobQueue.pop();
-            }
-		}
+	//1. Count the number of jobs that are migrating
+	//2. Count the number of assigned jobs in the parkinglot.
+	//3. Pull off a few more jobs to get the number up to x.
+
+	int maxJobsInInitialSetup = 1;
+	int jobsInInitialSetup = 0;
+	int totalJobs = 0;
+    std::map<int, Job*>::iterator it;
+    for(it = jobMap.begin(); it != jobMap.end(); it++)
+    {
+      Job* job = it->second;
+      if (job->jobStatus == InitialSetup)
+      {
+        jobsInInitialSetup++;
+      }
+      totalJobs++;
+    }
+
+  // 	int totalJobsAssigned = jobMap.size();
+  // 	int carsInParkingLot = carMap.size();
+
+   	int maxUtilization = 90;
+
+//   	percentage = ((double)jobMap.size() / (double)carMap.size()) * 100
+    CarModel _carModel;
+    while (jobsInInitialSetup <= maxJobsInInitialSetup && !jobQueue.empty() && ((double)totalJobs / (double) _carModel.CarsInParkingLot()) * 100 < maxUtilization)
+    {
+        Job* jobPtr = jobQueue.top();
+
+        Car* car = _carModel.findCarForAssignment(jobPtr);
+        if (car != NULL)
+        {
+            jobPtr->jobStatus = InitialSetup;
+            car->job = jobPtr;
+            car->job->car = car;
+
+            /// now that the data is sent from datacenter to the car, we can put it into jobMap
+//            *_log.info << "New Job is assigned to car:" << (*it)->carTo->car_spot_number << std::endl;
+//            (*it)->jobFrom->car = (*it)->carTo;
+//            (*it)->carTo->job_number = (*it)->jobFrom->job_number;
+//            (*it)->carTo->job = (*it)->jobFrom;
+            jobMap[car->car_spot_number] = jobPtr;
+//            cout << "Job " << (*it)->jobFrom->job_number << ", to car to: " << (*it)->carTo->car_spot_number << endl;
+
+
+
+            //*_log.info << "New Job is assigning to car: " << car->car_spot_number << std::endl;
+            addMigrationJobToDataCenter(jobPtr, car);
+            jobQueue.pop();
+        }
+        jobsInInitialSetup++;
 	}
 }
 
@@ -482,15 +592,16 @@ void JobModel::handleMigrationJobsAtDataCenter_CompleteTransaction() {
         if ((*it)->dataLeftToMigrate <=0)
         {
             /// sending data from datacenter
-            if((*it)->jobFrom->jobStatus == Idle) {
+            if((*it)->jobFrom->jobStatus == InitialSetup) {
                 /// now that the data is sent from datacenter to the car, we can put it into jobMap
-                *_log.info << "New Job is assigned to car:" << (*it)->carTo->car_spot_number << std::endl;
+//                *_log.info << "New Job is assigned to car:" << (*it)->carTo->car_spot_number << std::endl;
                 (*it)->jobFrom->car = (*it)->carTo;
                 (*it)->carTo->job_number = (*it)->jobFrom->job_number;
                 (*it)->carTo->job = (*it)->jobFrom;
-                jobMap[(*it)->carTo->car_spot_number] = (*it)->jobFrom;
-                cout << "Job " << (*it)->jobFrom->job_number << ", to car to: " << (*it)->carTo->car_spot_number << endl;
+//                jobMap[(*it)->carTo->car_spot_number] = (*it)->jobFrom;
+//                cout << "Job " << (*it)->jobFrom->job_number << ", to car to: " << (*it)->carTo->car_spot_number << endl;
                 //cin.get();
+                StartNextJobTask((*it)->jobFrom);
               /// sending data to datacenter
             } else if ((*it)->jobFrom->jobStatus == Complete) {
                 cout << "Job Map size before deletion: " << jobMap.size() << endl;

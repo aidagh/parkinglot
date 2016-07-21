@@ -57,6 +57,8 @@ std::string Job::PrintJobStatus(JobStatus jobStatus)
     {
         case Idle:
             return "Idle";
+        case InitialSetup:
+            return "Initial Setup";
         case Processing:
             return "Processing";
         case VMMigrating:

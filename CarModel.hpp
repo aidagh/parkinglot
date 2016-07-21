@@ -54,6 +54,7 @@ class CarModel
 	int getGroupNumber(int);
 
 	void HandleCars();
+	int CarsInParkingLot();
 };
 
 #endif

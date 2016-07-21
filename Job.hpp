@@ -16,6 +16,7 @@ class JobTask;
 enum JobStatus
 {
 	Idle,
+	InitialSetup,
 	Processing,
 	VMMigrating,
 	VMMigrationComplete,
