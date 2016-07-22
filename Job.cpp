@@ -69,6 +69,8 @@ std::string Job::PrintJobStatus(JobStatus jobStatus)
             return "DataMigrating";
         case Complete:
             return "Complete";
+        case FinalMigration:
+            return "Final Migration";
         default:
             return "Status Not Mapped";
     }

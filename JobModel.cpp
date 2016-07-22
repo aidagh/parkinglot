@@ -227,8 +227,11 @@ void JobModel::StartNextJobTask(Job * job)
 
     if (found == false)
     {
-        SetJobComplete(job);
+        job->jobStatus = FinalMigration;
+        addMigrationJobToDataCenter(job, job->car);
     }
+
+
 /*
     std::list<int>::iterator itList;
     for(itList = jobEraseList.begin(); itList != jobEraseList.end(); itList++)
@@ -340,11 +343,11 @@ void JobModel::HandleJobProcessing()
         SetActiveTaskComplete(job);
 		StartNextJobTask(job);
 
-        if (job->jobStatus == Complete)
-        {
+//        if (job->jobStatus == Complete)
+//        {
             //jobEraseList.push_back(it->first);
-            addMigrationJobToDataCenter(job, job->car);
-        }
+//            addMigrationJobToDataCenter(job, job->car);
+//        }
 	  }
 	}
   }
@@ -413,11 +416,11 @@ void JobModel::HandleJobDataMigration_CompleteTransaction()
             SetActiveTaskComplete(job);
 			StartNextJobTask(job);
 
-            if (job->jobStatus == Complete)
-            {
+//            if (job->jobStatus == Complete)
+//            {
                 //jobEraseList.push_back(it->first);
-                addMigrationJobToDataCenter(job, job->car);
-            }
+//                addMigrationJobToDataCenter(job, job->car);
+//            }
 
 
 //			*_log.info << "Space:" << it->first << " -- Job Complete!" << std::endl;
@@ -512,7 +515,7 @@ void JobModel::HandleIncomingJobs()
 	//2. Count the number of assigned jobs in the parkinglot.
 	//3. Pull off a few more jobs to get the number up to x.
 
-	int maxJobsInInitialSetup = 1;
+	//int maxJobsInInitialSetup = 1;
 	int jobsInInitialSetup = 0;
 	int totalJobs = 0;
     std::map<int, Job*>::iterator it;
@@ -526,14 +529,11 @@ void JobModel::HandleIncomingJobs()
       totalJobs++;
     }
 
-  // 	int totalJobsAssigned = jobMap.size();
-  // 	int carsInParkingLot = carMap.size();
-
-   	int maxUtilization = 90;
-
-//   	percentage = ((double)jobMap.size() / (double)carMap.size()) * 100
     CarModel _carModel;
-    while (jobsInInitialSetup <= maxJobsInInitialSetup && !jobQueue.empty() && ((double)totalJobs / (double) _carModel.CarsInParkingLot()) * 100 < maxUtilization)
+    //While
+    // 1. The max jobs in the statua Initial Setup has not been reached, and
+    // 2. the total utilization of the vehicles is less than the MaxUtilization
+    while (jobsInInitialSetup <= _configuration.MaxJobsInInitialSetup && !jobQueue.empty() && ((double)totalJobs / (double) _carModel.CarsInParkingLot()) * 100 < _configuration.MaxVehicleUtilization)
     {
         Job* jobPtr = jobQueue.top();
 
@@ -603,10 +603,13 @@ void JobModel::handleMigrationJobsAtDataCenter_CompleteTransaction() {
                 //cin.get();
                 StartNextJobTask((*it)->jobFrom);
               /// sending data to datacenter
-            } else if ((*it)->jobFrom->jobStatus == Complete) {
-                cout << "Job Map size before deletion: " << jobMap.size() << endl;
+            } else if ((*it)->jobFrom->jobStatus == FinalMigration) {
+
+                SetJobComplete((*it)->jobFrom);
+
+//                cout << "Job Map size before deletion: " << jobMap.size() << endl;
                 jobMap.erase((*it)->carTo->car_spot_number);
-                cout << "Job Map size after deletion: " << jobMap.size() << endl;
+//                cout << "Job Map size after deletion: " << jobMap.size() << endl;
                 //cin.get();
             }
             CarModel::dataCenter->DataMigrationTasks.erase(it++);

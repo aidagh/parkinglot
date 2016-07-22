@@ -64,6 +64,8 @@ class Configuration
 
    //Job configuration
    //  These affect the jobs and tasks
+   static int MaxVehicleUtilization;
+   static int MaxJobsInInitialSetup;
    static int NumberTasksPerJob;
    static bool TaskScheme_AlternateProcessAndDataMigrate;
 

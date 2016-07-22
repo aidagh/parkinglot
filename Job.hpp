@@ -21,6 +21,7 @@ enum JobStatus
 	VMMigrating,
 	VMMigrationComplete,
 	DataMigrating,
+	FinalMigration,
 	Complete
 
 

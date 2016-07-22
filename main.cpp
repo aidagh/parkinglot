@@ -51,7 +51,7 @@ int main(int argc,char *argv[]) {
 
     _configuration.ReadFromFile();
 
-    _configuration.PrintConfiguration();
+    //_configuration.PrintConfiguration();
 
     //std::cin.get();
 
@@ -92,7 +92,7 @@ int main(int argc,char *argv[]) {
 
 	if (_configuration.PauseAtEndOfCode)
     {
-        std::cin.get();
+//        std::cin.get();
     }
 
     _results.results.close();

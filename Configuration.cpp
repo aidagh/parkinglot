@@ -17,6 +17,8 @@ double Configuration::BandwidthPerMinuteForClusterInMegaBytes = 75;
 double Configuration::BandwidthPerMinuteForWiredLinksInMegaBytes = 7500;
 int Configuration::NumberOfParkingSpaces = 2560;
 
+int Configuration::MaxVehicleUtilization = 50;
+int Configuration::MaxJobsInInitialSetup = 5;
 int Configuration::NumberTasksPerJob = 4;
 bool Configuration::TaskScheme_AlternateProcessAndDataMigrate = true;
 
@@ -97,6 +99,16 @@ void Configuration::ReadFromFile()
     {
       NumberOfParkingSpaces = ConvertToInt(right);
     }
+
+    if (left == "MaxVehicleUtilization")
+    {
+      MaxVehicleUtilization = ConvertToInt(right);
+    }
+    if (left == "MaxJobsInInitialSetup")
+    {
+      MaxJobsInInitialSetup = ConvertToInt(right);
+    }
+
     if (left == "NumberTasksPerJob")
     {
       NumberTasksPerJob = ConvertToInt(right);
@@ -278,6 +290,8 @@ void Configuration::PrintConfiguration()
   std::cout << "BandwidthPerMinuteForClusterInMegaBytes = " << BandwidthPerMinuteForClusterInMegaBytes << std::endl;
   std::cout << "BandwidthPerMinuteForWiredLinksInMegaBytes = " << BandwidthPerMinuteForWiredLinksInMegaBytes << std::endl;
   std::cout << "NumberOfParkingSpaces = " << NumberOfParkingSpaces << std::endl;
+  std::cout << "MaxVehicleUtilization = " << MaxVehicleUtilization << std::endl;
+  std::cout << "MaxJobsInInitialSetup = " << MaxJobsInInitialSetup << std::endl;
   std::cout << "NumberTasksPerJob = " << NumberTasksPerJob << std::endl;
   std::cout << "TaskScheme_AlternateProcessAndDataMigrate = " << TaskScheme_AlternateProcessAndDataMigrate << std::endl;
   std::cout << "VMMigrationOffset = " << VMMigrationOffset << std::endl;
@@ -324,6 +338,8 @@ void Configuration::WriteConfigSettings()
       << "," << BandwidthPerMinuteForClusterInMegaBytes
       << "," << BandwidthPerMinuteForWiredLinksInMegaBytes
       << "," << NumberOfParkingSpaces
+      << "," << MaxVehicleUtilization
+      << "," << MaxJobsInInitialSetup
       << "," << NumberTasksPerJob
       << "," << TaskScheme_AlternateProcessAndDataMigrate
       << "," << VMMigrationOffset
