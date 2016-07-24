@@ -277,7 +277,7 @@ void JobModel::SetJobToDataMigrating(Job * job)
         //  Set the MigrationJob on the car
         job->DataMigrationJobs.push_back(migrationJob);
         //  Add the Migration Job to the job->DataMigrationJobs
-        (*it)->DataMigrationTasks.push_back(migrationJob);
+        (*it)->ActiveDataMigrationTasks.push_back(migrationJob);
 
         *_log.info << "   To Car: " << (*it)->car_spot_number << ", cluster number: "
                                   << (*it)->car_cluster_number << ", group number: "
@@ -398,17 +398,22 @@ void JobModel::HandleJobDataMigration_CompleteTransaction()
 	if (job->jobStatus == DataMigrating)
 	{
 		std::list<MigrationJob*>::iterator itMJ;
-        for(itMJ = job->DataMigrationJobs.begin(); itMJ != job->DataMigrationJobs.end(); ++itMJ)
+        for(itMJ = job->DataMigrationJobs.begin(); itMJ != job->DataMigrationJobs.end();)
         {
 			(*itMJ)->dataLeftToMigrate = (*itMJ)->dataLeftToMigrate - (*itMJ)->currentBandwidthSize;
 			if ((*itMJ)->dataLeftToMigrate <=0)
 			{
 				//**Some statistics should be kept up here.
 				//**Update the list of DataMigrationSet vehicles.
-				(*itMJ)->carTo->DataMigrationTasks.remove(*itMJ);
+				(*itMJ)->carTo->CompletedDataMigrationTasks.push_back(job->ActiveJobTask);
+				(*itMJ)->carTo->ActiveDataMigrationTasks.remove(*itMJ);
+				job->ActiveJobTask->completedDataMigrationVehicles.push_back((*itMJ)->carTo);
 				itMJ = job->DataMigrationJobs.erase(itMJ);
-				itMJ--;
 			}
+			else
+            {
+                itMJ++;
+            }
 		}
 
 		if (job->DataMigrationJobs.empty())
@@ -571,22 +576,22 @@ void JobModel::addMigrationJobToDataCenter(Job* jobPtr, Car* car) {
     migrationJob->type = DC;
     migrationJob->totalDataSize = jobPtr->dataToMigrate + jobPtr->VMsize;
     migrationJob->dataLeftToMigrate = jobPtr->dataToMigrate + jobPtr->VMsize;
-    CarModel::dataCenter->DataMigrationTasks.push_back(migrationJob);
+    CarModel::dataCenter->ActiveDataMigrationTasks.push_back(migrationJob);
 }
 
 void JobModel::handleMigrationJobsAtDataCenter_ReserveTransaction() {
   NetworkModel _networkModel;
-  std::list<MigrationJob*>::iterator it = CarModel::dataCenter->DataMigrationTasks.begin();
-  for(;it != CarModel::dataCenter->DataMigrationTasks.end(); it++)
+  std::list<MigrationJob*>::iterator it = CarModel::dataCenter->ActiveDataMigrationTasks.begin();
+  for(;it != CarModel::dataCenter->ActiveDataMigrationTasks.end(); it++)
   {
       _networkModel.ReserveBandwidth(*it);
   }
 }
 
 void JobModel::handleMigrationJobsAtDataCenter_CompleteTransaction() {
-    std::list<MigrationJob*>::iterator it = CarModel::dataCenter->DataMigrationTasks.begin();
+    std::list<MigrationJob*>::iterator it = CarModel::dataCenter->ActiveDataMigrationTasks.begin();
 
-    while(it != CarModel::dataCenter->DataMigrationTasks.end())
+    while(it != CarModel::dataCenter->ActiveDataMigrationTasks.end())
     {
         (*it)->dataLeftToMigrate = (*it)->dataLeftToMigrate - (*it)->currentBandwidthSize;
         if ((*it)->dataLeftToMigrate <=0)
@@ -612,7 +617,7 @@ void JobModel::handleMigrationJobsAtDataCenter_CompleteTransaction() {
 //                cout << "Job Map size after deletion: " << jobMap.size() << endl;
                 //cin.get();
             }
-            CarModel::dataCenter->DataMigrationTasks.erase(it++);
+            CarModel::dataCenter->ActiveDataMigrationTasks.erase(it++);
         } else {
             ++it;
         }

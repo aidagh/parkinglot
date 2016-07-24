@@ -112,10 +112,47 @@ void CarModel::HandleIncomingVehicles()
 //For a car that is migrating, choose the car to migrate to
 Car * CarModel::GetVMMigrationToVehicle(Car* FromCar)
 {
-  //Loop through and find the latest departing vehicle that currently is not running a job.
-  //ToDo: This needs to consider cluster
+//  1. does the vehicle have any cars in the migration set
+//     a. if yes, pick the one that is available for the longest AND is able to take the VM
+//     b. if no, pick the vehicle that is available for the longest
+
+
   Car* latestDepartingCar = NULL;
   int latestDepartureTime = 0;
+  bool latestDepartingCarSet = false;
+
+  //1.a
+
+  std::list<JobTask*>::reverse_iterator reverseIteratorJobtask;
+
+  for(reverseIteratorJobtask = FromCar->job->JobTasks.rbegin(); reverseIteratorJobtask != FromCar->job->JobTasks.rend(); reverseIteratorJobtask++)
+  {
+     //if job task is a Data migrate AND it is complete
+     if (((*reverseIteratorJobtask)->taskType == Task_DataMigrate) && ((*reverseIteratorJobtask)->jobTaskStatus == Task_Complete))
+     {
+        //loop through each of the (*it)->completedDataMigrationVehicles to find the one that will be in the network the longest AND does not already have a VM.
+        std::list<Car*>::iterator itCar;
+
+        for(itCar = (*reverseIteratorJobtask)->completedDataMigrationVehicles.begin(); itCar != (*reverseIteratorJobtask)->completedDataMigrationVehicles.end(); itCar++)
+        {
+            if ((*itCar)->canAcceptJob() && (*itCar)->departure_time_of_car > latestDepartureTime)
+            {
+                latestDepartingCar = *itCar;
+                latestDepartureTime = latestDepartingCar->departure_time_of_car;
+                latestDepartingCarSet = true;
+            }
+        }
+
+        if (latestDepartingCarSet)
+            return latestDepartingCar;
+     }
+  }
+
+//1.b
+
+  //Loop through and find the latest departing vehicle that currently is not running a job.
+  //ToDo: This needs to consider cluster
+
   std::map<int, Car*>::iterator it;
 
   for(it = carmap.begin(); it != carmap.end(); it++)
@@ -150,8 +187,42 @@ void CarModel::handleVehicleDepartingNOW()
     if (leavingCar.departure_time_of_car <= _time.getTime())
     {
         _statisticsModel.LogCarDeparted();
-	  if (leavingCar.job != NULL)
-	    _jobModel.CancelJob(leavingCarSpace);
+
+  	    //If the car has a job, cancel it
+  	    if (leavingCar.job != NULL)
+	      _jobModel.CancelJob(leavingCarSpace);
+
+	    //if the car is receiving a backup, then cancel that backup
+	    if (!leavingCar.ActiveDataMigrationTasks.empty())
+        {
+            //Loop through these and delete
+        }
+
+	    //if the has a completed backup, remove the record of it.
+	    if (!leavingCar.CompletedDataMigrationTasks.empty())
+	    {
+	        //Loop through and delete
+            std::list<JobTask*>::iterator itJobTask;
+
+            for(itJobTask = leavingCar.CompletedDataMigrationTasks.begin(); itJobTask != leavingCar.CompletedDataMigrationTasks.end(); itJobTask++)
+            {
+                //Loop through the completedDataMigrationVehicles are remove the leavingCar
+                std::list<Car*>::iterator itCar;
+
+                for(itCar = (*itJobTask)->completedDataMigrationVehicles.begin(); itCar != (*itJobTask)->completedDataMigrationVehicles.end();)
+                {
+                    if ((*itCar)->car_spot_number == leavingCar.car_spot_number)
+                    {
+                        itCar = (*itJobTask)->completedDataMigrationVehicles.erase(itCar);
+                    }
+                    else
+                    {
+                        itCar++;
+                    }
+                }
+	        }
+	    }
+
 
   	  *_log.info << "Car in spot " << leavingCarSpace << " is leaving NOW" << std::endl;
 	  emptySpaces.push_back(leavingCarSpace);

@@ -1,15 +1,18 @@
 //File:         JobTask.hpp
 //Description:
 
+
 #ifndef __JOBTASK_HPP__
 #define __JOBTASK_HPP__
 
 #include <fstream>
 #include <list>
 #include "Job.hpp"
+#include "Car.hpp"
 //#include "MigrationJob.hpp"
 
 class Job;
+class Car;
 
 enum JobTaskStatus
 {
@@ -42,6 +45,8 @@ class JobTask
 
 
 
+	//This list hold the list of vehicles with completed Data Migrations.
+	std::list<Car*> completedDataMigrationVehicles;
 
 //	int dataToMigrate;		  //In Megabytes
 

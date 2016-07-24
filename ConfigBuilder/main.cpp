@@ -29,10 +29,10 @@ int main () {
 
 
   int bandwidthArr [] = {56, 75, 100};
-  double jobarrivalArr [] = {1, 5, 10};
+  double jobarrivalArr [] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   int joblengthArr [] = {60, 120, 180, 240, 300};
-  int vehicleUtilizationArr [] = {70, 80, 90, 100};
-  int jobInInitialSetupArr [] = {10, 20, 30};
+  int vehicleUtilizationArr [] = {80};
+  int jobInInitialSetupArr [] = {20};
 
   int bandwidth;
   double jobarrival;
@@ -70,10 +70,10 @@ int main () {
               configfile << "";
                 configfile << "LogLevel=3" << std::endl;
                 configfile << "PauseAtEndOfCode=false" << std::endl;
-                configfile << "MaxTime=7200" << std::endl;
+                configfile << "MaxTime=10080" << std::endl;
                 configfile << "TimeStep=1" << std::endl;
                 configfile << "BandwidthPerMinuteForClusterInMegaBytes=" << bandwidthStr << std::endl;
-                configfile << "BandwidthPerMinuteForWiredLinksInMegaBytes=10080" << std::endl;
+                configfile << "BandwidthPerMinuteForWiredLinksInMegaBytes=7500" << std::endl;
                 configfile << "NumberOfParkingSpaces=2560" << std::endl;
                 configfile << "MaxVehicleUtilization=" << vehicleUtilizationStr << std::endl;
                 configfile << "MaxJobsInInitialSetup=" << jobInInitialSetupStr << std::endl;

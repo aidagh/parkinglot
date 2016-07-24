@@ -44,10 +44,10 @@ void Car::printCarDetails(bool printChildDetails, std::string tab)
 	         job->printJobDetails(true, tab + "    ");
 	 }
 
-	 if (!DataMigrationTasks.empty())
+	 if (!ActiveDataMigrationTasks.empty())
      {
         std::list<MigrationJob*>::iterator it;
-        for(it = DataMigrationTasks.begin(); it != DataMigrationTasks.end(); it++)
+        for(it = ActiveDataMigrationTasks.begin(); it != ActiveDataMigrationTasks.end(); it++)
         {
             (*it)->printMigrationJobDetails(true, tab + "    ");
         }

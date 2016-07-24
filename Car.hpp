@@ -8,9 +8,11 @@
 #include <list>
 #include "Job.hpp"
 #include "MigrationJob.hpp"
+#include "JobTask.hpp"
 
 class Job;
 class MigrationJob;
+class JobTask;
 
 // This includes information about all the cars including which spot the car is currently parked, along with arrival and departure time.
 class Car
@@ -25,7 +27,10 @@ class Car
 	Job * job;
 
     //A list of DataMigationTask coming IN to the car.
-    std::list<MigrationJob*> DataMigrationTasks;
+    std::list<MigrationJob*> ActiveDataMigrationTasks;
+
+    //A list of Job Tasks that are completed
+    std::list<JobTask*> CompletedDataMigrationTasks;
 
     Car();
 
