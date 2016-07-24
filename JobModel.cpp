@@ -44,7 +44,7 @@ Job * JobModel::GenerateJob()
   job->VMsize = _jobDistributionModel.getNextVMSize();
   job->dataToMigrate = jobDataToMigrate;
 
-  job->JobStartTime = _time.getTime();
+  job->JobArrivalTime = _time.getTime();
 
   if (_configuration.TaskScheme_AlternateProcessAndDataMigrate)
   {
@@ -495,7 +495,7 @@ void JobModel::HandleJobVMMigration_CompleteTransaction()
                 it = jobMap.erase(it);
                 it--;
 
-                _statisticsModel.LogSuccessfulVMMigration();
+                _statisticsModel.LogSuccessfulVMMigration(_time.getTime() - job->LastVMMigrationStart);
 
                 StartNextJobTask(job);
                 //Is it always appropriate to set this to Processing?
@@ -562,8 +562,14 @@ void JobModel::HandleIncomingJobs()
             //*_log.info << "New Job is assigning to car: " << car->car_spot_number << std::endl;
             addMigrationJobToDataCenter(jobPtr, car);
             jobQueue.pop();
+
+
+            if (jobPtr->JobStartTime == -1)
+                jobPtr->JobStartTime = _time.getTime();
+            jobPtr->JobStartTimeCurrentAttempt = _time.getTime();
         }
         jobsInInitialSetup++;
+        totalJobs++;
 	}
 }
 
@@ -650,9 +656,11 @@ void JobModel::CancelJob(int spaceId)
 
   if (jobMap.find(spaceId) != jobMap.end())
   {
-      _statisticsModel.LogJobFailed();
 
       Job * job = jobMap[spaceId];
+
+      _statisticsModel.LogJobFailed(job);
+
 
       if (job->jobStatus == Processing)
       {

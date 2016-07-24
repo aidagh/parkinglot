@@ -3,6 +3,7 @@
 
 
 #include "StatisticsModel.hpp"
+#include "TimeModel.hpp"
 #include <list>
 int StatisticsModel::cars_arrived = 0;
 int StatisticsModel::cars_departed = 0;
@@ -12,9 +13,14 @@ int StatisticsModel::count_failed_migrate_vm = 0;
 int StatisticsModel::count_success_migrate_vm = 0;
 
 double StatisticsModel::average_job_completion_time = 0;
+double StatisticsModel::MTTF = 0;
+double StatisticsModel::average_successful_VM_Migration_time = 0;
+
 
 
 std::list<int> StatisticsModel::jobCompletionTimes;
+std::list<int> StatisticsModel::interJobFailureTimes;
+std::list<int> StatisticsModel::successfulVMMigrationTimes;
 
 void StatisticsModel::Initialize()
 {
@@ -24,6 +30,8 @@ void StatisticsModel::Initialize()
   average_job_completion_time = 0;
   //jobCompletionTimes.clear?
   jobCompletionTimes = std::list<int>();
+  interJobFailureTimes = std::list<int>();
+  successfulVMMigrationTimes = std::list<int>();
 
 }
 
@@ -40,13 +48,16 @@ void StatisticsModel::LogJobCompleted()
 {
 	jobs_completed++;
 }
-void StatisticsModel::LogJobFailed()
+void StatisticsModel::LogJobFailed(Job * job)
 {
+    TimeModel _time;
+    interJobFailureTimes.push_back(_time.getTime() - job->JobStartTimeCurrentAttempt);
 	jobs_failed++;
 }
 
-void StatisticsModel::LogSuccessfulVMMigration()
+void StatisticsModel::LogSuccessfulVMMigration(int VMmigrationLength)
 {
+    successfulVMMigrationTimes.push_back(VMmigrationLength);
 	count_success_migrate_vm++;
 }
 
@@ -74,10 +85,41 @@ void StatisticsModel::setAverageJobCompletionTime()
         totalSum += *it;
         count++;
     }
-
+    if (totalSum == 0 || count == 0)
+        return;
     average_job_completion_time = totalSum / count;
 }
+void StatisticsModel::setMTTF()
+{
+    int totalSum = 0;
+    int count = 0;
 
+    std::list<int>::iterator it;
+    for (it = interJobFailureTimes.begin(); it != interJobFailureTimes.end(); it++)
+    {
+        totalSum += *it;
+        count++;
+    }
+    if (totalSum == 0 || count == 0)
+        return;
+    MTTF = totalSum / count;
+}
+
+void StatisticsModel::setAverageSuccessfulVMMigrationTime()
+{
+    int totalSum = 0;
+    int count = 0;
+
+    std::list<int>::iterator it;
+    for (it = successfulVMMigrationTimes.begin(); it != successfulVMMigrationTimes.end(); it++)
+    {
+        totalSum += *it;
+        count++;
+    }
+    if (totalSum == 0 || count == 0)
+        return;
+    average_successful_VM_Migration_time = totalSum / count;
+}
 
 void StatisticsModel::PrintResults()
 {
@@ -90,6 +132,8 @@ void StatisticsModel::PrintResults()
   int vm_migrations_total = count_success_migrate_vm + count_failed_migrate_vm;
 
   setAverageJobCompletionTime();
+  setMTTF();
+  setAverageSuccessfulVMMigrationTime();
 
 
   *_log.info << "Results" << std::endl;
@@ -107,6 +151,9 @@ void StatisticsModel::PrintResults()
   *_log.info << "Total VM Migrations: " << vm_migrations_total << std::endl;
 
   *_log.info << "Average Job Completion Time: " << average_job_completion_time << std::endl;
+  *_log.info << "MTTF : " << MTTF << std::endl;
+  *_log.info << "Average Successful VM Migration Time : " << average_successful_VM_Migration_time << std::endl;
+
 
 
 
@@ -123,6 +170,8 @@ void StatisticsModel::WriteResults()
   int vm_migrations_total = count_success_migrate_vm + count_failed_migrate_vm;
 
   setAverageJobCompletionTime();
+  setMTTF();
+  setAverageSuccessfulVMMigrationTime();
 
   _results.results <<",Results," << cars_arrived
        << "," << cars_departed
@@ -132,7 +181,9 @@ void StatisticsModel::WriteResults()
        << "," << vm_migrations_successful
        << "," << vm_migrations_failed
        << "," << vm_migrations_total
-       << "," << average_job_completion_time << std::endl;
+       << "," << average_job_completion_time
+       << "," << MTTF
+       << "," << average_successful_VM_Migration_time << std::endl;
 
 
 

@@ -36,9 +36,21 @@ class Job
     int job_number;
     double VMsize;
 
+    //This is the time the job arrives in the queue (the first time)
+    int JobArrivalTime;
+
+
+    //This is the time the job is FIRST started
     int JobStartTime;
     int JobEndTime;
 
+    //This is the time the job was started, not the original assignment.
+    //If the job fails, this time will be changed
+    int JobStartTimeCurrentAttempt;
+
+
+    //Used to calculate the length of a VM Migration
+    int LastVMMigrationStart;
 
 
 	JobStatus jobStatus;

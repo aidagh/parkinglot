@@ -22,8 +22,8 @@ class comparison
         {reversed=revparam;}
     bool operator()(const Job* lhs, const Job* rhs) const
     {
-        if(reversed) return lhs->JobStartTime < rhs->JobStartTime;
-        else return lhs->JobStartTime > rhs->JobStartTime;
+        if(reversed) return lhs->JobArrivalTime > rhs->JobArrivalTime;
+        else return lhs->JobArrivalTime < rhs->JobArrivalTime;
     }
 };
 

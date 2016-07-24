@@ -269,6 +269,7 @@ void CarModel::handleVehicleDepartingSOON()
 	  //2. Set Migration to
 	  //3. Stop Job Processing / Data Migration
 	  leavingCar->job->jobStatus = VMMigrating;
+	  leavingCar->job->LastVMMigrationStart = _time.getTime();
 
 
         _jobModel.SetupVMMigration(leavingCar, carToMigrateTo) ;
@@ -338,16 +339,26 @@ Car * CarModel::AssignJob(Job* job)
 
 Car * CarModel::findCarForAssignment(Job* job)
 {
+    bool longestAvailableVehicleSet = false;
+    int longestAvailableVehicleTime = 0;
+    Car* longestAvailableVehicle;
+
     for(std::map<int, Car*>::iterator it = carmap.begin(); it != carmap.end(); it++)
     {
         Car* car = it->second;
+
+
         //Check if car has a job or is getting a job migrated
-        if (car->canAcceptJob())
+        if (car->canAcceptJob() && longestAvailableVehicleTime < car->departure_time_of_car)
         {
-          return car;
-          //break;
+            longestAvailableVehicleTime = car->departure_time_of_car;
+            longestAvailableVehicle = car;
+            longestAvailableVehicleSet = true;
         }
     }
+
+    if (longestAvailableVehicleSet)
+        return longestAvailableVehicle;
 
       *_log.info << "Job cannot be assigned to any cars :" << job->job_number << std::endl;
 

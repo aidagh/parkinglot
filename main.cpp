@@ -77,10 +77,10 @@ int main(int argc,char *argv[]) {
       _carModel.HandleCars();
 	  _jobModel.HandleJobs();
 
-     // _carModel.PrintVehicleInfo();
+      //_carModel.PrintVehicleInfo();
 	  _timeModel.increment();
 
-	  //std::cin.get();
+	 // std::cin.get();
 	}
 
 
@@ -92,7 +92,7 @@ int main(int argc,char *argv[]) {
 
 	if (_configuration.PauseAtEndOfCode)
     {
-//        std::cin.get();
+    //   std::cin.get();
     }
 
     _results.results.close();

@@ -8,6 +8,8 @@ Job::Job()
   jobStatus = Idle;
   jobProcessingTime = 0;
   jobProcessingTimeLeft = 999;
+  JobArrivalTime = -1;
+  JobStartTime = -1;
   VMMigrationJob = NULL;
 }
 
