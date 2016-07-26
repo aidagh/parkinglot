@@ -15,8 +15,8 @@ class CarDepartureDistributionFactory
 	public:
 	    static CarDepartureDistributionFactory *make_CarDepartureDistribution(DistributionType distribution);
 		virtual void Initialize() = 0;  //=0 because we have to declare some function;
-		virtual int getNext() = 0;      //=0 because we have to declare some function;
-	
+		virtual double getNext() = 0;      //=0 because we have to declare some function;
+
 };
 
 #endif

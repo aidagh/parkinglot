@@ -105,6 +105,8 @@ void CarModel::HandleIncomingVehicles()
 		createNewCar();
 
         _statisticsModel.LogCarArrived();
+
+        _statisticsModel.LogCurrentCarsInParkingLot(carmap.size());
 	}
 }
 

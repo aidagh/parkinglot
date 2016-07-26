@@ -14,7 +14,7 @@ class ExponentialDeparture: public CarDepartureDistributionFactory
 
 	public:
 		void Initialize();
-		int getNext();
+		double getNext();
 
 };
 
@@ -24,7 +24,7 @@ void ExponentialDeparture::Initialize()
 	DepartureExponentialDistribution = new std::exponential_distribution<double>(1/_configuration.CarDeparture_Exponential_Mean);
 }
 
-int ExponentialDeparture::getNext()
+double ExponentialDeparture::getNext()
 {
 	return (*DepartureExponentialDistribution)(generatorDeparture);
 }
@@ -33,10 +33,10 @@ int ExponentialDeparture::getNext()
 class StaticDeparture: public CarDepartureDistributionFactory
 {
 	private:
-	    int staticValue;
+	    double staticValue;
 	public:
 		void Initialize();
-		int getNext();
+		double getNext();
 
 };
 
@@ -46,7 +46,7 @@ void StaticDeparture::Initialize()
 	staticValue = _configuration.CarDeparture_Static_Value;
 }
 
-int StaticDeparture::getNext()
+double StaticDeparture::getNext()
 {
 	return staticValue;
 }

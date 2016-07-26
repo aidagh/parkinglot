@@ -571,17 +571,37 @@ void JobModel::HandleIncomingJobs()
         jobsInInitialSetup++;
         totalJobs++;
 	}
+
+    //log - jobsInInitialSetup
+	//log - totalJobs  (can get the utilization from here)
+	//log - size of queue
+    _statisticsModel.LogCurrentJobsInInitialSetup(jobsInInitialSetup);
+	_statisticsModel.LogCurrentJobsInParkingLot(totalJobs);
+	_statisticsModel.LogCurrentJobQueueSize(jobQueue.size());
+
+
+
 }
 
 void JobModel::addMigrationJobToDataCenter(Job* jobPtr, Car* car) {
+
+    int dataSize = 0;
+    if (jobPtr->jobStatus == InitialSetup )
+    {
+        dataSize = jobPtr->dataToMigrate + jobPtr->VMsize;
+    }
+    else
+    {
+        dataSize = jobPtr->dataToMigrate;
+    }
     /// Adding migrationJob to take care of data sending from datacenter to the car
     MigrationJob * migrationJob = new MigrationJob();
     migrationJob->jobFrom = jobPtr;
     migrationJob->carFrom = CarModel::dataCenter;
     migrationJob->carTo = car;
     migrationJob->type = DC;
-    migrationJob->totalDataSize = jobPtr->dataToMigrate + jobPtr->VMsize;
-    migrationJob->dataLeftToMigrate = jobPtr->dataToMigrate + jobPtr->VMsize;
+    migrationJob->totalDataSize = dataSize;
+    migrationJob->dataLeftToMigrate = dataSize;
     CarModel::dataCenter->ActiveDataMigrationTasks.push_back(migrationJob);
 }
 

@@ -22,16 +22,16 @@ class CarResidencyDistributionModel
     Logger _log;
     Configuration _configuration;
     TimeModel _time;
-    static int NextArrival;
-	static int NextDeparture;
+    static double NextArrival;
+	static double NextDeparture;
 
 	static CarArrivalDistributionFactory * CarArrivalDistribution;
 	static CarDepartureDistributionFactory * CarDepartureDistribution;
 
   public:
     void Initialize();
-    int getNextArrival();
-	int getNextDeparture();
+    double getNextArrival();
+	double getNextDeparture();
     void generateNext();
 
 };

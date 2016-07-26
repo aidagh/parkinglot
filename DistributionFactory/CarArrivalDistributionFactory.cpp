@@ -14,7 +14,7 @@ class PoissonArrival: public CarArrivalDistributionFactory
 
 	public:
 		void Initialize();
-		int getNext();
+		double getNext();
 
 };
 
@@ -24,7 +24,7 @@ void PoissonArrival::Initialize()
 	ArrivalPoissonDistribution = new std::poisson_distribution<int>(_configuration.CarArrival_Poisson_Lambda);
 }
 
-int PoissonArrival::getNext()
+double PoissonArrival::getNext()
 {
 	return (*ArrivalPoissonDistribution)(generatorArrival);
 }
@@ -33,10 +33,10 @@ int PoissonArrival::getNext()
 class StaticArrival: public CarArrivalDistributionFactory
 {
 	private:
-	    int staticValue;
+	    double staticValue;
 	public:
 		void Initialize();
-		int getNext();
+		double getNext();
 
 };
 
@@ -46,7 +46,7 @@ void StaticArrival::Initialize()
 	staticValue = _configuration.CarArrival_Static_Value;
 }
 
-int StaticArrival::getNext()
+double StaticArrival::getNext()
 {
 	return staticValue;
 }

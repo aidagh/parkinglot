@@ -29,18 +29,18 @@ bool Configuration::DataMigrationType_Random = true;
 
 bool Configuration::CarArrival_FromFile = false;
 bool Configuration::CarArrival_Static = true;
-int Configuration::CarArrival_Static_Value = 5;
+double Configuration::CarArrival_Static_Value = 5;
 bool Configuration::CarArrival_Poisson = false;
 double Configuration::CarArrival_Poisson_Lambda = 0.1;
 
 bool Configuration::CarDeparture_Static = true;
-int Configuration::CarDeparture_Static_Value = 25;
+double Configuration::CarDeparture_Static_Value = 25;
 bool Configuration::CarDeparture_Exponential = false;
 double Configuration::CarDeparture_Exponential_Mean = 10;
 
 
 bool Configuration::JobArrival_Static = true;
-int Configuration::JobArrival_Static_Value = 10;
+double Configuration::JobArrival_Static_Value = 10;
 bool Configuration::JobArrival_Poisson = false;
 double Configuration::JobArrival_Poisson_Lambda = .05;
 
@@ -139,7 +139,7 @@ void Configuration::ReadFromFile()
 	}
     if (left == "CarArrival_Static_Value")
 	{
-	  CarArrival_Static_Value = ConvertToInt(right);
+	  CarArrival_Static_Value = ConvertToDouble(right);
 	}
     if (left == "CarArrival_Poisson")
 	{
@@ -155,7 +155,7 @@ void Configuration::ReadFromFile()
 	}
     if (left == "CarDeparture_Static_Value")
 	{
-	  CarDeparture_Static_Value = ConvertToInt(right);
+	  CarDeparture_Static_Value = ConvertToDouble(right);
 	}
     if (left == "CarDeparture_Exponential")
 	{
@@ -172,7 +172,7 @@ void Configuration::ReadFromFile()
     }
     if (left == "JobArrival_Static_Value")
     {
-        JobArrival_Static_Value = ConvertToInt(right);
+        JobArrival_Static_Value = ConvertToDouble(right);
     }
     if (left == "JobArrival_Poisson")
     {

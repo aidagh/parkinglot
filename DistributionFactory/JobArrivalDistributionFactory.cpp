@@ -14,7 +14,7 @@ class PoissonJobArrival: public JobArrivalDistributionFactory
 
 	public:
 		void Initialize();
-		int getNext();
+		double getNext();
 
 };
 
@@ -24,7 +24,7 @@ void PoissonJobArrival::Initialize()
 	ArrivalPoissonDistribution = new std::poisson_distribution<int>(_configuration.JobArrival_Poisson_Lambda);
 }
 
-int PoissonJobArrival::getNext()
+double PoissonJobArrival::getNext()
 {
 	return (*ArrivalPoissonDistribution)(generatorArrival);
 }
@@ -33,10 +33,10 @@ int PoissonJobArrival::getNext()
 class StaticJobArrival: public JobArrivalDistributionFactory
 {
 	private:
-	    int staticValue;
+	    double staticValue;
 	public:
 		void Initialize();
-		int getNext();
+		double getNext();
 
 };
 
@@ -46,7 +46,7 @@ void StaticJobArrival::Initialize()
 	staticValue = _configuration.JobArrival_Static_Value;
 }
 
-int StaticJobArrival::getNext()
+double StaticJobArrival::getNext()
 {
 	return staticValue;
 }

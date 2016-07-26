@@ -79,19 +79,19 @@ class Configuration
    //Car configuration
    static bool CarArrival_FromFile;
    static bool CarArrival_Static;
-   static int CarArrival_Static_Value;
+   static double CarArrival_Static_Value;
    static bool CarArrival_Poisson;
    static double CarArrival_Poisson_Lambda;
 
    static bool CarDeparture_Static;
-   static int CarDeparture_Static_Value;
+   static double CarDeparture_Static_Value;
    static bool CarDeparture_Exponential;
    static double CarDeparture_Exponential_Mean;
 
 
    //Job configuration
    static bool JobArrival_Static;
-   static int JobArrival_Static_Value;
+   static double JobArrival_Static_Value;
    static bool JobArrival_Poisson;
    static double JobArrival_Poisson_Lambda;
 

@@ -18,6 +18,8 @@ class ResultsLogger
 
 	public:
 	  static std::ofstream results;
+	  static std::ofstream results_carsInParkingLot;
+	  static std::ofstream results_jobsInParkingLot;
 
       void Initialize();
 };

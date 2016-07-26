@@ -128,7 +128,7 @@ void JobDistributionModel::generateNext()
 {
   *_log.trace << "JobDistributionModel.generateNext()" << std::endl;
 
-  NextArrival = _time.getTime() + JobArrivalDistribution->getNext();
+  NextArrival = NextArrival + JobArrivalDistribution->getNext();
   NextJobLength = JobLengthDistribution->getNext();
   NextVMSize = JobVMSizeDistribution->getNext();
   NextDataSize = JobDataSizeDistribution->getNext();

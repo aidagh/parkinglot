@@ -37,11 +37,26 @@ class StatisticsModel
 //    static std::list<int> failedVMMigrationTimes;
 //    static double average_job_completion_time;
 
+    static std::list<int> jobsInInitialSetup;
+    static double average_jobs_in_initial_setup;
 
+    static std::list<int> jobsInParkingLot;
+    static double average_jobs_in_parking_lot;
 
+    static std::list<int> jobQueueSize;
+    static double average_job_queue_size;
+
+    static std::list<int> carsInParkingLot;
+    static double average_cars_in_parking_lot;
+
+    static double getAverageForList(std::list<int> * values);
     static void setAverageJobCompletionTime();
     static void setAverageSuccessfulVMMigrationTime();
     static void setMTTF();
+    static void setAverageJobsInInitialSetup();
+    static void setAverageJobsInParkingLot();
+    static void setAverageJobQueueSize();
+    static void setAverageCarsInParkingLot();
 
     //A list of any possible statistic that we can think of
 	//jobs queued
@@ -71,6 +86,13 @@ class StatisticsModel
 	static void LogSuccessfulVMMigration(int VMmigrationLength);
 	static void LogFailedVMMigration();
 	static void LogJobCompletionTime(int);
+
+	static void LogCurrentJobsInInitialSetup(int);
+	static void LogCurrentJobsInParkingLot(int);
+	static void LogCurrentJobQueueSize(int);
+
+	static void LogCurrentCarsInParkingLot(int);
+
 
 	static void PrintResults();
     static void WriteResults();

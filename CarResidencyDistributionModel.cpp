@@ -3,8 +3,8 @@
 
 #include "CarResidencyDistributionModel.hpp"
 
-int CarResidencyDistributionModel::NextArrival = 0;
-int CarResidencyDistributionModel::NextDeparture = 0;
+double CarResidencyDistributionModel::NextArrival = 0;
+double CarResidencyDistributionModel::NextDeparture = 0;
 CarArrivalDistributionFactory* CarResidencyDistributionModel::CarArrivalDistribution = NULL;
 CarDepartureDistributionFactory* CarResidencyDistributionModel::CarDepartureDistribution = NULL;
 
@@ -54,7 +54,7 @@ void CarResidencyDistributionModel::Initialize()
 }
 
 
-int CarResidencyDistributionModel::getNextArrival()
+double CarResidencyDistributionModel::getNextArrival()
 {
 	if (NextArrival == 0)
 	{
@@ -64,7 +64,7 @@ int CarResidencyDistributionModel::getNextArrival()
 }
 
 
-int CarResidencyDistributionModel::getNextDeparture()
+double CarResidencyDistributionModel::getNextDeparture()
 {
 	if (NextDeparture == 0)
 	{
@@ -77,7 +77,14 @@ int CarResidencyDistributionModel::getNextDeparture()
 void CarResidencyDistributionModel::generateNext()
 {
   *_log.trace << "CarResidencyDistributionModel.generateNext()" << std::endl;
-  NextArrival = _time.getTime() + CarArrivalDistribution->getNext();
+
+  double baseTime = 0;
+  if (_time.getTime() > 0)
+  {
+      baseTime = NextArrival;
+  }
+
+  NextArrival = baseTime + CarArrivalDistribution->getNext();
   NextDeparture = NextArrival + CarDepartureDistribution->getNext();
 }
 

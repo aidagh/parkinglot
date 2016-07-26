@@ -15,12 +15,20 @@ int StatisticsModel::count_success_migrate_vm = 0;
 double StatisticsModel::average_job_completion_time = 0;
 double StatisticsModel::MTTF = 0;
 double StatisticsModel::average_successful_VM_Migration_time = 0;
-
+double StatisticsModel::average_jobs_in_initial_setup = 0;
+double StatisticsModel::average_jobs_in_parking_lot = 0;
+double StatisticsModel::average_job_queue_size = 0;
+double StatisticsModel::average_cars_in_parking_lot = 0;
 
 
 std::list<int> StatisticsModel::jobCompletionTimes;
 std::list<int> StatisticsModel::interJobFailureTimes;
 std::list<int> StatisticsModel::successfulVMMigrationTimes;
+
+std::list<int> StatisticsModel::jobsInInitialSetup;
+std::list<int> StatisticsModel::jobsInParkingLot;
+std::list<int> StatisticsModel::jobQueueSize;
+std::list<int> StatisticsModel::carsInParkingLot;
 
 void StatisticsModel::Initialize()
 {
@@ -32,9 +40,12 @@ void StatisticsModel::Initialize()
   jobCompletionTimes = std::list<int>();
   interJobFailureTimes = std::list<int>();
   successfulVMMigrationTimes = std::list<int>();
+  jobsInInitialSetup = std::list<int>();
+  jobsInParkingLot = std::list<int>();
+  jobQueueSize =  std::list<int>();
+  carsInParkingLot = std::list<int>();
 
 }
-
 
 void StatisticsModel::LogCarArrived()
 {
@@ -70,56 +81,79 @@ void StatisticsModel::LogFailedVMMigration()
 void StatisticsModel::LogJobCompletionTime(int completionTime)
 {
   jobCompletionTimes.push_back(completionTime);
+}
 
+void StatisticsModel::LogCurrentJobsInInitialSetup(int numJobs)
+{
+  jobsInInitialSetup.push_back(numJobs);
+}
+void StatisticsModel::LogCurrentJobsInParkingLot(int numJobs)
+{
+  jobsInParkingLot.push_back(numJobs);
+}
+void StatisticsModel::LogCurrentJobQueueSize(int numJobs)
+{
+  jobQueueSize.push_back(numJobs);
+}
+void StatisticsModel::LogCurrentCarsInParkingLot(int numCars)
+{
+  carsInParkingLot.push_back(numCars);
+}
+
+
+
+
+double StatisticsModel::getAverageForList(std::list<int> * values)
+{
+    int totalSum = 0;
+    int count = 0;
+
+    std::list<int>::iterator it;
+    for (it = values->begin(); it != values->end(); it++)
+    {
+        totalSum += *it;
+        count++;
+    }
+    if (totalSum == 0 || count == 0)
+        return 0;
+    return (totalSum / count);
 }
 
 
 void StatisticsModel::setAverageJobCompletionTime()
 {
-    int totalSum = 0;
-    int count = 0;
-
-    std::list<int>::iterator it;
-    for (it = jobCompletionTimes.begin(); it != jobCompletionTimes.end(); it++)
-    {
-        totalSum += *it;
-        count++;
-    }
-    if (totalSum == 0 || count == 0)
-        return;
-    average_job_completion_time = totalSum / count;
+    average_job_completion_time = getAverageForList(&jobCompletionTimes);
 }
 void StatisticsModel::setMTTF()
 {
-    int totalSum = 0;
-    int count = 0;
-
-    std::list<int>::iterator it;
-    for (it = interJobFailureTimes.begin(); it != interJobFailureTimes.end(); it++)
-    {
-        totalSum += *it;
-        count++;
-    }
-    if (totalSum == 0 || count == 0)
-        return;
-    MTTF = totalSum / count;
+        MTTF = getAverageForList(&interJobFailureTimes);
 }
 
 void StatisticsModel::setAverageSuccessfulVMMigrationTime()
 {
-    int totalSum = 0;
-    int count = 0;
-
-    std::list<int>::iterator it;
-    for (it = successfulVMMigrationTimes.begin(); it != successfulVMMigrationTimes.end(); it++)
-    {
-        totalSum += *it;
-        count++;
-    }
-    if (totalSum == 0 || count == 0)
-        return;
-    average_successful_VM_Migration_time = totalSum / count;
+     average_successful_VM_Migration_time = getAverageForList(&successfulVMMigrationTimes);
 }
+
+void StatisticsModel::setAverageJobsInInitialSetup()
+{
+    average_jobs_in_initial_setup = getAverageForList(&jobsInInitialSetup);
+}
+
+void StatisticsModel::setAverageJobsInParkingLot()
+{
+     average_jobs_in_parking_lot = getAverageForList(&jobsInParkingLot);
+}
+
+void StatisticsModel::setAverageJobQueueSize()
+{
+     average_job_queue_size = getAverageForList(&jobQueueSize);
+}
+
+void StatisticsModel::setAverageCarsInParkingLot()
+{
+     average_cars_in_parking_lot = getAverageForList(&carsInParkingLot);
+}
+
 
 void StatisticsModel::PrintResults()
 {
@@ -134,7 +168,10 @@ void StatisticsModel::PrintResults()
   setAverageJobCompletionTime();
   setMTTF();
   setAverageSuccessfulVMMigrationTime();
-
+  setAverageJobsInInitialSetup();
+  setAverageJobsInParkingLot();
+  setAverageJobQueueSize();
+  setAverageCarsInParkingLot();
 
   *_log.info << "Results" << std::endl;
   *_log.info << "==============================" << std::endl;
@@ -153,6 +190,10 @@ void StatisticsModel::PrintResults()
   *_log.info << "Average Job Completion Time: " << average_job_completion_time << std::endl;
   *_log.info << "MTTF : " << MTTF << std::endl;
   *_log.info << "Average Successful VM Migration Time : " << average_successful_VM_Migration_time << std::endl;
+  *_log.info << "Average Jobs In Initial Setup : " << average_jobs_in_initial_setup << std::endl;
+  *_log.info << "Average Jobs In Parking Lot  : " << average_jobs_in_parking_lot << std::endl;
+  *_log.info << "Average Job Queue Size : " << average_job_queue_size << std::endl;
+  *_log.info << "Average Cars In Parking Lot  : " << average_cars_in_parking_lot << std::endl;
 
 
 
@@ -172,6 +213,10 @@ void StatisticsModel::WriteResults()
   setAverageJobCompletionTime();
   setMTTF();
   setAverageSuccessfulVMMigrationTime();
+  setAverageJobsInInitialSetup();
+  setAverageJobsInParkingLot();
+  setAverageJobQueueSize();
+
 
   _results.results <<",Results," << cars_arrived
        << "," << cars_departed
@@ -183,8 +228,24 @@ void StatisticsModel::WriteResults()
        << "," << vm_migrations_total
        << "," << average_job_completion_time
        << "," << MTTF
-       << "," << average_successful_VM_Migration_time << std::endl;
+       << "," << average_successful_VM_Migration_time
+       << "," << average_jobs_in_initial_setup
+       << "," << average_jobs_in_parking_lot
+       << "," << average_job_queue_size
+       << "," << average_cars_in_parking_lot << std::endl;
 
 
+
+    std::list<int>::iterator it;
+    for (it = jobsInParkingLot.begin(); it != jobsInParkingLot.end(); it++)
+    {
+        _results.results_jobsInParkingLot << *it << std::endl;
+    }
+
+
+    for (it = carsInParkingLot.begin(); it != carsInParkingLot.end(); it++)
+    {
+        _results.results_carsInParkingLot << *it << std::endl;
+    }
 
 }

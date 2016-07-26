@@ -92,7 +92,7 @@ int main(int argc,char *argv[]) {
 
 	if (_configuration.PauseAtEndOfCode)
     {
-    //   std::cin.get();
+     std::cin.get();
     }
 
     _results.results.close();
