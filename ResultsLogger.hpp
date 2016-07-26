@@ -20,6 +20,7 @@ class ResultsLogger
 	  static std::ofstream results;
 	  static std::ofstream results_carsInParkingLot;
 	  static std::ofstream results_jobsInParkingLot;
+	  static std::ofstream results_bandwidth;
 
       void Initialize();
 };

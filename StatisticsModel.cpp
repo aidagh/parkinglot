@@ -235,7 +235,7 @@ void StatisticsModel::WriteResults()
        << "," << average_cars_in_parking_lot << std::endl;
 
 
-
+/*
     std::list<int>::iterator it;
     for (it = jobsInParkingLot.begin(); it != jobsInParkingLot.end(); it++)
     {
@@ -247,5 +247,5 @@ void StatisticsModel::WriteResults()
     {
         _results.results_carsInParkingLot << *it << std::endl;
     }
-
+*/
 }

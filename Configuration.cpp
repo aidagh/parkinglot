@@ -25,7 +25,8 @@ bool Configuration::TaskScheme_AlternateProcessAndDataMigrate = true;
 
 int Configuration::VMMigrationOffset = 10;
 int Configuration::NumberOfDataBackupsRequired = 3;
-bool Configuration::DataMigrationType_Random = true;
+bool Configuration::DataMigrationType_Random = false;
+bool Configuration::DataMigrationType_TwoClusterOneGroup_Random = true;
 
 bool Configuration::CarArrival_FromFile = false;
 bool Configuration::CarArrival_Static = true;
@@ -95,6 +96,10 @@ void Configuration::ReadFromFile()
     {
       BandwidthPerMinuteForClusterInMegaBytes = ConvertToDouble(right);
     }
+    if (left == "BandwidthPerMinuteForWiredLinksInMegaBytes")
+    {
+      BandwidthPerMinuteForWiredLinksInMegaBytes = ConvertToDouble(right);
+    }
     if (left == "NumberOfParkingSpaces")
     {
       NumberOfParkingSpaces = ConvertToInt(right);
@@ -129,6 +134,11 @@ void Configuration::ReadFromFile()
     {
       DataMigrationType_Random = ConvertToBool(right);
     }
+    if (left == "DataMigrationType_TwoClusterOneGroup_Random")
+    {
+      DataMigrationType_TwoClusterOneGroup_Random = ConvertToBool(right);
+    }
+
     if (left == "CarArrival_FromFile")
 	{
 	  CarArrival_FromFile = ConvertToBool(right);
@@ -297,6 +307,7 @@ void Configuration::PrintConfiguration()
   std::cout << "VMMigrationOffset = " << VMMigrationOffset << std::endl;
   std::cout << "NumberOfDataBackupsRequired = " << NumberOfDataBackupsRequired << std::endl;
   std::cout << "DataMigrationType_Random = " << DataMigrationType_Random << std::endl;
+  std::cout << "DataMigrationType_TwoClusterOneGroup_Random = " << DataMigrationType_TwoClusterOneGroup_Random << std::endl;
   std::cout << "CarArrival_FromFile = " << CarArrival_FromFile << std::endl;
   std::cout << "CarArrival_Static = " << CarArrival_Static << std::endl;
   std::cout << "CarArrival_Static_Value = " << CarArrival_Static_Value << std::endl;
@@ -344,7 +355,8 @@ void Configuration::WriteConfigSettings()
       << "," << TaskScheme_AlternateProcessAndDataMigrate
       << "," << VMMigrationOffset
       << "," << NumberOfDataBackupsRequired
-      << "," << DataMigrationType_Random
+      //<< "," << DataMigrationType_Random
+      << "," << DataMigrationType_TwoClusterOneGroup_Random
       << "," << CarArrival_FromFile
       << "," << CarArrival_Static
       << "," << CarArrival_Static_Value

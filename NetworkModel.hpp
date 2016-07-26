@@ -11,6 +11,7 @@
 #include "JobDistributionModel.hpp"
 #include "CarModel.hpp"
 #include "StatisticsModel.hpp"
+#include "ResultsLogger.hpp"
 #include <map>
 
 using namespace std;
@@ -19,6 +20,7 @@ class NetworkModel
 {
   private:
     Logger _log;
+    ResultsLogger _results;
     Configuration _configuration;
     /// first = cluster number; second = number of migrations
     map<int, int> migrations_in_cluster;

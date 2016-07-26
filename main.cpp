@@ -51,9 +51,9 @@ int main(int argc,char *argv[]) {
 
     _configuration.ReadFromFile();
 
-    //_configuration.PrintConfiguration();
+//    _configuration.PrintConfiguration();
 
-    //std::cin.get();
+//    std::cin.get();
 
 
     _statisticsModel.Initialize();
@@ -73,7 +73,8 @@ int main(int argc,char *argv[]) {
 
 	while (_timeModel.getTime() < _configuration.MaxTime)
 	{
-	  *_log.info << "Time: " << _timeModel.getTime() << std::endl;
+	  //*_log.info << "Time: " << _timeModel.getTime() << std::endl;
+	  std::cout << "Time: " << _timeModel.getTime() << std::endl;
       _carModel.HandleCars();
 	  _jobModel.HandleJobs();
 
@@ -92,7 +93,7 @@ int main(int argc,char *argv[]) {
 
 	if (_configuration.PauseAtEndOfCode)
     {
-     std::cin.get();
+//     std::cin.get();
     }
 
     _results.results.close();

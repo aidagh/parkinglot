@@ -75,6 +75,7 @@ class Configuration
    static int VMMigrationOffset;
    static int NumberOfDataBackupsRequired;
    static bool DataMigrationType_Random;
+   static bool DataMigrationType_TwoClusterOneGroup_Random;
 
    //Car configuration
    static bool CarArrival_FromFile;

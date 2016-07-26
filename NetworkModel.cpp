@@ -199,7 +199,21 @@ void NetworkModel::Allocate()
                             : bandwithAllocationMapRegion[carTo->car_region_number];
         allBandwidth[3] = bandwidthAllocationDataCenter;
 
-        for(int i = 0; i < 4; ++i) {
+        int highestlevel = 1;
+        if (carFrom->car_region_number != carTo->car_region_number)
+        {
+            highestlevel = 4;
+        }
+        else if (carFrom->car_group_number != carTo->car_group_number)
+        {
+            highestlevel = 3;
+        }
+        else if (carFrom->car_cluster_number != carTo->car_cluster_number)
+        {
+            highestlevel = 2;
+        }
+
+        for(int i = 0; i < highestlevel; ++i) {
             /// get the minimum out of four possible bandwidth
             if(allBandwidth[i] < bandWidth) {
                 bandWidth = allBandwidth[i];

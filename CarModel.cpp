@@ -397,6 +397,70 @@ std::list<Car*> CarModel::AssignDataMigrationCars(Job* job)
             }
         }
     }
+    //In this type, two vehicles will be randomly selected from the cluster and one from the same groun.
+    else if (_configuration.DataMigrationType_TwoClusterOneGroup_Random)
+    {
+        Car* car = job->car;
+//        car->car_cluster_number
+
+       // int carRegionOffset = ((car->car_region_number-1) * 640);
+       // int carGroupOffset = ((car->car_group_number-1) * 160);
+        int carClusterOffset = ((car->car_cluster_number-1) * 40);
+        int carStart = carClusterOffset + 1;
+
+        //NOTE: If the parking lot is not always full, this algorithm may not complete.
+
+        int backupCar1 = carStart + random.GetNextInt(40);
+std::cout << "A" << endl;
+        while (carmap.find(backupCar1) == carmap.end())
+        {
+            backupCar1 = carStart + random.GetNextInt(40);
+        }
+std::cout << "B" << endl;
+
+        int backupCar2 = carStart + random.GetNextInt(40);
+        while (backupCar2 == car->car_spot_number || backupCar1 == backupCar2 || carmap.find(backupCar1) == carmap.end())
+        {
+            backupCar2 = carStart + random.GetNextInt(40);
+        }
+std::cout << "C" << endl;
+
+        int backupCar3Cluster = ((car->car_group_number - 1) * 4) + random.GetNextInt(4);
+        while (car->car_cluster_number == backupCar3Cluster)
+        {
+            backupCar3Cluster = ((car->car_group_number - 1) * 4) + random.GetNextInt(4);
+        }
+std::cout << "D" << endl;
+
+
+
+
+        carClusterOffset = ((backupCar3Cluster) * 40);
+        carStart = carClusterOffset + 1;
+
+        int backupCar3 = carStart + random.GetNextInt(40);
+        int count = 0;
+        while (carmap.find(backupCar3) == carmap.end())
+        {
+            backupCar3 = carStart + random.GetNextInt(40);
+            count++;
+
+            if (count > 5)
+            {
+                count --;
+            }
+        }
+std::cout << "E" << endl;
+
+
+        MigrationSet.push_back(carmap[backupCar1]);
+        MigrationSet.push_back(carmap[backupCar2]);
+        MigrationSet.push_back(carmap[backupCar3]);
+
+
+
+
+    }
     else
     {
         *_log.info << "No DataMigrationType Setup" << std::endl;
