@@ -448,6 +448,7 @@ std::cout << "D" << endl;
             if (count > 5)
             {
                 count --;
+
             }
         }
 std::cout << "E" << endl;

@@ -14,7 +14,9 @@ bool Configuration::PauseAtEndOfCode = true;
 int Configuration::MaxTime = 100;
 int Configuration::TimeStep = 1;
 double Configuration::BandwidthPerMinuteForClusterInMegaBytes = 75;
-double Configuration::BandwidthPerMinuteForWiredLinksInMegaBytes = 7500;
+double Configuration::BandwidthPerMinuteForGroupInMegaBytes = 7500;
+double Configuration::BandwidthPerMinuteForRegionInMegaBytes = 7500;
+double Configuration::BandwidthPerMinuteForDataCenterInMegaBytes = 7500;
 int Configuration::NumberOfParkingSpaces = 2560;
 
 int Configuration::MaxVehicleUtilization = 50;
@@ -96,9 +98,17 @@ void Configuration::ReadFromFile()
     {
       BandwidthPerMinuteForClusterInMegaBytes = ConvertToDouble(right);
     }
-    if (left == "BandwidthPerMinuteForWiredLinksInMegaBytes")
+    if (left == "BandwidthPerMinuteForGroupInMegaBytes")
     {
-      BandwidthPerMinuteForWiredLinksInMegaBytes = ConvertToDouble(right);
+      BandwidthPerMinuteForGroupInMegaBytes = ConvertToDouble(right);
+    }
+    if (left == "BandwidthPerMinuteForRegionInMegaBytes")
+    {
+      BandwidthPerMinuteForRegionInMegaBytes = ConvertToDouble(right);
+    }
+    if (left == "BandwidthPerMinuteForDataCenterInMegaBytes")
+    {
+      BandwidthPerMinuteForDataCenterInMegaBytes = ConvertToDouble(right);
     }
     if (left == "NumberOfParkingSpaces")
     {
@@ -298,7 +308,9 @@ void Configuration::PrintConfiguration()
   std::cout << "MaxTime = " << MaxTime << std::endl;
   std::cout << "TimeStep = " << TimeStep << std::endl;
   std::cout << "BandwidthPerMinuteForClusterInMegaBytes = " << BandwidthPerMinuteForClusterInMegaBytes << std::endl;
-  std::cout << "BandwidthPerMinuteForWiredLinksInMegaBytes = " << BandwidthPerMinuteForWiredLinksInMegaBytes << std::endl;
+  std::cout << "BandwidthPerMinuteForGroupWiredLinksInMegaBytes = " << BandwidthPerMinuteForGroupInMegaBytes << std::endl;
+  std::cout << "BandwidthPerMinuteForRegionWiredLinksInMegaBytes = " << BandwidthPerMinuteForRegionInMegaBytes << std::endl;
+  std::cout << "BandwidthPerMinuteForDataCenterInMegaBytes = " << BandwidthPerMinuteForDataCenterInMegaBytes << std::endl;
   std::cout << "NumberOfParkingSpaces = " << NumberOfParkingSpaces << std::endl;
   std::cout << "MaxVehicleUtilization = " << MaxVehicleUtilization << std::endl;
   std::cout << "MaxJobsInInitialSetup = " << MaxJobsInInitialSetup << std::endl;
@@ -347,7 +359,9 @@ void Configuration::WriteConfigSettings()
 
     _results.results << MaxTime
       << "," << BandwidthPerMinuteForClusterInMegaBytes
-      << "," << BandwidthPerMinuteForWiredLinksInMegaBytes
+      << "," << BandwidthPerMinuteForGroupInMegaBytes
+      << "," << BandwidthPerMinuteForRegionInMegaBytes
+      << "," << BandwidthPerMinuteForDataCenterInMegaBytes
       << "," << NumberOfParkingSpaces
       << "," << MaxVehicleUtilization
       << "," << MaxJobsInInitialSetup

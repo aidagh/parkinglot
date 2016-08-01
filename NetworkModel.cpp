@@ -26,14 +26,14 @@ void NetworkModel::resetMigrationMap()
     }
     for(int i = 1; i <= 16; ++i) {
         migratios_in_group.insert(make_pair(i, 0));
-        bandwithAllocationMapGroup.insert(make_pair(i, _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes));
+        bandwithAllocationMapGroup.insert(make_pair(i, _configuration.BandwidthPerMinuteForGroupInMegaBytes));
     }
     for(int i = 1; i <= 4; ++i) {
         migrations_in_region.insert(make_pair(i, 0));
-        bandwithAllocationMapRegion.insert(make_pair(i, _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes));
+        bandwithAllocationMapRegion.insert(make_pair(i, _configuration.BandwidthPerMinuteForRegionInMegaBytes));
     }
     migartion_in_datacenter = 0;
-    bandwidthAllocationDataCenter = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
+    bandwidthAllocationDataCenter = _configuration.BandwidthPerMinuteForDataCenterInMegaBytes;
     /*
     for(int i = 1; i <= 64; ++i) {
         migrations_in_cluster[i] = 0;
@@ -117,7 +117,7 @@ void NetworkModel::updateCongestionData()
       //cout << "***************** Migrations in groups **********************" << endl;
       while(mapItrGrp != migratios_in_group.end()) {
           if(mapItrGrp->second != 0) bandwithAllocationMapGroup[mapItrGrp->first] =
-                _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes / (double) mapItrGrp->second;
+                _configuration.BandwidthPerMinuteForGroupInMegaBytes / (double) mapItrGrp->second;
           //cout << "Group No: " << mapItrGrp->first << ", Number of messages: " << mapItrGrp->second << endl;
           ++mapItrGrp;
       }
@@ -126,7 +126,7 @@ void NetworkModel::updateCongestionData()
       //cout << "***************** Migrations in Region **********************" << endl;
       while(mapItrRgn != migrations_in_region.end()) {
           if(mapItrRgn->second != 0) bandwithAllocationMapRegion[mapItrRgn->first] =
-                _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes / (double) mapItrRgn->second;
+                _configuration.BandwidthPerMinuteForRegionInMegaBytes / (double) mapItrRgn->second;
           //cout << "Region No: " <<  mapItrRgn->first << ", Number of messages: " << mapItrRgn->second << endl;
           ++mapItrRgn;
       }
@@ -134,7 +134,7 @@ void NetworkModel::updateCongestionData()
       //cout << "***************** Migrations in Data center **********************" << endl;
       //cout << "Number of messages: " << migartion_in_datacenter << endl;
       if(migartion_in_datacenter != 0)
-        bandwidthAllocationDataCenter = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes / (double) migartion_in_datacenter;
+        bandwidthAllocationDataCenter = _configuration.BandwidthPerMinuteForDataCenterInMegaBytes / (double) migartion_in_datacenter;
       /*
       map<int, double>::iterator mapItr2 = bandwithAllocationMap.begin();
       while(mapItr2 != bandwithAllocationMap.end()) {
@@ -145,8 +145,8 @@ void NetworkModel::updateCongestionData()
           }
           ++mapItr2;
       }*/
-      bandwithAllocationMapRegion[-1] = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
-      bandwithAllocationMapGroup[-1] = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
+      bandwithAllocationMapRegion[-1] = _configuration.BandwidthPerMinuteForRegionInMegaBytes;
+      bandwithAllocationMapGroup[-1] = _configuration.BandwidthPerMinuteForGroupInMegaBytes;
       bandwithAllocationMap[-1] = _configuration.BandwidthPerMinuteForClusterInMegaBytes;
       lastCongestionDataUpdate = _time.getTime();
 
@@ -172,7 +172,7 @@ void NetworkModel::Allocate()
     //Calculate how much bandwidth can be allocated to each migrationJob.
 	//Loop through each of the migrationJobs and update the migrationJob->currentBandwidthSize with the available bandwidth for that job.
 
-    double bandWidth = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
+    double bandWidth = _configuration.BandwidthPerMinuteForDataCenterInMegaBytes;
     double allBandwidth[4] = {};
     Car* carFrom = nullptr;
     Car* carTo = nullptr;
@@ -181,7 +181,7 @@ void NetworkModel::Allocate()
         carFrom = (*it)->carFrom;
         carTo = (*it)->carTo;
         /// set the initial bandwidth to maximum bandwidth and then we find the minimum.
-        bandWidth = _configuration.BandwidthPerMinuteForWiredLinksInMegaBytes;
+        bandWidth = _configuration.BandwidthPerMinuteForDataCenterInMegaBytes;
         /// find out the minimum bandwidth of the two cars and then choose the minimum one
         allBandwidth[0] = bandwithAllocationMap[carFrom->car_cluster_number]
                             < bandwithAllocationMap[carTo->car_cluster_number]
