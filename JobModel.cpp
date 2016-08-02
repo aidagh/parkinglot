@@ -272,8 +272,8 @@ void JobModel::SetJobToDataMigrating(Job * job)
         migrationJob->carFrom = job->car;
         migrationJob->carTo = *it;
         migrationJob->type = Data;
-        migrationJob->totalDataSize = job->dataToMigrate;
-        migrationJob->dataLeftToMigrate = job->dataToMigrate;
+        migrationJob->totalDataSize = job->ActiveJobTask->taskDataToMigrate;
+        migrationJob->dataLeftToMigrate = job->ActiveJobTask->taskDataToMigrate;
         //  Set the MigrationJob on the car
         job->DataMigrationJobs.push_back(migrationJob);
         //  Add the Migration Job to the job->DataMigrationJobs
