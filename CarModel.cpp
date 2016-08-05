@@ -412,7 +412,7 @@ std::list<Car*> CarModel::AssignDataMigrationCars(Job* job)
 
         int backupCar1 = carStart + random.GetNextInt(40);
 std::cout << "A" << endl;
-        while (carmap.find(backupCar1) == carmap.end())
+        while (backupCar1 == car->car_spot_number || carmap.find(backupCar1) == carmap.end())
         {
             backupCar1 = carStart + random.GetNextInt(40);
         }
