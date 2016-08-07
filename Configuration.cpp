@@ -13,10 +13,12 @@ int Configuration::LogLevel = 0;
 bool Configuration::PauseAtEndOfCode = true;
 int Configuration::MaxTime = 100;
 int Configuration::TimeStep = 1;
-double Configuration::BandwidthPerMinuteForClusterInMegaBytes = 75;
-double Configuration::BandwidthPerMinuteForGroupInMegaBytes = 7500;
-double Configuration::BandwidthPerMinuteForRegionInMegaBytes = 7500;
-double Configuration::BandwidthPerMinuteForDataCenterInMegaBytes = 7500;
+
+double Configuration::BandwidthPerMinuteForClusterInMegaBytes=7500;
+double Configuration::BandwidthPerMinuteForGroupInMegaBytes=30000;
+double Configuration::BandwidthPerMinuteForRegionInMegaBytes=120000;
+double Configuration::BandwidthPerMinuteForDataCenterInMegaBytes=480000;
+
 int Configuration::NumberOfParkingSpaces = 2560;
 
 int Configuration::MaxVehicleUtilization = 50;

@@ -116,15 +116,14 @@ Car * CarModel::GetVMMigrationToVehicle(Car* FromCar)
 {
 //  1. does the vehicle have any cars in the migration set
 //     a. if yes, pick the one that is available for the longest AND is able to take the VM
-//     b. if no, pick the vehicle that is available for the longest
+//     b. if no, return NULL
 
-
+  Job* job = FromCar->job;
   Car* latestDepartingCar = NULL;
   int latestDepartureTime = 0;
   bool latestDepartingCarSet = false;
 
   //1.a
-
   std::list<JobTask*>::reverse_iterator reverseIteratorJobtask;
 
   for(reverseIteratorJobtask = FromCar->job->JobTasks.rbegin(); reverseIteratorJobtask != FromCar->job->JobTasks.rend(); reverseIteratorJobtask++)
@@ -146,14 +145,21 @@ Car * CarModel::GetVMMigrationToVehicle(Car* FromCar)
         }
 
         if (latestDepartingCarSet)
+        {
+            //1. Reset the processing back to the previous processing task
+
+
+
             return latestDepartingCar;
+        }
+
      }
   }
 
 //1.b
+/*
 
   //Loop through and find the latest departing vehicle that currently is not running a job.
-  //ToDo: This needs to consider cluster
 
   std::map<int, Car*>::iterator it;
 
@@ -166,8 +172,10 @@ Car * CarModel::GetVMMigrationToVehicle(Car* FromCar)
 		 *_log.trace << "Car " << it->first << " can accept job, leaving " << latestDepartingCar->departure_time_of_car << std::endl;
 	 }
   }
+*/
 
-  return latestDepartingCar;
+
+  return NULL;
 }
 
 
@@ -272,6 +280,30 @@ void CarModel::handleVehicleDepartingSOON()
 	  //3. Stop Job Processing / Data Migration
 	  leavingCar->job->jobStatus = VMMigrating;
 	  leavingCar->job->LastVMMigrationStart = _time.getTime();
+
+      std::list<JobTask*>::reverse_iterator reverseIteratorJobtask;
+
+     bool complete = false;
+     for(reverseIteratorJobtask = leavingCar->job->JobTasks.rbegin(); !complete && reverseIteratorJobtask != leavingCar->job->JobTasks.rend(); reverseIteratorJobtask++)
+     {
+         if ((*reverseIteratorJobtask)->jobTaskStatus != Task_NotStarted)
+         {
+            if ((*reverseIteratorJobtask)->taskType == Task_DataMigrate)
+            {
+                (*reverseIteratorJobtask)->jobTaskStatus = Task_NotStarted;
+            }
+            if ((*reverseIteratorJobtask)->taskType == Task_Process)
+            {
+                (*reverseIteratorJobtask)->taskProcessingTimeLeft = (*reverseIteratorJobtask)->taskProcessingTime;
+                leavingCar->job->ActiveJobTask = (*reverseIteratorJobtask);
+                //(*reverseIteratorJobtask)->jobTaskStatus = Task_InProgress;
+                complete = true;
+            }
+         }
+     }
+
+
+
 
 
         _jobModel.SetupVMMigration(leavingCar, carToMigrateTo) ;
@@ -401,39 +433,29 @@ std::list<Car*> CarModel::AssignDataMigrationCars(Job* job)
     else if (_configuration.DataMigrationType_TwoClusterOneGroup_Random)
     {
         Car* car = job->car;
-//        car->car_cluster_number
-
-       // int carRegionOffset = ((car->car_region_number-1) * 640);
-       // int carGroupOffset = ((car->car_group_number-1) * 160);
         int carClusterOffset = ((car->car_cluster_number-1) * 40);
         int carStart = carClusterOffset + 1;
 
         //NOTE: If the parking lot is not always full, this algorithm may not complete.
 
         int backupCar1 = carStart + random.GetNextInt(40);
-std::cout << "A" << endl;
+
         while (backupCar1 == car->car_spot_number || carmap.find(backupCar1) == carmap.end())
         {
             backupCar1 = carStart + random.GetNextInt(40);
         }
-std::cout << "B" << endl;
 
         int backupCar2 = carStart + random.GetNextInt(40);
         while (backupCar2 == car->car_spot_number || backupCar1 == backupCar2 || carmap.find(backupCar1) == carmap.end())
         {
             backupCar2 = carStart + random.GetNextInt(40);
         }
-std::cout << "C" << endl;
 
         int backupCar3Cluster = ((car->car_group_number - 1) * 4) + random.GetNextInt(4);
         while (car->car_cluster_number == backupCar3Cluster)
         {
             backupCar3Cluster = ((car->car_group_number - 1) * 4) + random.GetNextInt(4);
         }
-std::cout << "D" << endl;
-
-
-
 
         carClusterOffset = ((backupCar3Cluster) * 40);
         carStart = carClusterOffset + 1;
@@ -445,22 +467,14 @@ std::cout << "D" << endl;
             backupCar3 = carStart + random.GetNextInt(40);
             count++;
 
-            if (count > 5)
-            {
-                count --;
-
-            }
+//            if (count > 5)
+//            {
+//                bool breakpoint=true;
+//            }
         }
-std::cout << "E" << endl;
-
-
         MigrationSet.push_back(carmap[backupCar1]);
         MigrationSet.push_back(carmap[backupCar2]);
         MigrationSet.push_back(carmap[backupCar3]);
-
-
-
-
     }
     else
     {
@@ -477,7 +491,7 @@ void CarModel::PrintVehicleInfo()
 
   for(it = carmap.begin(); it != carmap.end(); it++)
   {
-      //if (it->second->job != NULL)
+      //if (it->second->car_spot_number == 18 || it->second->car_spot_number == 23 || it->second->job_number == 117)
         it->second->printCarDetails(true, "");
   }
 }

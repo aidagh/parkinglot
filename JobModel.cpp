@@ -684,11 +684,13 @@ void JobModel::CancelJob(int spaceId)
 
       if (job->jobStatus == Processing)
       {
-        *_log.debug << "Possible Issue - Job failed while Processing " << spaceId << std::endl;
+
+
+        *_log.debug << "Job failed while Processing " << spaceId << std::endl;
       }
       else if (job->jobStatus == DataMigrating)
       {
-        *_log.debug << "Possible Issue - Job failed while DataMigrating " << spaceId << std::endl;
+        *_log.debug << "Job failed while DataMigrating " << spaceId << std::endl;
       }
       else if (job->jobStatus == VMMigrating)
       {
@@ -701,12 +703,29 @@ void JobModel::CancelJob(int spaceId)
         delete job->VMMigrationJob;
       }
 
-      jobQueue.push(job);
-      //delete job;
-      //Handle Statistics!
-      jobMap.erase(spaceId);
+      job->ActiveJobTask = NULL;
 
-      //Add job back to the jobQueue
+      std::list<JobTask*>::iterator iteratorJobtask;
+      for(iteratorJobtask = job->JobTasks.begin(); iteratorJobtask != job->JobTasks.end(); iteratorJobtask++)
+      {
+         if ((*iteratorJobtask)->jobTaskStatus != Task_NotStarted)
+         {
+            if ((*iteratorJobtask)->taskType == Task_DataMigrate)
+            {
+                (*iteratorJobtask)->jobTaskStatus = Task_NotStarted;
+            }
+            if ((*iteratorJobtask)->taskType == Task_Process)
+            {
+                (*iteratorJobtask)->taskProcessingTimeLeft = (*iteratorJobtask)->taskProcessingTime;
+                (*iteratorJobtask)->jobTaskStatus = Task_NotStarted;
+            }
+         }
+      }
+
+
+
+      jobQueue.push(job);
+      jobMap.erase(spaceId);
 
 
       *_log.debug << "Cancelled job in space" << spaceId << "; added back into Queue" << std::endl;
