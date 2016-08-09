@@ -8,8 +8,8 @@
 class NormalJobLength: public JobLengthDistributionFactory
 {
 	private:
-	std::default_random_engine generatorJobLength;
-	std::normal_distribution<double> * JobLengthNormalDistribution;
+        static std::default_random_engine generatorJobLength;
+        static std::normal_distribution<double> * JobLengthNormalDistribution;
 
 
 	public:
@@ -18,9 +18,13 @@ class NormalJobLength: public JobLengthDistributionFactory
 
 };
 
+std::default_random_engine NormalJobLength::generatorJobLength;
+std::normal_distribution<double> * NormalJobLength::JobLengthNormalDistribution;
+
 void NormalJobLength::Initialize()
 {
 	Configuration _configuration;
+    generatorJobLength = std::default_random_engine(_configuration.Seed);
 	JobLengthNormalDistribution = new std::normal_distribution<double>(_configuration.JobLength_Normal_Mean, _configuration.JobLength_Normal_STDev);
 }
 

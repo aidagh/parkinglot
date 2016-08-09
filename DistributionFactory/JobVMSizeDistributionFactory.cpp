@@ -7,8 +7,8 @@
 class NormalJobVMSize: public JobVMSizeDistributionFactory
 {
 	private:
-	std::default_random_engine generatorJobVMSize;
-	std::normal_distribution<double> * JobVMSizeNormalDistribution;
+        static std::default_random_engine generatorJobVMSize;
+        static std::normal_distribution<double> * JobVMSizeNormalDistribution;
 
 
 	public:
@@ -17,9 +17,13 @@ class NormalJobVMSize: public JobVMSizeDistributionFactory
 
 };
 
+std::default_random_engine NormalJobVMSize::generatorJobVMSize;
+std::normal_distribution<double> * NormalJobVMSize::JobVMSizeNormalDistribution;
+
 void NormalJobVMSize::Initialize()
 {
 	Configuration _configuration;
+    generatorJobVMSize = std::default_random_engine(_configuration.Seed);
 	JobVMSizeNormalDistribution = new std::normal_distribution<double>(_configuration.JobVMSize_Normal_Mean, _configuration.JobVMSize_Normal_STDev);
 }
 

@@ -8,8 +8,8 @@
 class PoissonJobArrival: public JobArrivalDistributionFactory
 {
 	private:
-	std::default_random_engine generatorArrival;
-	std::poisson_distribution<int> * ArrivalPoissonDistribution;
+        static std::default_random_engine generatorArrival;
+        static std::poisson_distribution<int> * ArrivalPoissonDistribution;
 
 
 	public:
@@ -18,9 +18,13 @@ class PoissonJobArrival: public JobArrivalDistributionFactory
 
 };
 
+std::default_random_engine PoissonJobArrival::generatorArrival;
+std::poisson_distribution<int> * PoissonJobArrival::ArrivalPoissonDistribution;
+
 void PoissonJobArrival::Initialize()
 {
 	Configuration _configuration;
+    generatorArrival = std::default_random_engine(_configuration.Seed);
 	ArrivalPoissonDistribution = new std::poisson_distribution<int>(_configuration.JobArrival_Poisson_Lambda);
 }
 

@@ -44,10 +44,17 @@ StatisticsModel _statisticsModel;
 
 int main(int argc,char *argv[]) {
 
-     if (argc == 2) {
+     if (argc >= 2) {
         _configuration.SetConfigFile(argv[1]);
      }
 
+     if (argc == 3) {
+        _configuration.SetSeed(atoi(argv[2]));
+     }
+
+
+    Random _random;
+    _random.Initialize();
 
     _configuration.ReadFromFile();
 
@@ -81,11 +88,11 @@ int main(int argc,char *argv[]) {
       //_carModel.PrintVehicleInfo();
 	  _timeModel.increment();
 
-	 // std::cin.get();
+	  //std::cin.get();
 	}
 
 
-	_statisticsModel.PrintResults();
+	//_statisticsModel.PrintResults();
 
 
     _configuration.WriteConfigSettings();

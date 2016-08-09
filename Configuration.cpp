@@ -8,6 +8,7 @@
 #include "ResultsLogger.hpp"
 
 char* Configuration::ConfigFileName = "config.in";
+int Configuration::Seed = 0;
 
 int Configuration::LogLevel = 0;
 bool Configuration::PauseAtEndOfCode = true;
@@ -71,6 +72,11 @@ double Configuration::JobDataSize_Normal_STDev = 3;
 void Configuration::SetConfigFile(char * filename)
 {
     ConfigFileName = filename;
+}
+
+void Configuration::SetSeed(int seed)
+{
+    Seed = seed;;
 }
 
 

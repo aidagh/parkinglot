@@ -11,8 +11,8 @@
 class Random
 {
   private:
-    std::mt19937 mersenneTwisterEngine; //gen(rd());
-    std::uniform_int_distribution<> uniformDistribution; //dis(1, 6);
+    static std::default_random_engine generator;
+    static std::uniform_int_distribution<> uniformDistribution;
 
   public:
     void Initialize();

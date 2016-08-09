@@ -84,7 +84,10 @@ void CarResidencyDistributionModel::generateNext()
       baseTime = NextArrival;
   }
 
-  NextArrival = baseTime + CarArrivalDistribution->getNext();
-  NextDeparture = NextArrival + CarDepartureDistribution->getNext();
+  double arrivalOffset = CarArrivalDistribution->getNext();
+  double departureOffset = CarDepartureDistribution->getNext();
+
+  NextArrival = baseTime + arrivalOffset;
+  NextDeparture = NextArrival + departureOffset;
 }
 

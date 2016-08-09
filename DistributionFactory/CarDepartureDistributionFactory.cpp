@@ -8,8 +8,8 @@
 class ExponentialDeparture: public CarDepartureDistributionFactory
 {
 	private:
-	std::default_random_engine generatorDeparture;
-	std::exponential_distribution<double> * DepartureExponentialDistribution;
+        static std::default_random_engine generatorDeparture;
+        static std::exponential_distribution<double> * DepartureExponentialDistribution;
 
 
 	public:
@@ -18,9 +18,14 @@ class ExponentialDeparture: public CarDepartureDistributionFactory
 
 };
 
+
+std::default_random_engine ExponentialDeparture::generatorDeparture;
+std::exponential_distribution<double> * ExponentialDeparture::DepartureExponentialDistribution;
+
 void ExponentialDeparture::Initialize()
 {
 	Configuration _configuration;
+    generatorDeparture = std::default_random_engine(_configuration.Seed);
 	DepartureExponentialDistribution = new std::exponential_distribution<double>(1/_configuration.CarDeparture_Exponential_Mean);
 }
 

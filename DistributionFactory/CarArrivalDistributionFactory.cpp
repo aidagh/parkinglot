@@ -8,9 +8,8 @@
 class PoissonArrival: public CarArrivalDistributionFactory
 {
 	private:
-	std::default_random_engine generatorArrival;
-	std::poisson_distribution<int> * ArrivalPoissonDistribution;
-
+        static std::default_random_engine generatorArrival;
+        static std::poisson_distribution<int> * ArrivalPoissonDistribution;
 
 	public:
 		void Initialize();
@@ -18,16 +17,21 @@ class PoissonArrival: public CarArrivalDistributionFactory
 
 };
 
+std::default_random_engine PoissonArrival::generatorArrival;
+std::poisson_distribution<int> * PoissonArrival::ArrivalPoissonDistribution;
+
 void PoissonArrival::Initialize()
 {
 	Configuration _configuration;
-	ArrivalPoissonDistribution = new std::poisson_distribution<int>(_configuration.CarArrival_Poisson_Lambda);
+    generatorArrival = std::default_random_engine(_configuration.Seed);
+	ArrivalPoissonDistribution = new std::poisson_distribution<int>(_configuration.CarArrival_Poisson_Lambda * 1000);
 }
 
 double PoissonArrival::getNext()
 {
-	return (*ArrivalPoissonDistribution)(generatorArrival);
+	return (*ArrivalPoissonDistribution)(generatorArrival) / 1000;
 }
+
 
 
 class StaticArrival: public CarArrivalDistributionFactory

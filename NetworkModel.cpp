@@ -172,7 +172,7 @@ void NetworkModel::Allocate()
     //Calculate how much bandwidth can be allocated to each migrationJob.
 	//Loop through each of the migrationJobs and update the migrationJob->currentBandwidthSize with the available bandwidth for that job.
 
-    double bandWidth = _configuration.BandwidthPerMinuteForDataCenterInMegaBytes;
+    double bandWidth;//= _configuration.BandwidthPerMinuteForDataCenterInMegaBytes;
     double allBandwidth[4] = {};
     Car* carFrom = nullptr;
     Car* carTo = nullptr;
@@ -198,6 +198,8 @@ void NetworkModel::Allocate()
                             ? bandwithAllocationMapRegion[carFrom->car_region_number]
                             : bandwithAllocationMapRegion[carTo->car_region_number];
         allBandwidth[3] = bandwidthAllocationDataCenter;
+
+
 
         int highestlevel = 1;
         if (carFrom->car_region_number != carTo->car_region_number)

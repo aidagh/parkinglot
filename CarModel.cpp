@@ -2,6 +2,8 @@
 //Description:
 
 #include "CarModel.hpp"
+#include "Random.hpp"
+
 
 
 std::map<int, Car*> CarModel::carmap;
@@ -54,7 +56,9 @@ void CarModel::createNewCar()
   }
 
 
-  int randomEmptyIndex = 0; //_random.GetNextInt(emptySpaces.size());
+  Random _random;
+
+  int randomEmptyIndex = _random.GetNextInt(emptySpaces.size());
   int randomEmptySpace = 0;
   //Get the empty space at the randomEmptyIndexth place in the list
   std::list<int>::iterator it;

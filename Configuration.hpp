@@ -45,6 +45,7 @@ class Configuration
   public:
 
     static char* ConfigFileName;
+    static int Seed;
    //Program level configurations
    //  These are basic configurations that do not affect the logic
    static int LogLevel;
@@ -119,6 +120,7 @@ class Configuration
 
 
    void SetConfigFile(char* filename);
+   void SetSeed(int seed);
    void ReadFromFile();
    bool ConvertToBool(std::string &data);
    int ConvertToInt(std::string &data);

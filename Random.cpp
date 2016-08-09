@@ -2,21 +2,28 @@
 //Description:
 
 #include "Random.hpp"
+#include "Configuration.hpp"
+
+
+ std::default_random_engine Random::generator;
+ std::uniform_int_distribution<> Random::uniformDistribution;
+
+
 
 void Random::Initialize()
 {
-  int seed = 0;
-  mersenneTwisterEngine = std::mt19937(seed);
+  Configuration _configuration;
+  generator = std::default_random_engine(_configuration.Seed);
   uniformDistribution = std::uniform_int_distribution<> (0, RAND_MAX);
 }
 
 int Random::GetNextInt(int max)
 {
-  return uniformDistribution(mersenneTwisterEngine) % max;
+  return uniformDistribution(generator) % max;
 }
 
 double Random::GetNextDouble(double max)
 {
-  return ((double)uniformDistribution(mersenneTwisterEngine) / (RAND_MAX)) * max;
+  return ((double)uniformDistribution(generator) / (RAND_MAX)) * max;
 }
 
