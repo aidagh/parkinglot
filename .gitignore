@@ -5,3 +5,5 @@ bin/Debug/
 *.dat
 bin/
 *.exe
+ConfigBuilder/
+run.bat
