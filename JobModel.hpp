@@ -73,6 +73,7 @@ class JobModel
 
 	void HandleIncomingJobs();
     void HandleCompletedJobs();
+    void UpdateJobStats();
 
   public:
     void Initialize();
@@ -80,6 +81,7 @@ class JobModel
 
 	void CancelJob(int);
 	void SetupVMMigration(Car* leavingCar, Car* carToMigrateTo);
+
 };
 
 

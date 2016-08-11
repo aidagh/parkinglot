@@ -75,6 +75,13 @@ class Job
     void printJobDetails(bool printChildDetails, std::string tab);
     std::string PrintJobStatus(JobStatus jobStatus);
 
+
+
+    int timeSpentInProcessing;
+    int timeSpentInInitialSetup;
+    int timeSpentInBackup;
+    int timeSpentInFinalization;
+    int timeSpentInVMMigration;
 };
 
 #endif

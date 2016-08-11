@@ -11,6 +11,12 @@ Job::Job()
   JobArrivalTime = -1;
   JobStartTime = -1;
   VMMigrationJob = NULL;
+
+  timeSpentInProcessing = 0;
+  timeSpentInInitialSetup = 0;
+  timeSpentInBackup = 0;
+  timeSpentInFinalization = 0;
+  timeSpentInVMMigration = 0;
 }
 
 

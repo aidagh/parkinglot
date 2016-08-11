@@ -20,15 +20,34 @@ double StatisticsModel::average_jobs_in_parking_lot = 0;
 double StatisticsModel::average_job_queue_size = 0;
 double StatisticsModel::average_cars_in_parking_lot = 0;
 
+double StatisticsModel::average_timeSpentInProcessing = 0;
+double StatisticsModel::average_timeSpentInInitialSetup = 0;
+double StatisticsModel::average_timeSpentInBackup = 0;
+double StatisticsModel::average_timeSpentInFinalization = 0;
+double StatisticsModel::average_timeSpentInVMMigration = 0;
+
+
+
+
+
+
+
 
 std::list<int> StatisticsModel::jobCompletionTimes;
 std::list<int> StatisticsModel::interJobFailureTimes;
 std::list<int> StatisticsModel::successfulVMMigrationTimes;
+std::list<int> StatisticsModel::failedVMMigrationTimes;
 
 std::list<int> StatisticsModel::jobsInInitialSetup;
 std::list<int> StatisticsModel::jobsInParkingLot;
 std::list<int> StatisticsModel::jobQueueSize;
 std::list<int> StatisticsModel::carsInParkingLot;
+
+std::list<int> StatisticsModel::timeSpentInProcessing;
+std::list<int> StatisticsModel::timeSpentInInitialSetup;
+std::list<int> StatisticsModel::timeSpentInBackup;
+std::list<int> StatisticsModel::timeSpentInFinalization;
+std::list<int> StatisticsModel::timeSpentInVMMigration;
 
 void StatisticsModel::Initialize()
 {
@@ -72,8 +91,9 @@ void StatisticsModel::LogSuccessfulVMMigration(int VMmigrationLength)
 	count_success_migrate_vm++;
 }
 
-void StatisticsModel::LogFailedVMMigration()
+void StatisticsModel::LogFailedVMMigration(int VMmigrationLength)
 {
+    failedVMMigrationTimes.push_back(VMmigrationLength);
 	count_failed_migrate_vm++;
 }
 
@@ -100,7 +120,14 @@ void StatisticsModel::LogCurrentCarsInParkingLot(int numCars)
   carsInParkingLot.push_back(numCars);
 }
 
-
+void StatisticsModel::LogJobStats(int _timeSpentInProcessing, int _timeSpentInInitialSetup, int _timeSpentInBackup, int _timeSpentInFinalization, int _timeSpentInVMMigration)
+{
+	timeSpentInProcessing.push_back(_timeSpentInProcessing);
+	timeSpentInInitialSetup.push_back(_timeSpentInInitialSetup);
+	timeSpentInBackup.push_back(_timeSpentInBackup);
+	timeSpentInFinalization.push_back(_timeSpentInFinalization);
+	timeSpentInVMMigration.push_back(_timeSpentInVMMigration);
+}
 
 
 double StatisticsModel::getAverageForList(std::list<int> * values)
@@ -134,6 +161,12 @@ void StatisticsModel::setAverageSuccessfulVMMigrationTime()
      average_successful_VM_Migration_time = getAverageForList(&successfulVMMigrationTimes);
 }
 
+void StatisticsModel::setAvgTimeSpentInVMMigrationTime()
+{
+     int average_failed_VM_Migration_time = getAverageForList(&failedVMMigrationTimes);
+
+}
+
 void StatisticsModel::setAverageJobsInInitialSetup()
 {
     average_jobs_in_initial_setup = getAverageForList(&jobsInInitialSetup);
@@ -154,6 +187,17 @@ void StatisticsModel::setAverageCarsInParkingLot()
      average_cars_in_parking_lot = getAverageForList(&carsInParkingLot);
 }
 
+void StatisticsModel::setAverageJobStats()
+{
+
+     average_timeSpentInProcessing = getAverageForList(&timeSpentInProcessing);
+     average_timeSpentInInitialSetup = getAverageForList(&timeSpentInInitialSetup);
+     average_timeSpentInBackup = getAverageForList(&timeSpentInBackup);
+     average_timeSpentInFinalization = getAverageForList(&timeSpentInFinalization);
+     average_timeSpentInVMMigration = getAverageForList(&timeSpentInVMMigration);
+
+}
+
 
 void StatisticsModel::PrintResults()
 {
@@ -172,6 +216,7 @@ void StatisticsModel::PrintResults()
   setAverageJobsInParkingLot();
   setAverageJobQueueSize();
   setAverageCarsInParkingLot();
+  setAverageJobStats();
 
   *_log.info << "Results" << std::endl;
   *_log.info << "==============================" << std::endl;
@@ -195,6 +240,11 @@ void StatisticsModel::PrintResults()
   *_log.info << "Average Job Queue Size : " << average_job_queue_size << std::endl;
   *_log.info << "Average Cars In Parking Lot  : " << average_cars_in_parking_lot << std::endl;
 
+  *_log.info << "Average time Spent In Processing     : " << average_timeSpentInProcessing    << std::endl;
+  *_log.info << "Average time Spent In InitialSetup   : " << average_timeSpentInInitialSetup  << std::endl;
+  *_log.info << "Average time Spent In Backup         : " << average_timeSpentInBackup        << std::endl;
+  *_log.info << "Average time Spent In Finalization   : " << average_timeSpentInFinalization  << std::endl;
+  *_log.info << "Average time Spent In VMMigration    : " << average_timeSpentInVMMigration   << std::endl;
 
 
 
@@ -216,7 +266,8 @@ void StatisticsModel::WriteResults()
   setAverageJobsInInitialSetup();
   setAverageJobsInParkingLot();
   setAverageJobQueueSize();
-
+  setAverageCarsInParkingLot();
+  setAverageJobStats();
 
   _results.results <<",Results," << cars_arrived
        << "," << cars_departed
@@ -232,7 +283,12 @@ void StatisticsModel::WriteResults()
        << "," << average_jobs_in_initial_setup
        << "," << average_jobs_in_parking_lot
        << "," << average_job_queue_size
-       << "," << average_cars_in_parking_lot << std::endl;
+       << "," << average_cars_in_parking_lot
+       << "," << average_timeSpentInProcessing
+       << "," << average_timeSpentInInitialSetup
+       << "," << average_timeSpentInBackup
+       << "," << average_timeSpentInFinalization
+       << "," << average_timeSpentInVMMigration  << std::endl;
 
 
 /*

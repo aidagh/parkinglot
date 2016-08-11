@@ -450,13 +450,13 @@ std::list<Car*> CarModel::AssignDataMigrationCars(Job* job)
         }
 
         int backupCar2 = carStart + random.GetNextInt(40);
-        while (backupCar2 == car->car_spot_number || backupCar1 == backupCar2 || carmap.find(backupCar1) == carmap.end())
+        while (backupCar2 == car->car_spot_number || backupCar1 == backupCar2 || carmap.find(backupCar2) == carmap.end())
         {
             backupCar2 = carStart + random.GetNextInt(40);
         }
 
         int backupCar3Cluster = ((car->car_group_number - 1) * 4) + random.GetNextInt(4);
-        while (car->car_cluster_number == backupCar3Cluster)
+        while (car->car_cluster_number == backupCar3Cluster + 1)
         {
             backupCar3Cluster = ((car->car_group_number - 1) * 4) + random.GetNextInt(4);
         }
@@ -471,10 +471,10 @@ std::list<Car*> CarModel::AssignDataMigrationCars(Job* job)
             backupCar3 = carStart + random.GetNextInt(40);
             count++;
 
-//            if (count > 5)
-//            {
-//                bool breakpoint=true;
-//            }
+            if (count > 5)
+            {
+                bool breakpoint=true;
+            }
         }
         MigrationSet.push_back(carmap[backupCar1]);
         MigrationSet.push_back(carmap[backupCar2]);

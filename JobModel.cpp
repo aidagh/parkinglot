@@ -29,6 +29,8 @@ void JobModel::HandleJobs()
   HandleJobVMMigration_CompleteTransaction();
 
   HandleCompletedJobs();
+
+  UpdateJobStats();
 }
 
 
@@ -314,6 +316,10 @@ void JobModel::SetJobComplete(Job *job)
         _statisticsModel.LogJobCompleted();
 
         _statisticsModel.LogJobCompletionTime(job->JobEndTime - job->JobStartTime);
+
+        _statisticsModel.LogJobStats(job->timeSpentInProcessing,job->timeSpentInInitialSetup,job->timeSpentInBackup,job->timeSpentInFinalization,job->timeSpentInVMMigration);
+
+
 
 
         //TODO: update statistics
@@ -698,7 +704,7 @@ void JobModel::CancelJob(int spaceId)
         job->VMMigrationJob->carTo->job = NULL;
         *_log.debug << "Migration Failure - Job failed while VM Migration From " << spaceId << " to " << job->VMMigrationJob->carTo->car_spot_number << std::endl;
 
-        _statisticsModel.LogFailedVMMigration();
+        _statisticsModel.LogFailedVMMigration(_time.getTime() - job->LastVMMigrationStart);
 
         delete job->VMMigrationJob;
       }
@@ -766,4 +772,39 @@ void JobModel::SetupVMMigration(Car* leavingCar, Car* carToMigrateTo)
 
 
 	*_log.info << "Job " << job->job_number << " from Car " << leavingCar->car_spot_number << "to Car " << carToMigrateTo->car_spot_number << std::endl;
+}
+
+
+void JobModel::UpdateJobStats()
+{
+
+
+    std::map<int, Job*>::iterator it;
+    for(it = jobMap.begin(); it != jobMap.end(); it++)
+    {
+      Job* job = it->second;
+      if (job->jobStatus == InitialSetup)
+      {
+          job->timeSpentInInitialSetup++;
+      }
+      else if (job->jobStatus == Processing)
+      {
+          job->timeSpentInProcessing++;
+      }
+      else if (job->jobStatus == VMMigrating)
+      {
+          job->timeSpentInVMMigration++;
+      }
+      else if (job->jobStatus == DataMigrating)
+      {
+          job->timeSpentInBackup++;
+      }
+      else if (job->jobStatus == FinalMigration)
+      {
+          job->timeSpentInFinalization++;
+      }
+
+    }
+
+
 }
