@@ -132,18 +132,18 @@ void StatisticsModel::LogJobStats(int _timeSpentInProcessing, int _timeSpentInIn
 
 double StatisticsModel::getAverageForList(std::list<int> * values)
 {
-    int totalSum = 0;
+    double totalSum = 0;
     int count = 0;
 
     std::list<int>::iterator it;
     for (it = values->begin(); it != values->end(); it++)
     {
-        totalSum += *it;
+        totalSum += (double)*it;
         count++;
     }
     if (totalSum == 0 || count == 0)
         return 0;
-    return (totalSum / count);
+    return (totalSum / (double)count);
 }
 
 
